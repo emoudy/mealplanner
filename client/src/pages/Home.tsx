@@ -30,7 +30,7 @@ export default function Home() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <Link href="/chatbot">
           <Card className="cursor-pointer hover:shadow-lg transition-shadow bg-gradient-to-br from-brand-50 to-brand-100 dark:from-brand-900 dark:to-brand-800 border-brand-200 dark:border-brand-700">
             <CardContent className="p-6 text-center">
