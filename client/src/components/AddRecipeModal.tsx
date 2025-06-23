@@ -11,6 +11,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -165,12 +166,15 @@ export function AddRecipeModal({ open, onOpenChange }: AddRecipeModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto p-6" aria-describedby="dialog-description">
         <DialogHeader>
           <DialogTitle>Add New Recipe</DialogTitle>
+          <DialogDescription id="dialog-description">
+            Fill out the form below to create and save your recipe.
+          </DialogDescription>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 pb-20">
           {/* Basic Info */}
           <div className="grid md:grid-cols-2 gap-4">
             <div>
@@ -315,7 +319,7 @@ export function AddRecipeModal({ open, onOpenChange }: AddRecipeModalProps) {
           </div>
 
           {/* Submit */}
-          <div className="flex justify-end space-x-3">
+          <div className="flex justify-end space-x-3 pt-4 border-t sticky bottom-0 bg-white dark:bg-gray-900">
             <Button
               type="button"
               variant="outline"
