@@ -328,7 +328,7 @@ export function AddRecipeModal({ open, onOpenChange }: AddRecipeModalProps) {
               disabled={createRecipeMutation.isPending}
               className="bg-brand-500 hover:bg-brand-600"
             >
-              {createRecipeMutation.isPending ? 'Creating...' : 'Create Recipe'}
+              {createRecipeMutation.isPending ? 'Saving...' : 'Save Recipe'}
             </Button>
           </div>
         </form>
