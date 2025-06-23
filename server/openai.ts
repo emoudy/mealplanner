@@ -43,7 +43,12 @@ export async function generateRecipe(prompt: string): Promise<RecipeResponse> {
       max_tokens: 1000,
     });
 
-    const result = JSON.parse(response.content[0].text || "{}");
+    let responseText = response.content[0].text || "{}";
+    
+    // Clean up markdown code blocks if present
+    responseText = responseText.replace(/^```json\n?/, '').replace(/\n?```$/, '').trim();
+    
+    const result = JSON.parse(responseText);
     
     // Validate the response has required fields
     if (!result.title || !result.ingredients || !result.instructions) {

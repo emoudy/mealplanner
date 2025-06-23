@@ -121,7 +121,11 @@ FlavorBot is a full-stack web application that serves as an AI-powered recipe as
 ## Changelog
 ```
 Changelog:
-- June 23, 2025. Initial setup
+- June 23, 2025: Initial setup with complete FlavorBot application
+- Added recipe sharing via email and SMS functionality
+- Updated AI service to use Anthropic Claude instead of OpenAI
+- Fixed AI response parsing for JSON wrapped in markdown
+- Added 4 sample recipes for immediate use
 ```
 
 ## User Preferences
