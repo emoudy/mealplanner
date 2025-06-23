@@ -305,7 +305,8 @@ export default function Settings() {
                 <Avatar className="w-20 h-20">
                   <AvatarImage 
                     src={photoPreview || user.profileImageUrl} 
-                    alt={user.firstName || 'User'} 
+                    alt={user.firstName || 'User'}
+                    className="object-cover"
                   />
                   <AvatarFallback className="text-xl">
                     {user.firstName?.[0]}{user.lastName?.[0]}
