@@ -35,7 +35,7 @@ export default function Home() {
           <Card className="cursor-pointer hover:shadow-lg transition-shadow bg-gradient-to-br from-brand-50 to-brand-100 dark:from-brand-900 dark:to-brand-800 border-brand-200 dark:border-brand-700">
             <CardContent className="p-6 text-center">
               <div className="w-12 h-12 bg-brand-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                <MessageCircle className="w-6 h-6 text-white" />
+                <MessageCircle className="w-6 h-6 text-white" style={{ display: 'inline-block' }} />
               </div>
               <h3 className="text-lg font-semibold text-brand-700 dark:text-brand-300 mb-2">
                 Ask FlavorBot
@@ -50,8 +50,8 @@ export default function Home() {
         <Link href="/recipes">
           <Card className="cursor-pointer hover:shadow-lg transition-shadow">
             <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-accent-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                <BookOpen className="w-6 h-6 text-white" />
+              <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <BookOpen className="w-6 h-6 text-white" style={{ display: 'inline-block' }} />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                 My Recipes
@@ -69,7 +69,7 @@ export default function Home() {
         >
           <CardContent className="p-6 text-center">
             <div className="w-12 h-12 bg-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Plus className="w-6 h-6 text-white" />
+              <Plus className="w-6 h-6 text-white" style={{ display: 'inline-block' }} />
             </div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
               Add Recipe
