@@ -288,9 +288,10 @@ export default function Chatbot() {
                     <Button 
                       onClick={() => handleSaveRecipe(message.recipe)}
                       disabled={saveRecipeMutation.isPending}
-                      className="w-full mt-4 bg-brand-500 hover:bg-brand-600"
+                      className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium flex items-center justify-center"
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}
                     >
-                      <Bookmark className="w-4 h-4 mr-2" />
+                      <Bookmark className="w-4 h-4 mr-2" style={{ display: 'inline-block' }} />
                       {saveRecipeMutation.isPending ? 'Saving...' : 'Save Recipe'}
                     </Button>
                   </div>
