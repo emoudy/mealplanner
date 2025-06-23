@@ -1,11 +1,15 @@
 import type { Express } from "express";
+import express from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
+import { storage as dbStorage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { generateRecipe, getChatResponse } from "./openai";
 import { insertRecipeSchema, updateUserSchema } from "@shared/schema";
 import { z } from "zod";
 import nodemailer from "nodemailer";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
 
 // Email configuration
 const emailTransporter = nodemailer.createTransport({
@@ -23,6 +27,36 @@ const twilioClient = process.env.TWILIO_ACCOUNT_SID ? require('twilio')(
   process.env.TWILIO_AUTH_TOKEN
 ) : null;
 
+// File upload configuration
+const uploadDir = path.join(process.cwd(), 'uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const multerStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({
+  storage: multerStorage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
+    }
+  }
+});
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
@@ -31,7 +65,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
+      const user = await dbStorage.getUser(userId);
       res.json(user);
     } catch (error) {
       console.error("Error fetching user:", error);
@@ -44,7 +78,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const updates = updateUserSchema.parse(req.body);
-      const user = await storage.updateUser(userId, updates);
+      const user = await dbStorage.updateUser(userId, updates);
       res.json(user);
     } catch (error) {
       console.error("Error updating user:", error);
@@ -63,12 +97,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Photo upload route
+  app.post('/api/user/upload-photo', isAuthenticated, upload.single('photo'), async (req: any, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      const userId = req.user.claims.sub;
+      const photoUrl = `/uploads/${req.file.filename}`;
+      
+      // Update user profile with new photo URL
+      const user = await dbStorage.updateUser(userId, {
+        profileImageUrl: photoUrl
+      });
+
+      res.json({ 
+        message: "Photo uploaded successfully",
+        profileImageUrl: photoUrl,
+        user 
+      });
+    } catch (error) {
+      console.error("Error uploading photo:", error);
+      res.status(500).json({ message: "Failed to upload photo" });
+    }
+  });
+
+  // Serve uploaded files
+  app.use('/uploads', express.static(uploadDir));
+
   // Recipe routes
   app.get('/api/recipes', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const category = req.query.category as string;
-      const recipes = await storage.getRecipesByUser(userId, category);
+      const recipes = await dbStorage.getRecipesByUser(userId, category);
       res.json(recipes);
     } catch (error) {
       console.error("Error fetching recipes:", error);
@@ -80,7 +143,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const recipeData = insertRecipeSchema.parse(req.body);
-      const recipe = await storage.createRecipe(userId, recipeData);
+      const recipe = await dbStorage.createRecipe(userId, recipeData);
       res.json(recipe);
     } catch (error) {
       console.error("Error creating recipe:", error);
@@ -92,7 +155,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const recipeId = parseInt(req.params.id);
-      const recipe = await storage.getRecipe(recipeId, userId);
+      const recipe = await dbStorage.getRecipe(recipeId, userId);
       
       if (!recipe) {
         return res.status(404).json({ message: "Recipe not found" });
@@ -110,7 +173,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.claims.sub;
       const recipeId = parseInt(req.params.id);
       const updates = insertRecipeSchema.partial().parse(req.body);
-      const recipe = await storage.updateRecipe(recipeId, userId, updates);
+      const recipe = await dbStorage.updateRecipe(recipeId, userId, updates);
       res.json(recipe);
     } catch (error) {
       console.error("Error updating recipe:", error);
@@ -122,7 +185,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const recipeId = parseInt(req.params.id);
-      await storage.deleteRecipe(recipeId, userId);
+      await dbStorage.deleteRecipe(recipeId, userId);
       res.json({ message: "Recipe deleted successfully" });
     } catch (error) {
       console.error("Error deleting recipe:", error);
@@ -134,7 +197,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const query = req.params.query;
-      const recipes = await storage.searchRecipes(userId, query);
+      const recipes = await dbStorage.searchRecipes(userId, query);
       res.json(recipes);
     } catch (error) {
       console.error("Error searching recipes:", error);
@@ -154,8 +217,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Check subscription limits
       const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
-      const usage = await storage.getUsageForMonth(userId, currentMonth);
-      const user = await storage.getUser(userId);
+      const usage = await dbStorage.getUsageForMonth(userId, currentMonth);
+      const user = await dbStorage.getUser(userId);
       
       const limits = {
         free: 5,
@@ -173,7 +236,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const recipe = await generateRecipe(prompt);
       
       // Track usage
-      await storage.incrementUsage(userId, currentMonth, 'recipeQueries');
+      await dbStorage.incrementUsage(userId, currentMonth, 'recipeQueries');
       
       res.json(recipe);
     } catch (error) {
@@ -194,13 +257,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const response = await getChatResponse(messages);
       
       // Save or update conversation
-      let conversation = await storage.getChatConversation(userId);
+      let conversation = await dbStorage.getChatConversation(userId);
       const newMessages = [...messages, { role: 'assistant', content: response }];
       
       if (conversation) {
-        await storage.updateChatConversation(conversation.id, userId, newMessages);
+        await dbStorage.updateChatConversation(conversation.id, userId, newMessages);
       } else {
-        await storage.createChatConversation(userId, { messages: newMessages });
+        await dbStorage.createChatConversation(userId, { messages: newMessages });
       }
       
       res.json({ response });
@@ -213,7 +276,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/chatbot/conversation', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const conversation = await storage.getChatConversation(userId);
+      const conversation = await dbStorage.getChatConversation(userId);
       res.json(conversation || { messages: [] });
     } catch (error) {
       console.error("Error fetching conversation:", error);
@@ -228,7 +291,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const recipeId = parseInt(req.params.id);
       const { email, message } = req.body;
       
-      const recipe = await storage.getRecipe(recipeId, userId);
+      const recipe = await dbStorage.getRecipe(recipeId, userId);
       if (!recipe) {
         return res.status(404).json({ message: "Recipe not found" });
       }
@@ -277,7 +340,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(500).json({ message: "SMS service not configured" });
       }
       
-      const recipe = await storage.getRecipe(recipeId, userId);
+      const recipe = await dbStorage.getRecipe(recipeId, userId);
       if (!recipe) {
         return res.status(404).json({ message: "Recipe not found" });
       }
@@ -302,7 +365,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const month = req.params.month;
-      const usage = await storage.getUsageForMonth(userId, month);
+      const usage = await dbStorage.getUsageForMonth(userId, month);
       res.json(usage || { recipeQueries: 0, recipesGenerated: 0 });
     } catch (error) {
       console.error("Error fetching usage:", error);

@@ -46,6 +46,8 @@ export default function Settings() {
   });
   const [dietaryPreferences, setDietaryPreferences] = useState<string[]>([]);
   const [emailNotifications, setEmailNotifications] = useState(true);
+  const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -149,6 +151,80 @@ export default function Settings() {
     }
   };
 
+  const handlePhotoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Invalid File",
+          description: "Please select an image file (JPG, PNG, or GIF)",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Validate file size (5MB max)
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "File Too Large",
+          description: "Please select an image smaller than 5MB",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setSelectedPhoto(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setPhotoPreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const uploadPhotoMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('photo', file);
+      
+      const response = await fetch('/api/user/upload-photo', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to upload photo');
+      }
+      
+      return response.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: "Profile photo updated successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+      setSelectedPhoto(null);
+      setPhotoPreview(null);
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to upload photo",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handlePhotoUpload = () => {
+    if (selectedPhoto) {
+      uploadPhotoMutation.mutate(selectedPhoto);
+    }
+  };
+
   const handleDietaryChange = (preference: string) => {
     setDietaryPreferences(prev => 
       prev.includes(preference)
@@ -227,16 +303,48 @@ export default function Settings() {
               {/* Profile Picture */}
               <div className="flex items-center space-x-6">
                 <Avatar className="w-20 h-20">
-                  <AvatarImage src={user.profileImageUrl} alt={user.firstName || 'User'} />
+                  <AvatarImage 
+                    src={photoPreview || user.profileImageUrl} 
+                    alt={user.firstName || 'User'} 
+                  />
                   <AvatarFallback className="text-xl">
                     {user.firstName?.[0]}{user.lastName?.[0]}
                   </AvatarFallback>
                 </Avatar>
-                <div>
-                  <Button variant="outline">Change Photo</Button>
-                  <p className="text-sm text-muted-foreground mt-1">
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="file"
+                      id="photo-upload"
+                      accept="image/*"
+                      onChange={handlePhotoChange}
+                      className="hidden"
+                    />
+                    <Button 
+                      variant="outline" 
+                      onClick={() => document.getElementById('photo-upload')?.click()}
+                    >
+                      Change Photo
+                    </Button>
+                    {selectedPhoto && (
+                      <Button
+                        onClick={handlePhotoUpload}
+                        disabled={uploadPhotoMutation.isPending}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium"
+                        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                      >
+                        {uploadPhotoMutation.isPending ? 'Uploading...' : 'Upload'}
+                      </Button>
+                    )}
+                  </div>
+                  <p className="text-sm text-muted-foreground">
                     JPG, PNG or GIF. Max size 5MB.
                   </p>
+                  {selectedPhoto && (
+                    <p className="text-sm text-green-600">
+                      Selected: {selectedPhoto.name}
+                    </p>
+                  )}
                 </div>
               </div>
 

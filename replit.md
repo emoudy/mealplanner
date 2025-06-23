@@ -129,6 +129,9 @@ Changelog:
 - Created manual recipe creation modal with dynamic ingredients/instructions
 - Fixed Save Recipe button visibility and CSS rendering issues
 - Confirmed recipe creation functionality working properly
+- Implemented profile photo upload with file validation and preview
+- Fixed all Save Recipe button CSS issues in both modal and chatbot
+- Added multer file upload handling with secure storage
 ```
 
 ## User Preferences
