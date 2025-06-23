@@ -60,19 +60,21 @@ export default function Home() {
           </Card>
         </Link>
 
-        <Card className="cursor-pointer hover:shadow-lg transition-shadow">
-          <CardContent className="p-6 text-center">
-            <div className="w-12 h-12 bg-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Plus className="w-6 h-6 text-white" />
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              Add Recipe
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-300">
-              Manually create a new recipe
-            </p>
-          </CardContent>
-        </Card>
+        <Link href="/recipes">
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+            <CardContent className="p-6 text-center">
+              <div className="w-12 h-12 bg-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Plus className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                Add Recipe
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                Manually create a new recipe
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
 
       {/* Stats Overview */}

@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RecipeCard } from '@/components/RecipeCard';
+import { AddRecipeModal } from '@/components/AddRecipeModal';
 import { Link } from 'wouter';
 import { 
   Search, 
@@ -30,6 +31,7 @@ const categories = [
 export default function Recipes() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [showAddModal, setShowAddModal] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -141,12 +143,13 @@ export default function Recipes() {
               className="pl-10 pr-4 py-2 w-64"
             />
           </div>
-          <Link href="/chatbot">
-            <Button className="bg-brand-500 hover:bg-brand-600">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Recipe
-            </Button>
-          </Link>
+          <Button 
+            onClick={() => setShowAddModal(true)}
+            className="bg-brand-500 hover:bg-brand-600"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add Recipe
+          </Button>
         </div>
       </div>
 
@@ -200,6 +203,11 @@ export default function Recipes() {
           </Link>
         </div>
       )}
+
+      <AddRecipeModal
+        open={showAddModal}
+        onOpenChange={setShowAddModal}
+      />
     </div>
   );
 }
