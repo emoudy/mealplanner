@@ -330,7 +330,8 @@ export function AddRecipeModal({ open, onOpenChange }: AddRecipeModalProps) {
             <Button
               type="submit"
               disabled={createRecipeMutation.isPending}
-              className="bg-brand-500 hover:bg-brand-600"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium"
+              style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
             >
               {createRecipeMutation.isPending ? 'Saving...' : 'Save Recipe'}
             </Button>
