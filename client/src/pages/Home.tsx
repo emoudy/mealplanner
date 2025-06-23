@@ -82,7 +82,7 @@ export default function Home() {
       </div>
 
       {/* Stats Overview */}
-      <div className="grid md:grid-cols-3 gap-6 mb-8">
+      <div className="grid md:grid-cols-2 gap-6 mb-8">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -110,24 +110,6 @@ export default function Home() {
               <Clock className="w-3 h-3 inline mr-1" />
               AI queries used
             </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
-              Subscription
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-gray-900 dark:text-white capitalize">
-              {user?.subscriptionTier || 'Free'}
-            </div>
-            <Link href="/settings">
-              <p className="text-xs text-brand-500 hover:text-brand-600 cursor-pointer">
-                Manage subscription
-              </p>
-            </Link>
           </CardContent>
         </Card>
       </div>
