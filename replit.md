@@ -126,6 +126,9 @@ Changelog:
 - Updated AI service to use Anthropic Claude instead of OpenAI
 - Fixed AI response parsing for JSON wrapped in markdown
 - Added 4 sample recipes for immediate use
+- Created manual recipe creation modal with dynamic ingredients/instructions
+- Fixed Save Recipe button visibility and CSS rendering issues
+- Confirmed recipe creation functionality working properly
 ```
 
 ## User Preferences
