@@ -34,8 +34,8 @@ export default function Home() {
         <Link href="/chatbot">
           <Card className="cursor-pointer hover:shadow-lg transition-shadow bg-gradient-to-br from-brand-50 to-brand-100 dark:from-brand-900 dark:to-brand-800 border-brand-200 dark:border-brand-700">
             <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-brand-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                <MessageCircle className="w-6 h-6 text-white" style={{ display: 'inline-block' }} />
+              <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <MessageCircle className="w-6 h-6 text-white" style={{ display: 'inline-block', width: '24px', height: '24px', color: 'white' }} />
               </div>
               <h3 className="text-lg font-semibold text-brand-700 dark:text-brand-300 mb-2">
                 Ask FlavorBot
