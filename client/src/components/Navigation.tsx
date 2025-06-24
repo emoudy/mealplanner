@@ -46,15 +46,6 @@ export function Navigation() {
           {/* Navigation Links (Authenticated State) */}
           {isAuthenticated && (
             <div className="hidden md:flex items-center space-x-2">
-              <Link href="/recipes">
-                <Button 
-                  variant={location === '/recipes' ? 'default' : 'ghost'}
-                  size="icon"
-                  className="w-10 h-10"
-                >
-                  <BookOpen className="w-5 h-5" />
-                </Button>
-              </Link>
               <Link href="/chatbot">
                 <Button 
                   variant={location === '/chatbot' ? 'default' : 'ghost'}
@@ -64,12 +55,20 @@ export function Navigation() {
                   <MessageCircle className="w-5 h-5" />
                 </Button>
               </Link>
+              <Link href="/recipes">
+                <Button 
+                  variant={location === '/recipes' ? 'default' : 'ghost'}
+                  size="icon"
+                  className="w-10 h-10"
+                >
+                  <BookOpen className="w-5 h-5" />
+                </Button>
+              </Link>
               <Button 
                 variant="ghost"
                 size="icon"
                 className="w-10 h-10"
                 onClick={() => {
-                  // Trigger add recipe modal - we'll need to implement this
                   window.dispatchEvent(new CustomEvent('openAddRecipeModal'));
                 }}
               >
