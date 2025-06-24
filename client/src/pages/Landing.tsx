@@ -137,7 +137,7 @@ export default function Landing() {
                 </ul>
                 <Button 
                   variant="outline" 
-                  className="w-full border-brand-500 text-brand-600 hover:bg-brand-50"
+                  className="w-full border-blue-600 text-blue-700 hover:bg-blue-50 dark:border-blue-400 dark:text-blue-400 dark:hover:bg-blue-950"
                   onClick={handleGetStarted}
                 >
                   Get Started
@@ -146,9 +146,9 @@ export default function Landing() {
             </Card>
 
             {/* Basic Plan */}
-            <Card className="border-2 border-brand-500 relative">
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <Badge className="bg-brand-500 text-white px-4 py-1">
+            <Card className="border-2 border-blue-500 relative">
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
+                <Badge className="bg-blue-600 text-white px-4 py-2 shadow-md font-semibold">
                   Most Popular
                 </Badge>
               </div>
@@ -176,7 +176,7 @@ export default function Landing() {
                   </li>
                 </ul>
                 <Button 
-                  className="w-full bg-brand-500 hover:bg-brand-600"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                   onClick={handleGetStarted}
                 >
                   Choose Basic
@@ -211,7 +211,7 @@ export default function Landing() {
                 </ul>
                 <Button 
                   variant="outline"
-                  className="w-full border-brand-500 text-brand-600 hover:bg-brand-50"
+                  className="w-full border-blue-600 text-blue-700 hover:bg-blue-50 dark:border-blue-400 dark:text-blue-400 dark:hover:bg-blue-950"
                   onClick={handleGetStarted}
                 >
                   Choose Pro
