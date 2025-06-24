@@ -46,15 +46,15 @@ export default function Home() {
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <Link href="/chatbot">
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow bg-gradient-to-br from-brand-50 to-brand-100 dark:from-brand-900 dark:to-brand-800 border-brand-200 dark:border-brand-700">
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow">
             <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <MessageCircle className="w-6 h-6 text-white" style={{ display: 'inline-block', width: '24px', height: '24px', color: 'white' }} />
+              <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <MessageCircle className="w-6 h-6 text-white" style={{ display: 'inline-block' }} />
               </div>
-              <h3 className="text-lg font-semibold text-brand-700 dark:text-brand-300 mb-2">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                 Ask FlavorBot
               </h3>
-              <p className="text-sm text-brand-600 dark:text-brand-400">
+              <p className="text-sm text-gray-600 dark:text-gray-300">
                 Get AI-powered recipe recommendations
               </p>
             </CardContent>
