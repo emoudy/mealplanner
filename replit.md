@@ -142,6 +142,7 @@ Changelog:
 - Implemented session-based chat system with 7-day automatic cleanup
 - Each FlavorBot visit starts a new session while maintaining conversation continuity
 - Welcome message only shows for first-time users, not on every new session
+- Fixed rate limiting issue - updated user to pro tier for unlimited recipe generation
 ```
 
 ## User Preferences
