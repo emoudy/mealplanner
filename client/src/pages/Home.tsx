@@ -11,7 +11,8 @@ import {
   MessageCircle, 
   UtensilsCrossed,
   TrendingUp,
-  Clock
+  Clock,
+  Plus
 } from 'lucide-react';
 import type { Recipe } from '@shared/schema';
 
