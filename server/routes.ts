@@ -239,6 +239,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Track usage
       await dbStorage.incrementUsage(userId, currentMonth, 'recipeQueries');
       
+      // Create conversation record for recipe generation if needed
+      const sessionId = req.sessionID;
+      const userMessage = { role: 'user', content: prompt };
+      const recipeMessage = { 
+        role: 'assistant', 
+        content: `I've created a recipe for you: **${recipe.title}**. Would you like me to save it to your collection?`,
+        recipe: recipe
+      };
+      
+      let conversation = await dbStorage.getChatConversation(userId, sessionId);
+      if (!conversation) {
+        await dbStorage.createChatConversation(userId, sessionId, { 
+          messages: [userMessage, recipeMessage] 
+        });
+      }
+      
       res.json(recipe);
     } catch (error) {
       console.error("Error generating recipe:", error);
@@ -279,17 +295,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const response = await getChatResponse(messages);
       
-      // Save or update conversation - use current session for new messages
+      // Save conversation for current session
       const sessionId = req.sessionID;
-      let conversation = await dbStorage.getChatConversation(userId, sessionId);
       const newMessages = [...messages, { role: 'assistant', content: response }];
       
-      if (conversation) {
-        await dbStorage.updateChatConversation(conversation.id, userId, newMessages);
-      } else {
-        // Create new conversation for this chat interaction
-        await dbStorage.createChatConversation(userId, sessionId, { messages: newMessages });
-      }
+      // Always create new conversation record for new sessions
+      await dbStorage.createChatConversation(userId, sessionId, { messages: newMessages });
       
       res.json({ response });
     } catch (error) {
