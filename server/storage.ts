@@ -13,7 +13,7 @@ import {
   type UsageTracking,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, ilike, gte, lt } from "drizzle-orm";
 
 // Interface for storage operations
 export interface IStorage {
