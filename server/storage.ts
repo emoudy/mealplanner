@@ -35,6 +35,8 @@ export interface IStorage {
   createChatConversation(userId: string, conversation: InsertChatConversation): Promise<ChatConversation>;
   getChatConversation(userId: string): Promise<ChatConversation | undefined>;
   updateChatConversation(id: number, userId: string, messages: any[]): Promise<ChatConversation>;
+  startNewChatSession(userId: string): Promise<ChatConversation>;
+  cleanupExpiredSessions(): Promise<void>;
   
   // Usage tracking
   getUsageForMonth(userId: string, month: string): Promise<UsageTracking | undefined>;
@@ -143,7 +145,7 @@ export class DatabaseStorage implements IStorage {
     const [conversation] = await db
       .select()
       .from(chatConversations)
-      .where(eq(chatConversations.userId, userId))
+      .where(and(eq(chatConversations.userId, userId), eq(chatConversations.isActive, true)))
       .orderBy(desc(chatConversations.updatedAt))
       .limit(1);
     return conversation;
@@ -156,6 +158,47 @@ export class DatabaseStorage implements IStorage {
       .where(and(eq(chatConversations.id, id), eq(chatConversations.userId, userId)))
       .returning();
     return conversation;
+  }
+
+  async startNewChatSession(userId: string): Promise<ChatConversation> {
+    // Mark existing active sessions as inactive
+    await db
+      .update(chatConversations)
+      .set({ isActive: false })
+      .where(and(eq(chatConversations.userId, userId), eq(chatConversations.isActive, true)));
+
+    // Create new session with welcome message
+    const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const welcomeMessage = {
+      role: 'assistant',
+      content: "Hi! I'm FlavorBot, your AI recipe assistant. I can help you find recipes based on ingredients, dietary preferences, cooking time, or cuisine type. What would you like to cook today?"
+    };
+
+    const [newSession] = await db
+      .insert(chatConversations)
+      .values({
+        userId,
+        sessionId,
+        messages: [welcomeMessage],
+        isActive: true
+      })
+      .returning();
+    
+    return newSession;
+  }
+
+  async cleanupExpiredSessions(): Promise<void> {
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    await db
+      .delete(chatConversations)
+      .where(
+        and(
+          eq(chatConversations.isActive, false),
+          db.sql`${chatConversations.updatedAt} < ${sevenDaysAgo}`
+        )
+      );
   }
 
   // Usage tracking

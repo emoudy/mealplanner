@@ -139,6 +139,8 @@ Changelog:
 - Streamlined navigation to icon-only design with "Add Recipe" functionality
 - Fixed card highlighting issues and improved visual consistency
 - Improved "Start Cooking Today" button visibility and removed demo functionality
+- Implemented session-based chat system with 7-day automatic cleanup
+- Each FlavorBot visit starts a new session while maintaining conversation continuity
 ```
 
 ## User Preferences

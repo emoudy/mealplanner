@@ -64,7 +64,9 @@ export const recipes = pgTable("recipes", {
 export const chatConversations = pgTable("chat_conversations", {
   id: serial("id").primaryKey(),
   userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  sessionId: varchar("session_id").notNull(), // unique session identifier
   messages: jsonb("messages").notNull(), // array of {role: 'user'|'assistant', content: string}
+  isActive: boolean("is_active").default(true), // current active session
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

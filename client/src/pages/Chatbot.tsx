@@ -46,6 +46,26 @@ export default function Chatbot() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // Start new session on component mount
+  const startNewSessionMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest('POST', '/api/chatbot/start-session');
+      return response.json();
+    },
+    onSuccess: (session) => {
+      setMessages(session.messages);
+      queryClient.setQueryData(['/api/chatbot/conversation'], session);
+    },
+    onError: (error) => {
+      console.error("Failed to start new session:", error);
+      // Fallback to default welcome message
+      setMessages([{
+        role: 'assistant',
+        content: "Hi! I'm FlavorBot, your AI recipe assistant. I can help you find recipes based on ingredients, dietary preferences, cooking time, or cuisine type. What would you like to cook today?"
+      }]);
+    }
+  });
+
   // Load conversation history
   const { data: conversation } = useQuery({
     queryKey: ['/api/chatbot/conversation'],
@@ -53,10 +73,15 @@ export default function Chatbot() {
   });
 
   useEffect(() => {
-    if (conversation?.messages) {
+    // Start new session on every visit to chatbot
+    startNewSessionMutation.mutate();
+  }, []);
+
+  useEffect(() => {
+    if (conversation?.messages && !startNewSessionMutation.isPending) {
       setMessages(conversation.messages);
     }
-  }, [conversation]);
+  }, [conversation, startNewSessionMutation.isPending]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

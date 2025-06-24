@@ -206,6 +206,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // AI Chatbot routes
+  app.post('/api/chatbot/start-session', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const newSession = await dbStorage.startNewChatSession(userId);
+      res.json(newSession);
+    } catch (error) {
+      console.error("Error starting new chat session:", error);
+      res.status(500).json({ message: "Failed to start new session" });
+    }
+  });
+
   app.post('/api/chatbot/generate-recipe', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
