@@ -3,7 +3,7 @@ import express from "express";
 import { createServer, type Server } from "http";
 import { storage as dbStorage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { generateRecipe, getChatResponse } from "./openai";
+import { generateRecipe, getChatResponse } from "./anthropic";
 import { insertRecipeSchema, updateUserSchema } from "@shared/schema";
 import { z } from "zod";
 import nodemailer from "nodemailer";

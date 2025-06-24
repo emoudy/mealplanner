@@ -36,7 +36,7 @@ FlavorBot is a full-stack web application that serves as an AI-powered recipe as
 - **Security**: Secure session handling with httpOnly cookies
 
 ### AI Integration
-- **Provider**: OpenAI GPT-4o model
+- **Provider**: Anthropic Claude Sonnet 4.0 model
 - **Features**: Recipe generation, chat assistant, personalized recommendations
 - **Response Format**: Structured JSON responses for recipes
 - **Usage Tracking**: Monthly usage limits and tracking
@@ -64,7 +64,7 @@ FlavorBot is a full-stack web application that serves as an AI-powered recipe as
 
 ### Recipe Generation Flow
 1. User submits prompt to AI chatbot
-2. Request sent to OpenAI API with structured prompt
+2. Request sent to Anthropic Claude API with structured prompt
 3. AI response parsed and validated
 4. Recipe saved to database with user association
 5. Frontend updates with new recipe data
@@ -83,7 +83,7 @@ FlavorBot is a full-stack web application that serves as an AI-powered recipe as
 - **SSL**: Secure database connections
 
 ### AI Services
-- **OpenAI**: GPT-4o model for recipe generation
+- **Anthropic Claude**: Sonnet 4.0 model for recipe generation
 - **Rate Limiting**: Usage tracking and monthly limits
 - **Structured Outputs**: JSON-formatted responses
 
@@ -124,6 +124,7 @@ Changelog:
 - June 23, 2025: Initial setup with complete FlavorBot application
 - Added recipe sharing via email and SMS functionality
 - Updated AI service to use Anthropic Claude instead of OpenAI
+- June 24, 2025: Cleaned up codebase - removed unused OpenAI dependency and renamed files for clarity
 - Fixed AI response parsing for JSON wrapped in markdown
 - Added 4 sample recipes for immediate use
 - Created manual recipe creation modal with dynamic ingredients/instructions
