@@ -136,6 +136,8 @@ Changelog:
 - June 24, 2025: Updated main page layout to display action cards in horizontal row
 - Fixed SVG icon visibility issues across all action cards
 - Implemented dynamic Total Recipes count display that updates in real-time
+- Streamlined navigation to icon-only design with "Add Recipe" functionality
+- Fixed card highlighting issues and improved visual consistency
 ```
 
 ## User Preferences

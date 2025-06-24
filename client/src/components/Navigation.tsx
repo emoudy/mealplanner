@@ -8,6 +8,7 @@ import {
   ChefHat, 
   BookOpen, 
   MessageCircle, 
+  UtensilsCrossed,
   Settings, 
   LogOut,
   User
@@ -44,25 +45,36 @@ export function Navigation() {
 
           {/* Navigation Links (Authenticated State) */}
           {isAuthenticated && (
-            <div className="hidden md:flex items-center space-x-6">
+            <div className="hidden md:flex items-center space-x-2">
               <Link href="/recipes">
                 <Button 
                   variant={location === '/recipes' ? 'default' : 'ghost'}
-                  className="flex items-center space-x-2"
+                  size="icon"
+                  className="w-10 h-10"
                 >
-                  <BookOpen className="w-4 h-4" />
-                  <span>My Recipes</span>
+                  <BookOpen className="w-5 h-5" />
                 </Button>
               </Link>
               <Link href="/chatbot">
                 <Button 
                   variant={location === '/chatbot' ? 'default' : 'ghost'}
-                  className="flex items-center space-x-2"
+                  size="icon"
+                  className="w-10 h-10"
                 >
-                  <MessageCircle className="w-4 h-4" />
-                  <span>Ask FlavorBot</span>
+                  <MessageCircle className="w-5 h-5" />
                 </Button>
               </Link>
+              <Button 
+                variant="ghost"
+                size="icon"
+                className="w-10 h-10"
+                onClick={() => {
+                  // Trigger add recipe modal - we'll need to implement this
+                  window.dispatchEvent(new CustomEvent('openAddRecipeModal'));
+                }}
+              >
+                <UtensilsCrossed className="w-5 h-5" />
+              </Button>
             </div>
           )}
 

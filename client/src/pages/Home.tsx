@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -18,6 +18,18 @@ import type { Recipe } from '@shared/schema';
 export default function Home() {
   const { user } = useAuth();
   const [showAddModal, setShowAddModal] = useState(false);
+
+  // Listen for add recipe modal events from navigation
+  useEffect(() => {
+    const handleOpenAddRecipeModal = () => {
+      setShowAddModal(true);
+    };
+
+    window.addEventListener('openAddRecipeModal', handleOpenAddRecipeModal);
+    return () => {
+      window.removeEventListener('openAddRecipeModal', handleOpenAddRecipeModal);
+    };
+  }, []);
 
   // Fetch user's recipes to get the total count
   const { data: recipes = [] } = useQuery<Recipe[]>({
