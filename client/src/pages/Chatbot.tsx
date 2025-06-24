@@ -225,7 +225,7 @@ export default function Chatbot() {
               
               <div className={`max-w-lg ${
                 message.role === 'user' 
-                  ? 'bg-brand-500 text-white' 
+                  ? 'bg-blue-600 dark:bg-blue-500' 
                   : 'bg-gray-100 dark:bg-gray-700'
               } rounded-lg p-3`}>
                 <p className={`text-sm ${
