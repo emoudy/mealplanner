@@ -32,14 +32,14 @@ export default function Landing() {
             <Button 
               onClick={handleGetStarted}
               size="lg"
-              className="px-8 py-4 text-lg font-semibold bg-brand-500 hover:bg-brand-600"
+              className="px-8 py-4 text-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
             >
               Start Cooking Today
             </Button>
             <Button 
               variant="outline" 
               size="lg"
-              className="px-8 py-4 text-lg font-semibold border-2 border-brand-500 text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-950"
+              className="px-8 py-4 text-lg font-semibold border-2 border-blue-600 text-blue-700 hover:bg-blue-50 dark:border-blue-400 dark:text-blue-400 dark:hover:bg-blue-950"
             >
               Watch Demo
             </Button>
