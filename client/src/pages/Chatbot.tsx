@@ -46,31 +46,11 @@ export default function Chatbot() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Start new session on component mount
-  const startNewSessionMutation = useMutation({
-    mutationFn: async () => {
-      const response = await apiRequest('POST', '/api/chatbot/start-session');
-      return response.json();
-    },
-    onSuccess: (session) => {
-      // After starting new session, reload conversation history
-      queryClient.invalidateQueries({ queryKey: ['/api/chatbot/conversation'] });
-    },
-    onError: (error) => {
-      console.error("Failed to start new session:", error);
-    }
-  });
-
   // Load conversation history
   const { data: conversation } = useQuery({
     queryKey: ['/api/chatbot/conversation'],
     retry: false,
   });
-
-  useEffect(() => {
-    // Start new session on every visit to chatbot
-    startNewSessionMutation.mutate();
-  }, []);
 
   useEffect(() => {
     if (conversation?.messages) {

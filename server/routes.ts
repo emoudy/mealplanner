@@ -205,17 +205,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // AI Chatbot routes
-  app.post('/api/chatbot/start-session', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const newSession = await dbStorage.startNewChatSession(userId);
-      res.json(newSession);
-    } catch (error) {
-      console.error("Error starting new chat session:", error);
-      res.status(500).json({ message: "Failed to start new session" });
-    }
-  });
+  // AI Chatbot routes - no longer needed, using Express sessions
 
   app.post('/api/chatbot/generate-recipe', isAuthenticated, async (req: any, res) => {
     try {
@@ -290,13 +280,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const response = await getChatResponse(messages);
       
       // Save or update conversation
-      let conversation = await dbStorage.getChatConversation(userId);
+      const sessionId = req.sessionID;
+      let conversation = await dbStorage.getChatConversation(userId, sessionId);
       const newMessages = [...messages, { role: 'assistant', content: response }];
       
       if (conversation) {
         await dbStorage.updateChatConversation(conversation.id, userId, newMessages);
       } else {
-        await dbStorage.createChatConversation(userId, { messages: newMessages });
+        await dbStorage.createChatConversation(userId, sessionId, { messages: newMessages });
       }
       
       res.json({ response });
@@ -309,8 +300,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/chatbot/conversation', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const allMessages = await dbStorage.getAllChatHistory(userId);
-      res.json({ messages: allMessages });
+      const sessionId = req.sessionID;
+      const conversation = await dbStorage.getChatConversation(userId, sessionId);
+      
+      if (!conversation) {
+        // First time in this session - check if user has any history
+        const allHistory = await dbStorage.getAllChatHistory(userId);
+        const hasHistory = allHistory.length > 0;
+        
+        const welcomeMessage = hasHistory ? [] : [{
+          role: 'assistant',
+          content: "Hi! I'm FlavorBot, your AI recipe assistant. I can help you find recipes based on ingredients, dietary preferences, cooking time, or cuisine type. What would you like to cook today?"
+        }];
+        
+        if (welcomeMessage.length > 0) {
+          await dbStorage.createChatConversation(userId, sessionId, { messages: welcomeMessage });
+        }
+        
+        return res.json({ messages: [...allHistory, ...welcomeMessage] });
+      }
+      
+      const allHistory = await dbStorage.getAllChatHistory(userId);
+      res.json({ messages: allHistory });
     } catch (error) {
       console.error("Error fetching conversation:", error);
       res.status(500).json({ message: "Failed to fetch conversation" });

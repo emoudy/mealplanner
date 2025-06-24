@@ -143,6 +143,8 @@ Changelog:
 - Each FlavorBot visit starts a new session while maintaining conversation continuity
 - Welcome message only shows for first-time users, not on every new session
 - Fixed rate limiting issue - updated user to basic tier (50 recipes/month) matching Replit Core plan
+- Properly implemented session management using Express sessions instead of custom session table
+- Chat conversations now map to actual Express session IDs in the sessions table
 ```
 
 ## User Preferences

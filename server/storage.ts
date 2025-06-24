@@ -32,10 +32,9 @@ export interface IStorage {
   searchRecipes(userId: string, query: string): Promise<Recipe[]>;
   
   // Chat operations
-  createChatConversation(userId: string, conversation: InsertChatConversation): Promise<ChatConversation>;
-  getChatConversation(userId: string): Promise<ChatConversation | undefined>;
+  createChatConversation(userId: string, sessionId: string, conversation: InsertChatConversation): Promise<ChatConversation>;
+  getChatConversation(userId: string, sessionId: string): Promise<ChatConversation | undefined>;
   updateChatConversation(id: number, userId: string, messages: any[]): Promise<ChatConversation>;
-  startNewChatSession(userId: string): Promise<ChatConversation>;
   getAllChatHistory(userId: string): Promise<any[]>;
   cleanupExpiredSessions(): Promise<void>;
   
@@ -134,20 +133,19 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Chat operations
-  async createChatConversation(userId: string, conversation: InsertChatConversation): Promise<ChatConversation> {
+  async createChatConversation(userId: string, sessionId: string, conversation: InsertChatConversation): Promise<ChatConversation> {
     const [newConversation] = await db
       .insert(chatConversations)
-      .values({ ...conversation, userId })
+      .values({ ...conversation, userId, sessionId })
       .returning();
     return newConversation;
   }
 
-  async getChatConversation(userId: string): Promise<ChatConversation | undefined> {
+  async getChatConversation(userId: string, sessionId: string): Promise<ChatConversation | undefined> {
     const [conversation] = await db
       .select()
       .from(chatConversations)
-      .where(and(eq(chatConversations.userId, userId), eq(chatConversations.isActive, true)))
-      .orderBy(desc(chatConversations.updatedAt))
+      .where(and(eq(chatConversations.userId, userId), eq(chatConversations.sessionId, sessionId)))
       .limit(1);
     return conversation;
   }
@@ -159,36 +157,6 @@ export class DatabaseStorage implements IStorage {
       .where(and(eq(chatConversations.id, id), eq(chatConversations.userId, userId)))
       .returning();
     return conversation;
-  }
-
-  async startNewChatSession(userId: string): Promise<ChatConversation> {
-    // Mark existing active sessions as inactive
-    await db
-      .update(chatConversations)
-      .set({ isActive: false })
-      .where(and(eq(chatConversations.userId, userId), eq(chatConversations.isActive, true)));
-
-    // Check if user has any conversation history
-    const hasHistory = await this.getAllChatHistory(userId);
-    const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
-    // Only add welcome message if no conversation history exists
-    const initialMessages = hasHistory.length > 0 ? [] : [{
-      role: 'assistant',
-      content: "Hi! I'm FlavorBot, your AI recipe assistant. I can help you find recipes based on ingredients, dietary preferences, cooking time, or cuisine type. What would you like to cook today?"
-    }];
-
-    const [newSession] = await db
-      .insert(chatConversations)
-      .values({
-        userId,
-        sessionId,
-        messages: initialMessages,
-        isActive: true
-      })
-      .returning();
-    
-    return newSession;
   }
 
   async getAllChatHistory(userId: string): Promise<any[]> {
@@ -208,25 +176,22 @@ export class DatabaseStorage implements IStorage {
       .orderBy(chatConversations.createdAt);
 
     // Flatten all messages from all sessions into one continuous conversation
-    // Filter out welcome messages that appear in the middle of conversations
+    // Filter out duplicate welcome messages
     const welcomeMessage = "Hi! I'm FlavorBot, your AI recipe assistant. I can help you find recipes based on ingredients, dietary preferences, cooking time, or cuisine type. What would you like to cook today?";
     const allMessages: any[] = [];
-    let hasRealConversation = false;
+    let hasAddedWelcome = false;
 
     sessions.forEach(session => {
       if (session.messages && Array.isArray(session.messages)) {
         session.messages.forEach((message: any) => {
-          // Skip welcome messages if we already have real conversation content
           if (message.role === 'assistant' && message.content === welcomeMessage) {
-            if (!hasRealConversation) {
+            // Only add welcome message once, at the beginning
+            if (!hasAddedWelcome && allMessages.length === 0) {
               allMessages.push(message);
+              hasAddedWelcome = true;
             }
-            // Skip if we already have real conversation
           } else {
             allMessages.push(message);
-            if (message.role === 'user' || (message.role === 'assistant' && message.content !== welcomeMessage)) {
-              hasRealConversation = true;
-            }
           }
         });
       }
@@ -239,14 +204,10 @@ export class DatabaseStorage implements IStorage {
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
+    // Delete old conversations (sessions are managed by Express)
     await db
       .delete(chatConversations)
-      .where(
-        and(
-          eq(chatConversations.isActive, false),
-          lt(chatConversations.updatedAt, sevenDaysAgo)
-        )
-      );
+      .where(lt(chatConversations.updatedAt, sevenDaysAgo));
   }
 
   // Usage tracking
