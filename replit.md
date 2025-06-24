@@ -138,6 +138,7 @@ Changelog:
 - Implemented dynamic Total Recipes count display that updates in real-time
 - Streamlined navigation to icon-only design with "Add Recipe" functionality
 - Fixed card highlighting issues and improved visual consistency
+- Improved "Start Cooking Today" button visibility and removed demo functionality
 ```
 
 ## User Preferences

@@ -28,20 +28,13 @@ export default function Landing() {
             Discover, save, and organize thousands of recipes with the help of AI. 
             Get personalized recommendations and never run out of meal ideas again.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex justify-center">
             <Button 
               onClick={handleGetStarted}
               size="lg"
               className="px-8 py-4 text-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
             >
               Start Cooking Today
-            </Button>
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="px-8 py-4 text-lg font-semibold border-2 border-blue-600 text-blue-700 hover:bg-blue-50 dark:border-blue-400 dark:text-blue-400 dark:hover:bg-blue-950"
-            >
-              Watch Demo
             </Button>
           </div>
         </div>
