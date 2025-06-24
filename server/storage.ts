@@ -208,10 +208,27 @@ export class DatabaseStorage implements IStorage {
       .orderBy(chatConversations.createdAt);
 
     // Flatten all messages from all sessions into one continuous conversation
+    // Filter out welcome messages that appear in the middle of conversations
+    const welcomeMessage = "Hi! I'm FlavorBot, your AI recipe assistant. I can help you find recipes based on ingredients, dietary preferences, cooking time, or cuisine type. What would you like to cook today?";
     const allMessages: any[] = [];
+    let hasRealConversation = false;
+
     sessions.forEach(session => {
       if (session.messages && Array.isArray(session.messages)) {
-        allMessages.push(...session.messages);
+        session.messages.forEach((message: any) => {
+          // Skip welcome messages if we already have real conversation content
+          if (message.role === 'assistant' && message.content === welcomeMessage) {
+            if (!hasRealConversation) {
+              allMessages.push(message);
+            }
+            // Skip if we already have real conversation
+          } else {
+            allMessages.push(message);
+            if (message.role === 'user' || (message.role === 'assistant' && message.content !== welcomeMessage)) {
+              hasRealConversation = true;
+            }
+          }
+        });
       }
     });
 
