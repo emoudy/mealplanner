@@ -36,6 +36,7 @@ export interface IStorage {
   getChatConversation(userId: string): Promise<ChatConversation | undefined>;
   updateChatConversation(id: number, userId: string, messages: any[]): Promise<ChatConversation>;
   startNewChatSession(userId: string): Promise<ChatConversation>;
+  getAllChatHistory(userId: string): Promise<any[]>;
   cleanupExpiredSessions(): Promise<void>;
   
   // Usage tracking
@@ -185,6 +186,33 @@ export class DatabaseStorage implements IStorage {
       .returning();
     
     return newSession;
+  }
+
+  async getAllChatHistory(userId: string): Promise<any[]> {
+    // Get all sessions from last 7 days, ordered by creation date
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const sessions = await db
+      .select()
+      .from(chatConversations)
+      .where(
+        and(
+          eq(chatConversations.userId, userId),
+          db.sql`${chatConversations.createdAt} > ${sevenDaysAgo}`
+        )
+      )
+      .orderBy(chatConversations.createdAt);
+
+    // Flatten all messages from all sessions into one continuous conversation
+    const allMessages: any[] = [];
+    sessions.forEach(session => {
+      if (session.messages && Array.isArray(session.messages)) {
+        allMessages.push(...session.messages);
+      }
+    });
+
+    return allMessages;
   }
 
   async cleanupExpiredSessions(): Promise<void> {

@@ -53,16 +53,11 @@ export default function Chatbot() {
       return response.json();
     },
     onSuccess: (session) => {
-      setMessages(session.messages);
-      queryClient.setQueryData(['/api/chatbot/conversation'], session);
+      // After starting new session, reload conversation history
+      queryClient.invalidateQueries({ queryKey: ['/api/chatbot/conversation'] });
     },
     onError: (error) => {
       console.error("Failed to start new session:", error);
-      // Fallback to default welcome message
-      setMessages([{
-        role: 'assistant',
-        content: "Hi! I'm FlavorBot, your AI recipe assistant. I can help you find recipes based on ingredients, dietary preferences, cooking time, or cuisine type. What would you like to cook today?"
-      }]);
     }
   });
 
@@ -78,10 +73,16 @@ export default function Chatbot() {
   }, []);
 
   useEffect(() => {
-    if (conversation?.messages && !startNewSessionMutation.isPending) {
+    if (conversation?.messages) {
       setMessages(conversation.messages);
+    } else {
+      // Fallback to default welcome message if no history
+      setMessages([{
+        role: 'assistant',
+        content: "Hi! I'm FlavorBot, your AI recipe assistant. I can help you find recipes based on ingredients, dietary preferences, cooking time, or cuisine type. What would you like to cook today?"
+      }]);
     }
-  }, [conversation, startNewSessionMutation.isPending]);
+  }, [conversation]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

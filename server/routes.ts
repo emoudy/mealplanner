@@ -309,8 +309,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/chatbot/conversation', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const conversation = await dbStorage.getChatConversation(userId);
-      res.json(conversation || { messages: [] });
+      const allMessages = await dbStorage.getAllChatHistory(userId);
+      res.json({ messages: allMessages });
     } catch (error) {
       console.error("Error fetching conversation:", error);
       res.status(500).json({ message: "Failed to fetch conversation" });
