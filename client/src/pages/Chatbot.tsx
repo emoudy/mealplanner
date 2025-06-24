@@ -34,12 +34,7 @@ const quickSuggestions = [
 ];
 
 export default function Chatbot() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: 'assistant',
-      content: "Hi! I'm FlavorBot, your AI recipe assistant. I can help you find recipes based on ingredients, dietary preferences, cooking time, or cuisine type. What would you like to cook today?"
-    }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isGeneratingRecipe, setIsGeneratingRecipe] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);

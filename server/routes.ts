@@ -279,7 +279,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const response = await getChatResponse(messages);
       
-      // Save or update conversation
+      // Save or update conversation - use current session for new messages
       const sessionId = req.sessionID;
       let conversation = await dbStorage.getChatConversation(userId, sessionId);
       const newMessages = [...messages, { role: 'assistant', content: response }];
@@ -287,6 +287,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (conversation) {
         await dbStorage.updateChatConversation(conversation.id, userId, newMessages);
       } else {
+        // Create new conversation for this chat interaction
         await dbStorage.createChatConversation(userId, sessionId, { messages: newMessages });
       }
       
@@ -300,28 +301,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/chatbot/conversation', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const sessionId = req.sessionID;
-      const conversation = await dbStorage.getChatConversation(userId, sessionId);
+      // Create a new conversation for each page visit
+      const visitId = `${req.sessionID}_${Date.now()}`;
       
-      if (!conversation) {
-        // First time in this session - check if user has any history
-        const allHistory = await dbStorage.getAllChatHistory(userId);
-        const hasHistory = allHistory.length > 0;
-        
-        const welcomeMessage = hasHistory ? [] : [{
-          role: 'assistant',
-          content: "Hi! I'm FlavorBot, your AI recipe assistant. I can help you find recipes based on ingredients, dietary preferences, cooking time, or cuisine type. What would you like to cook today?"
-        }];
-        
-        if (welcomeMessage.length > 0) {
-          await dbStorage.createChatConversation(userId, sessionId, { messages: welcomeMessage });
-        }
-        
-        return res.json({ messages: [...allHistory, ...welcomeMessage] });
+      // Get all conversation history
+      const allHistory = await dbStorage.getAllChatHistory(userId);
+      const hasHistory = allHistory.length > 0;
+      
+      // Only show welcome message if no history exists
+      const welcomeMessage = hasHistory ? [] : [{
+        role: 'assistant',
+        content: "Hi! I'm FlavorBot, your AI recipe assistant. I can help you find recipes based on ingredients, dietary preferences, cooking time, or cuisine type. What would you like to cook today?"
+      }];
+      
+      // Create new conversation record for this visit
+      if (welcomeMessage.length > 0) {
+        await dbStorage.createChatConversation(userId, visitId, { messages: welcomeMessage });
       }
       
-      const allHistory = await dbStorage.getAllChatHistory(userId);
-      res.json({ messages: allHistory });
+      res.json({ 
+        messages: [...allHistory, ...welcomeMessage],
+        visitId: visitId
+      });
     } catch (error) {
       console.error("Error fetching conversation:", error);
       res.status(500).json({ message: "Failed to fetch conversation" });
