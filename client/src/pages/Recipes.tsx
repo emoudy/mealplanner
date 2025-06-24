@@ -36,7 +36,7 @@ export default function Recipes() {
   const queryClient = useQueryClient();
 
   const { data: recipes = [], isLoading, error } = useQuery({
-    queryKey: ['/api/recipes', selectedCategory],
+    queryKey: ['/api/recipes'],
     retry: false,
   });
 
@@ -99,10 +99,20 @@ export default function Recipes() {
     }
   };
 
-  const filteredRecipes = recipes.filter((recipe: Recipe) => 
-    recipe.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    recipe.description?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredRecipes = recipes.filter((recipe: Recipe) => {
+    // Filter by category
+    const matchesCategory = selectedCategory === 'all' || recipe.category === selectedCategory;
+    
+    // Filter by search query
+    const matchesSearch = searchQuery === '' || 
+      recipe.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      recipe.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      recipe.ingredients?.some(ingredient => 
+        ingredient.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    
+    return matchesCategory && matchesSearch;
+  });
 
   if (isLoading) {
     return (
