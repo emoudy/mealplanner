@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AddRecipeModal } from '@/components/AddRecipeModal';
@@ -12,10 +13,17 @@ import {
   TrendingUp,
   Clock
 } from 'lucide-react';
+import type { Recipe } from '@shared/schema';
 
 export default function Home() {
   const { user } = useAuth();
   const [showAddModal, setShowAddModal] = useState(false);
+
+  // Fetch user's recipes to get the total count
+  const { data: recipes = [] } = useQuery<Recipe[]>({
+    queryKey: ['/api/recipes'],
+    enabled: !!user
+  });
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -90,10 +98,10 @@ export default function Home() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-gray-900 dark:text-white">0</div>
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">{recipes.length}</div>
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              <TrendingUp className="w-3 h-3 inline mr-1" />
-              Start adding recipes
+              <TrendingUp className="w-3 h-3 inline mr-1" style={{ display: 'inline-block' }} />
+              {recipes.length === 0 ? 'Start adding recipes' : 'Recipes saved'}
             </p>
           </CardContent>
         </Card>
