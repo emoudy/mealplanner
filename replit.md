@@ -132,6 +132,9 @@ Changelog:
 - Implemented profile photo upload with file validation and preview
 - Fixed all Save Recipe button CSS issues in both modal and chatbot
 - Added multer file upload handling with secure storage
+- June 24, 2025: Updated main page layout to display action cards in horizontal row
+- Fixed SVG icon visibility issues across all action cards
+- Implemented dynamic Total Recipes count display that updates in real-time
 ```
 
 ## User Preferences
