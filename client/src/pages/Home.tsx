@@ -25,6 +25,12 @@ export default function Home() {
     enabled: !!user
   });
 
+  // Fetch usage stats for AI queries
+  const { data: usageStats } = useQuery({
+    queryKey: ['/api/usage/stats'],
+    enabled: !!user
+  });
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Welcome Section */}
@@ -113,9 +119,9 @@ export default function Home() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-gray-900 dark:text-white">0</div>
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">{usageStats?.recipeQueries || 0}</div>
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              <Clock className="w-3 h-3 inline mr-1" />
+              <Clock className="w-3 h-3 inline mr-1" style={{ display: 'inline-block' }} />
               AI queries used
             </p>
           </CardContent>

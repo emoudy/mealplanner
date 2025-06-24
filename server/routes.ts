@@ -245,6 +245,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get user usage stats
+  app.get('/api/usage/stats', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
+      const usage = await dbStorage.getUsageForMonth(userId, currentMonth);
+      
+      res.json({
+        currentMonth,
+        recipeQueries: usage?.recipeQueries || 0,
+        recipesGenerated: usage?.recipesGenerated || 0
+      });
+    } catch (error) {
+      console.error("Error fetching usage stats:", error);
+      res.status(500).json({ message: "Failed to fetch usage stats" });
+    }
+  });
+
   app.post('/api/chatbot/chat', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
@@ -253,6 +271,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!Array.isArray(messages)) {
         return res.status(400).json({ message: "Messages must be an array" });
       }
+
+      // Track chat usage
+      const currentMonth = new Date().toISOString().slice(0, 7);
+      await dbStorage.incrementUsage(userId, currentMonth, 'recipeQueries');
 
       const response = await getChatResponse(messages);
       
