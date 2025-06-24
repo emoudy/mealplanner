@@ -199,7 +199,7 @@ export class DatabaseStorage implements IStorage {
       .where(
         and(
           eq(chatConversations.userId, userId),
-          db.sql`${chatConversations.createdAt} > ${sevenDaysAgo}`
+          gte(chatConversations.createdAt, sevenDaysAgo)
         )
       )
       .orderBy(chatConversations.createdAt);
@@ -224,7 +224,7 @@ export class DatabaseStorage implements IStorage {
       .where(
         and(
           eq(chatConversations.isActive, false),
-          db.sql`${chatConversations.updatedAt} < ${sevenDaysAgo}`
+          lt(chatConversations.updatedAt, sevenDaysAgo)
         )
       );
   }
