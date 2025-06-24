@@ -8,7 +8,7 @@ import { Link } from 'wouter';
 import { 
   ChefHat, 
   BookOpen, 
-  Bot, 
+  MessageCircle, 
   UtensilsCrossed,
   TrendingUp,
   Clock
@@ -49,7 +49,7 @@ export default function Home() {
           <Card className="cursor-pointer hover:shadow-lg transition-shadow">
             <CardContent className="p-6 text-center">
               <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Bot className="w-6 h-6 text-white" style={{ display: 'inline-block' }} />
+                <MessageCircle className="w-6 h-6 text-white" style={{ display: 'inline-block' }} />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                 Ask FlavorBot
