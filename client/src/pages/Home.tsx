@@ -8,8 +8,8 @@ import { Link } from 'wouter';
 import { 
   ChefHat, 
   BookOpen, 
-  MessageCircle, 
-  Plus,
+  Bot, 
+  UtensilsCrossed,
   TrendingUp,
   Clock
 } from 'lucide-react';
@@ -48,8 +48,8 @@ export default function Home() {
         <Link href="/chatbot">
           <Card className="cursor-pointer hover:shadow-lg transition-shadow">
             <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <MessageCircle className="w-6 h-6 text-white" style={{ display: 'inline-block' }} />
+              <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Bot className="w-6 h-6 text-white" style={{ display: 'inline-block' }} />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                 Ask FlavorBot
@@ -64,7 +64,7 @@ export default function Home() {
         <Link href="/recipes">
           <Card className="cursor-pointer hover:shadow-lg transition-shadow">
             <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <BookOpen className="w-6 h-6 text-white" style={{ display: 'inline-block' }} />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
@@ -82,8 +82,8 @@ export default function Home() {
           onClick={() => setShowAddModal(true)}
         >
           <CardContent className="p-6 text-center">
-            <div className="w-12 h-12 bg-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Plus className="w-6 h-6 text-white" style={{ display: 'inline-block' }} />
+            <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <UtensilsCrossed className="w-6 h-6 text-white" style={{ display: 'inline-block' }} />
             </div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
               Add Recipe
@@ -162,7 +162,7 @@ export default function Home() {
             <div className="pt-4">
               <Link href="/chatbot">
                 <Button className="bg-brand-500 hover:bg-brand-600">
-                  <MessageCircle className="w-4 h-4 mr-2" />
+                  <ChefHat className="w-4 h-4 mr-2" />
                   Start with AI Assistant
                 </Button>
               </Link>
