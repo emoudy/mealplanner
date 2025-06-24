@@ -141,6 +141,7 @@ Changelog:
 - Improved "Start Cooking Today" button visibility and removed demo functionality
 - Implemented session-based chat system with 7-day automatic cleanup
 - Each FlavorBot visit starts a new session while maintaining conversation continuity
+- Welcome message only shows for first-time users, not on every new session
 ```
 
 ## User Preferences

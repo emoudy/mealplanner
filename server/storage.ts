@@ -168,19 +168,22 @@ export class DatabaseStorage implements IStorage {
       .set({ isActive: false })
       .where(and(eq(chatConversations.userId, userId), eq(chatConversations.isActive, true)));
 
-    // Create new session with welcome message
+    // Check if user has any conversation history
+    const hasHistory = await this.getAllChatHistory(userId);
     const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const welcomeMessage = {
+    
+    // Only add welcome message if no conversation history exists
+    const initialMessages = hasHistory.length > 0 ? [] : [{
       role: 'assistant',
       content: "Hi! I'm FlavorBot, your AI recipe assistant. I can help you find recipes based on ingredients, dietary preferences, cooking time, or cuisine type. What would you like to cook today?"
-    };
+    }];
 
     const [newSession] = await db
       .insert(chatConversations)
       .values({
         userId,
         sessionId,
-        messages: [welcomeMessage],
+        messages: initialMessages,
         isActive: true
       })
       .returning();
