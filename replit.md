@@ -5,16 +5,28 @@ A comprehensive AI-powered recipe management platform that leverages advanced la
 
 ## Project Architecture
 
+### Cross-Platform Monorepo Structure
+```
+/packages
+  /shared        - Business logic, API client, hooks, types
+  /mobile        - React Native app (Expo)
+/apps
+  /web          - React web app (current implementation)
+/server         - Express.js backend
+```
+
 ### Technology Stack
-- **Frontend**: React.js with TypeScript, Tailwind CSS, shadcn/ui components
-- **Backend**: Express.js with TypeScript
+- **Shared Core**: TypeScript, TanStack Query, Zod validation, business logic
+- **Web Frontend**: React.js, Tailwind CSS, shadcn/ui components, Vite
+- **Mobile Frontend**: React Native, Expo, native navigation, platform APIs
+- **Backend**: Express.js with TypeScript (serves both platforms)
 - **Database**: PostgreSQL with Drizzle ORM
 - **AI Integration**: Anthropic Claude for recipe generation and chat assistance
-- **Authentication**: OAuth 2.0
-- **State Management**: TanStack Query for server state
-- **Routing**: Wouter for client-side routing
-- **Build Tool**: Vite
-- **Deployment**: Replit with automatic deployments
+- **Authentication**: OAuth 2.0 (web), secure storage (mobile)
+- **State Management**: TanStack Query for server state (shared)
+- **Deployment**: 
+  - Web: Replit with automatic deployments
+  - Mobile: iOS/Android app stores via Expo EAS Build
 
 ### Key Features
 - AI-powered recipe generation and recommendations
@@ -94,13 +106,20 @@ Implemented comprehensive WCAG 2.2 accessibility compliance including:
 - Ensure color contrast meets WCAG AA standards
 
 ## Recent Changes
-- **2025-01-02**: Implemented comprehensive WCAG 2.2 accessibility compliance
-- Enhanced semantic HTML structure across all pages
-- Added proper ARIA roles and attributes
-- Improved color contrast and focus management
-- Created accessibility announcement component
-- Added skip navigation and keyboard support
-- Updated CSS with accessibility utilities and reduced motion support
+- **2025-01-02**: Restructured for Cross-Platform Development
+- Implemented monorepo architecture with shared code between web and mobile
+- Created React Native mobile app with Expo for app store deployment
+- Extracted shared business logic, API client, and hooks into @flavorbot/shared package
+- Built mobile-optimized UI with native navigation and platform-specific features
+- Maintained comprehensive WCAG 2.2 accessibility compliance
+- Added workspace configuration for efficient development across platforms
+
+### Cross-Platform Architecture Implementation
+- **Shared Package**: Business logic, API calls, TanStack Query hooks, TypeScript types
+- **Web App**: Existing React app now consuming shared package
+- **Mobile App**: React Native with Expo, native navigation, platform features
+- **Code Sharing**: 70-80% code reuse between platforms
+- **Deployment**: Web on Replit, Mobile to iOS/Android app stores via Expo EAS
 
 ## Database Schema
 Located in `shared/schema.ts` with proper TypeScript interfaces and Drizzle ORM integration.
