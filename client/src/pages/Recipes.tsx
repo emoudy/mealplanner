@@ -136,7 +136,7 @@ export default function Recipes() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+      <header className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">My Recipes</h1>
           <p className="text-gray-600 dark:text-gray-300">Organize and manage your saved recipes</p>
@@ -144,75 +144,110 @@ export default function Recipes() {
         <div className="mt-4 md:mt-0 flex items-center space-x-4">
           {/* Search Bar */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <label htmlFor="recipe-search" className="sr-only">Search recipes</label>
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" aria-hidden="true" />
             <Input
+              id="recipe-search"
               type="text"
               placeholder="Search recipes..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 pr-4 py-2 w-64"
+              aria-describedby="search-description"
             />
+            <div id="search-description" className="sr-only">
+              Search through your recipes by title, description, or ingredients
+            </div>
           </div>
           <Button 
             onClick={() => setShowAddModal(true)}
             className="bg-brand-500 hover:bg-brand-600"
+            aria-label="Add new recipe to your collection"
           >
-            <Plus className="w-4 h-4 mr-2" />
+            <Plus className="w-4 h-4 mr-2" aria-hidden="true" />
             Add Recipe
           </Button>
         </div>
-      </div>
+      </header>
 
       {/* Category Tabs */}
-      <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="mb-8">
-        <TabsList className="grid grid-cols-5 w-full max-w-2xl">
-          {categories.map((category) => {
-            const Icon = category.icon;
-            return (
-              <TabsTrigger key={category.id} value={category.id} className="flex items-center space-x-2">
-                <Icon className="w-4 h-4" />
-                <span className="hidden sm:inline">{category.label}</span>
-              </TabsTrigger>
-            );
-          })}
-        </TabsList>
-      </Tabs>
+      <section aria-labelledby="categories-heading" className="mb-8">
+        <h2 id="categories-heading" className="sr-only">Filter recipes by category</h2>
+        <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
+          <TabsList className="grid grid-cols-5 w-full max-w-2xl" role="tablist" aria-label="Recipe categories">
+            {categories.map((category) => {
+              const Icon = category.icon;
+              return (
+                <TabsTrigger 
+                  key={category.id} 
+                  value={category.id} 
+                  className="flex items-center space-x-2"
+                  role="tab"
+                  aria-selected={selectedCategory === category.id}
+                  aria-controls={`recipes-panel-${category.id}`}
+                >
+                  <Icon className="w-4 h-4" aria-hidden="true" />
+                  <span className="hidden sm:inline">{category.label}</span>
+                </TabsTrigger>
+              );
+            })}
+          </TabsList>
+        </Tabs>
+      </section>
 
       {/* Recipe Grid */}
-      {filteredRecipes.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredRecipes.map((recipe: Recipe) => (
-            <RecipeCard
-              key={recipe.id}
-              recipe={recipe}
-              onEdit={handleEditRecipe}
-              onDelete={handleDeleteRecipe}
-            />
-          ))}
-        </div>
-      ) : (
-        /* Empty State */
-        <div className="text-center py-12">
-          <div className="w-24 h-24 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-            <ChefHat className="w-12 h-12 text-gray-400" />
+      <section 
+        role="tabpanel" 
+        id={`recipes-panel-${selectedCategory}`}
+        aria-labelledby="recipes-heading"
+      >
+        <h2 id="recipes-heading" className="sr-only">
+          {selectedCategory === 'all' ? 'All recipes' : `${categories.find(c => c.id === selectedCategory)?.label} recipes`}
+          {searchQuery && ` matching "${searchQuery}"`}
+        </h2>
+        
+        {filteredRecipes.length > 0 ? (
+          <div 
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            role="grid"
+            aria-label={`Recipe collection showing ${filteredRecipes.length} recipe${filteredRecipes.length === 1 ? '' : 's'}`}
+          >
+            {filteredRecipes.map((recipe: Recipe) => (
+              <RecipeCard
+                key={recipe.id}
+                recipe={recipe}
+                onEdit={handleEditRecipe}
+                onDelete={handleDeleteRecipe}
+              />
+            ))}
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-            {searchQuery ? 'No recipes found' : 'No recipes yet'}
-          </h3>
-          <p className="text-gray-600 dark:text-gray-300 mb-6">
-            {searchQuery 
-              ? 'Try adjusting your search terms'
-              : 'Start by asking our AI assistant for recipe recommendations'
-            }
-          </p>
-          <Link href="/chatbot">
-            <Button className="bg-brand-500 hover:bg-brand-600">
-              <Plus className="w-4 h-4 mr-2" />
-              Ask FlavorBot
-            </Button>
-          </Link>
-        </div>
-      )}
+        ) : (
+          /* Empty State */
+          <div className="text-center py-12" role="status" aria-live="polite">
+            <div className="w-24 h-24 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4" aria-hidden="true">
+              <ChefHat className="w-12 h-12 text-gray-400" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              {searchQuery ? 'No recipes found' : 'No recipes yet'}
+            </h3>
+            <p className="text-gray-600 dark:text-gray-300 mb-6">
+              {searchQuery 
+                ? 'Try adjusting your search terms or browsing different categories'
+                : 'Start by asking our AI assistant for recipe recommendations or add your own'
+              }
+            </p>
+            <Link href="/chatbot">
+              <Button 
+                className="bg-brand-500 hover:bg-brand-600"
+                aria-label="Go to FlavorBot AI assistant to get recipe recommendations"
+              >
+                <Plus className="w-4 h-4 mr-2" aria-hidden="true" />
+                Ask FlavorBot
+              </Button>
+            </Link>
+          </div>
+        )}
+      </section>
 
       <AddRecipeModal
         open={showAddModal}

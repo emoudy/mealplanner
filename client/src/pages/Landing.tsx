@@ -18,10 +18,13 @@ export default function Landing() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-brand-50 to-accent-50 dark:from-gray-800 dark:to-gray-900 py-20 overflow-hidden">
-        <div className="absolute inset-0 bg-black opacity-5 dark:opacity-20"></div>
+      <section 
+        className="relative bg-gradient-to-br from-brand-50 to-accent-50 dark:from-gray-800 dark:to-gray-900 py-20 overflow-hidden"
+        aria-labelledby="hero-heading"
+      >
+        <div className="absolute inset-0 bg-black opacity-5 dark:opacity-20" aria-hidden="true"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+          <h1 id="hero-heading" className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
             Your AI-Powered <span className="text-brand-500">Recipe</span> Assistant
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
@@ -33,6 +36,7 @@ export default function Landing() {
               onClick={handleGetStarted}
               size="lg"
               className="px-8 py-4 text-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
+              aria-label="Sign up to start using FlavorBot today"
             >
               Start Cooking Today
             </Button>
@@ -41,10 +45,13 @@ export default function Landing() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-white dark:bg-gray-800">
+      <section 
+        className="py-20 bg-white dark:bg-gray-800"
+        aria-labelledby="features-heading"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 id="features-heading" className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
               Everything You Need to Cook
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300">
@@ -52,11 +59,11 @@ export default function Landing() {
             </p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-8" role="list">
             {/* AI Chatbot Feature */}
-            <Card className="text-center hover:shadow-lg transition-shadow">
+            <Card className="text-center hover:shadow-lg transition-shadow" role="listitem">
               <CardContent className="p-6">
-                <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4" aria-hidden="true">
                   <MessageCircle className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">

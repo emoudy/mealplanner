@@ -47,66 +47,78 @@ export default function Home() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Welcome Section */}
-      <div className="mb-8">
+      <header className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          Welcome back, {user?.firstName || 'Chef'}! 👋
+          Welcome back, {user?.firstName || 'Chef'}!
         </h1>
         <p className="text-gray-600 dark:text-gray-300">
           Ready to discover some delicious new recipes today?
         </p>
-      </div>
+      </header>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Link href="/chatbot">
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+      <section aria-labelledby="quick-actions-heading" className="mb-8">
+        <h2 id="quick-actions-heading" className="sr-only">Quick Actions</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Link href="/chatbot">
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow" role="button" tabIndex={0}>
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4" aria-hidden="true">
+                  <MessageCircle className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  Ask FlavorBot
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  Get AI-powered recipe recommendations
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href="/recipes">
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow" role="button" tabIndex={0}>
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4" aria-hidden="true">
+                  <BookOpen className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  My Recipes
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  View and manage your saved recipes
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => setShowAddModal(true)}
+            role="button" 
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setShowAddModal(true);
+              }
+            }}
+            aria-label="Add new recipe"
+          >
             <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                <MessageCircle className="w-6 h-6 text-white" style={{ display: 'inline-block' }} />
+              <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4" aria-hidden="true">
+                <UtensilsCrossed className="w-6 h-6 text-white" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                Ask FlavorBot
+                Add Recipe
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-300">
-                Get AI-powered recipe recommendations
+                Manually create a new recipe
               </p>
             </CardContent>
           </Card>
-        </Link>
-
-        <Link href="/recipes">
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow">
-            <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <BookOpen className="w-6 h-6 text-white" style={{ display: 'inline-block' }} />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                My Recipes
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300">
-                View and manage your saved recipes
-              </p>
-            </CardContent>
-          </Card>
-        </Link>
-
-        <Card 
-          className="cursor-pointer hover:shadow-lg transition-shadow"
-          onClick={() => setShowAddModal(true)}
-        >
-          <CardContent className="p-6 text-center">
-            <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <UtensilsCrossed className="w-6 h-6 text-white" style={{ display: 'inline-block' }} />
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              Add Recipe
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-300">
-              Manually create a new recipe
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+        </div>
+      </section>
 
       {/* Stats Overview */}
       <div className="grid md:grid-cols-2 gap-6 mb-8">

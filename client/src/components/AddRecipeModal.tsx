@@ -183,16 +183,20 @@ export function AddRecipeModal({ open, onOpenChange }: AddRecipeModalProps) {
                 id="title"
                 {...register('title')}
                 placeholder="Enter recipe title"
+                aria-required="true"
+                aria-describedby={errors.title ? "title-error" : "title-help"}
+                aria-invalid={!!errors.title}
               />
+              <div id="title-help" className="sr-only">Enter a descriptive name for your recipe</div>
               {errors.title && (
-                <p className="text-sm text-red-500 mt-1">{errors.title.message}</p>
+                <p id="title-error" className="text-sm text-red-500 mt-1" role="alert">{errors.title.message}</p>
               )}
             </div>
             
             <div>
               <Label htmlFor="category">Category *</Label>
               <Select onValueChange={(value) => setValue('category', value as any)}>
-                <SelectTrigger>
+                <SelectTrigger id="category" aria-required="true" aria-describedby="category-help">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -202,6 +206,7 @@ export function AddRecipeModal({ open, onOpenChange }: AddRecipeModalProps) {
                   <SelectItem value="snacks">Snacks</SelectItem>
                 </SelectContent>
               </Select>
+              <div id="category-help" className="sr-only">Choose the meal category that best fits this recipe</div>
             </div>
           </div>
 
@@ -212,7 +217,9 @@ export function AddRecipeModal({ open, onOpenChange }: AddRecipeModalProps) {
               {...register('description')}
               placeholder="Brief description of the recipe"
               rows={2}
+              aria-describedby="description-help"
             />
+            <div id="description-help" className="sr-only">Optional: Add a brief description about this recipe, its origin, or special notes</div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-4">
