@@ -255,6 +255,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await dbStorage.updateChatConversation(conversation.id, userId, updatedMessages);
       } else {
         await dbStorage.createChatConversation(userId, sessionId, { 
+          sessionId,
           messages: [userMessage, recipeMessage] 
         });
       }
@@ -308,7 +309,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (existingConversation) {
         await dbStorage.updateChatConversation(existingConversation.id, userId, newMessages);
       } else {
-        await dbStorage.createChatConversation(userId, sessionId, { messages: newMessages });
+        await dbStorage.createChatConversation(userId, sessionId, { sessionId, messages: newMessages });
       }
       
       res.json({ response });
@@ -334,7 +335,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           content: "Hi! I'm FlavorBot, your AI recipe assistant. I can help you find recipes based on ingredients, dietary preferences, cooking time, or cuisine type. What would you like to cook today?"
         }];
         
-        await dbStorage.createChatConversation(userId, sessionId, { messages: welcomeMessage });
+        await dbStorage.createChatConversation(userId, sessionId, { sessionId, messages: welcomeMessage });
         
         res.json({ messages: welcomeMessage });
       } else {
