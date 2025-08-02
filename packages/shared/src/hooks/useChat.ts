@@ -151,7 +151,10 @@ export function useChat() {
   };
 
   const generateRecipe = (prompt: string, preferences?: GenerateRecipeData['preferences']) => {
-    generateRecipeMutation.mutate({ prompt, preferences: preferences || {} });
+    generateRecipeMutation.mutate({ 
+      prompt, 
+      preferences: preferences || { dietaryRestrictions: [] }
+    });
   };
 
   const clearChat = () => {

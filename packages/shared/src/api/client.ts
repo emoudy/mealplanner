@@ -1,7 +1,9 @@
 import { z } from 'zod';
 
 // Base API configuration
-export const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:5000';
+export const API_BASE_URL = typeof window !== 'undefined' 
+  ? '' // Use relative URLs in browser
+  : process.env.API_BASE_URL || 'http://localhost:5000';
 
 // Error types
 export class APIError extends Error {
@@ -71,7 +73,8 @@ export async function apiRequest<T = any>(
     if (error instanceof APIError) {
       throw error;
     }
-    throw new APIError(0, `Network error: ${error.message}`);
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    throw new APIError(0, `Network error: ${message}`);
   }
 }
 
