@@ -35,7 +35,7 @@ export default function Recipes() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: recipes = [], isLoading, error } = useQuery({
+  const { data: recipes = [], isLoading, error } = useQuery<Recipe[]>({
     queryKey: ['/api/recipes'],
     retry: false,
   });
@@ -107,7 +107,7 @@ export default function Recipes() {
     const matchesSearch = searchQuery === '' || 
       recipe.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       recipe.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      recipe.ingredients?.some(ingredient => 
+      recipe.ingredients?.some((ingredient: string) => 
         ingredient.toLowerCase().includes(searchQuery.toLowerCase())
       );
     

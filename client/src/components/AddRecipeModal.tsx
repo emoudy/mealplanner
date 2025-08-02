@@ -59,8 +59,7 @@ export function AddRecipeModal({ open, onOpenChange }: AddRecipeModalProps) {
 
   const createRecipeMutation = useMutation({
     mutationFn: async (data: z.infer<typeof formSchema>) => {
-      const response = await apiRequest('POST', '/api/recipes', data);
-      return response.json();
+      return await apiRequest('POST', '/api/recipes', data);
     },
     onSuccess: () => {
       toast({
