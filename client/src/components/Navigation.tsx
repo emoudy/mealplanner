@@ -39,7 +39,7 @@ export function Navigation() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3" aria-label="FlavorBot home">
-            <div className="w-8 h-8 bg-gradient-to-br from-emerald-600 to-yellow-500 rounded-lg flex items-center justify-center" aria-hidden="true">
+            <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-yellow-500 rounded-lg flex items-center justify-center" aria-hidden="true">
               <ChefHat className="w-4 h-4 text-white" />
             </div>
             <span className="text-xl font-bold text-gray-900 dark:text-white">FlavorBot</span>
