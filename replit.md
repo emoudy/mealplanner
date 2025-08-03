@@ -152,6 +152,13 @@ Implemented comprehensive WCAG 2.2 accessibility compliance including:
 
 ## Recent Changes
 
+### **2025-08-03**: Add Recipe Button Fix and Multi-Repository Architecture Complete
+- **Add Recipe Functionality**: ✅ Fixed "Add New Recipe" button not working from web app navigation
+  - Replaced custom event system with proper React Context (AddRecipeProvider)
+  - Button now works consistently across all pages (Home, Recipes, Chatbot, Settings)
+  - Implemented global modal state management for better UX
+  - Cleaned up TypeScript errors and improved accessibility compliance
+
 ### **2025-08-03**: Multi-Repository Architecture Implementation Complete
 - **Multi-Repository Strategy**: Successfully transitioned from monorepo to multi-repo architecture
 - **Shared Package (@flavorbot/shared)**: 

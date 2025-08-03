@@ -1,4 +1,5 @@
 import { useAuth } from '@/hooks/useAuth';
+import { useAddRecipe } from '@/contexts/AddRecipeContext';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,8 +17,7 @@ import type { Recipe } from '@shared/schema';
 
 export default function Home() {
   const { user } = useAuth();
-
-
+  const { openAddRecipeModal } = useAddRecipe();
 
   // Fetch user's recipes to get the total count
   const { data: recipes = [] } = useQuery<Recipe[]>({
@@ -36,7 +36,7 @@ export default function Home() {
       {/* Welcome Section */}
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          Welcome back, {user?.name || 'Chef'}!
+          Welcome back, {(user as any)?.name || 'Chef'}!
         </h1>
         <p className="text-gray-600 dark:text-gray-300">
           Ready to discover some delicious new recipes today?
@@ -81,13 +81,13 @@ export default function Home() {
 
           <Card 
             className="cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => setShowAddModal(true)}
+            onClick={openAddRecipeModal}
             role="button" 
             tabIndex={0}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
-                setShowAddModal(true);
+                openAddRecipeModal();
               }
             }}
             aria-label="Add new recipe"
@@ -131,7 +131,7 @@ export default function Home() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-gray-900 dark:text-white">{usageStats?.recipeQueries || 0}</div>
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">{(usageStats as any)?.recipeQueries || 0}</div>
             <p className="text-xs text-gray-500 dark:text-gray-400">
               <Clock className="w-3 h-3 inline mr-1" style={{ display: 'inline-block' }} />
               AI queries used
