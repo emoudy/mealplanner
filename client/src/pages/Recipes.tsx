@@ -107,9 +107,9 @@ export default function Recipes() {
     const matchesSearch = searchQuery === '' || 
       recipe.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       recipe.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      recipe.ingredients?.some((ingredient: string) => 
+      (Array.isArray(recipe.ingredients) && recipe.ingredients.some((ingredient: string) => 
         ingredient.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+      ));
     
     return matchesCategory && matchesSearch;
   });
