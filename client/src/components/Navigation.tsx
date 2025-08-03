@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useThemeContext } from '@/components/ThemeProvider';
 import { useAddRecipe } from '@/contexts/AddRecipeContext';
@@ -12,7 +13,9 @@ import {
   UtensilsCrossed,
   Settings, 
   LogOut,
-  User
+  User,
+  Menu,
+  X
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -28,6 +31,7 @@ export function Navigation() {
   const { isDarkMode, toggleTheme } = useThemeContext();
   const { openAddRecipeModal } = useAddRecipe();
   const [location] = useLocation();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
     window.location.href = '/api/logout';
@@ -81,6 +85,26 @@ export function Navigation() {
                 role="menuitem"
               >
                 <UtensilsCrossed className="w-5 h-5" aria-hidden="true" />
+              </Button>
+            </div>
+          )}
+
+          {/* Mobile menu button */}
+          {isAuthenticated && (
+            <div className="md:hidden">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                aria-label="Toggle mobile menu"
+                aria-expanded={isMobileMenuOpen}
+                className="w-10 h-10"
+              >
+                {isMobileMenuOpen ? (
+                  <X className="w-5 h-5" />
+                ) : (
+                  <Menu className="w-5 h-5" />
+                )}
               </Button>
             </div>
           )}
@@ -154,6 +178,69 @@ export function Navigation() {
             )}
           </div>
         </div>
+
+        {/* Mobile Navigation Menu */}
+        {isAuthenticated && isMobileMenuOpen && (
+          <div className="md:hidden border-t border-gray-200 dark:border-gray-700">
+            <div className="px-2 pt-2 pb-3 space-y-1">
+              <Link href="/chatbot">
+                <Button
+                  variant={location === '/chatbot' ? 'default' : 'ghost'}
+                  className="w-full justify-start"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  aria-current={location === '/chatbot' ? 'page' : undefined}
+                >
+                  <MessageCircle className="w-5 h-5 mr-3" />
+                  Ask FlavorBot
+                </Button>
+              </Link>
+              <Link href="/recipes">
+                <Button
+                  variant={location === '/recipes' ? 'default' : 'ghost'}
+                  className="w-full justify-start"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  aria-current={location === '/recipes' ? 'page' : undefined}
+                >
+                  <BookOpen className="w-5 h-5 mr-3" />
+                  My Recipes
+                </Button>
+              </Link>
+              <Button
+                variant="ghost"
+                className="w-full justify-start"
+                onClick={() => {
+                  openAddRecipeModal();
+                  setIsMobileMenuOpen(false);
+                }}
+              >
+                <UtensilsCrossed className="w-5 h-5 mr-3" />
+                Add Recipe
+              </Button>
+              <Link href="/settings">
+                <Button
+                  variant={location === '/settings' ? 'default' : 'ghost'}
+                  className="w-full justify-start"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  aria-current={location === '/settings' ? 'page' : undefined}
+                >
+                  <Settings className="w-5 h-5 mr-3" />
+                  Settings
+                </Button>
+              </Link>
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-red-600"
+                onClick={() => {
+                  handleLogout();
+                  setIsMobileMenuOpen(false);
+                }}
+              >
+                <LogOut className="w-5 h-5 mr-3" />
+                Sign out
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   );
