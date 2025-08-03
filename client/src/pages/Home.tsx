@@ -49,7 +49,7 @@ export default function Home() {
       {/* Welcome Section */}
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          Welcome back, {user?.firstName || 'Chef'}!
+          Welcome back, {user?.name || 'Chef'}!
         </h1>
         <p className="text-gray-600 dark:text-gray-300">
           Ready to discover some delicious new recipes today?
