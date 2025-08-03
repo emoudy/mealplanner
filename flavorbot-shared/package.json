@@ -1,0 +1,51 @@
+{
+  "name": "@flavorbot/shared",
+  "version": "1.0.0",
+  "description": "Shared business logic, types, and utilities for FlavorBot applications",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build",
+    "test": "jest",
+    "lint": "eslint src/**/*.ts"
+  },
+  "keywords": [
+    "flavorbot",
+    "recipe",
+    "cooking",
+    "ai",
+    "shared",
+    "cross-platform"
+  ],
+  "author": "FlavorBot Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/flavorbot/shared.git"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.60.5",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.11",
+    "typescript": "^5.6.3",
+    "eslint": "^8.57.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.12"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
