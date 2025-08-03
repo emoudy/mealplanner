@@ -1,55 +1,62 @@
-import { Switch, Route } from "wouter";
-import { queryClient } from "./lib/queryClient";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { ThemeProvider } from "@/components/ThemeProvider";
-import { Navigation } from "@/components/Navigation";
-import { useAuth } from "@/hooks/useAuth";
-import Landing from "@/pages/Landing";
-import Home from "@/pages/Home";
-import Recipes from "@/pages/Recipes";
-import Chatbot from "@/pages/Chatbot";
-import Settings from "@/pages/Settings";
-import NotFound from "@/pages/not-found";
+import { Router, Route, Switch } from 'wouter';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from '@/components/ui/toaster';
+import { ThemeProvider } from '@/components/ThemeProvider';
+import Navigation from '@/components/Navigation';
+import AccessibilityAnnouncement from '@/components/AccessibilityAnnouncement';
 
-function Router() {
-  const { isAuthenticated, isLoading } = useAuth();
+// Pages
+import Landing from '@/pages/Landing';
+import Home from '@/pages/Home';
+import Recipes from '@/pages/Recipes';
+import Chatbot from '@/pages/Chatbot';
+import Settings from '@/pages/Settings';
+import NotFound from '@/pages/not-found';
 
-  return (
-    <Switch>
-      {isLoading || !isAuthenticated ? (
-        <Route path="/" component={Landing} />
-      ) : (
-        <>
-          <Route path="/" component={Home} />
-          <Route path="/recipes" component={Recipes} />
-          <Route path="/chatbot" component={Chatbot} />
-          <Route path="/settings" component={Settings} />
-        </>
-      )}
-      {/* Fallback to 404 */}
-      <Route component={NotFound} />
-    </Switch>
-  );
-}
+// Create query client with shared package compatibility
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      queryFn: async ({ queryKey }) => {
+        const url = Array.isArray(queryKey) ? queryKey[0] as string : queryKey as string;
+        const response = await fetch(url, { 
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        return response.json();
+      },
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      retry: false,
+    },
+  },
+});
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <TooltipProvider>
-          <div className="min-h-screen bg-background text-foreground">
-            <a href="#main-content" className="skip-link">
-              Skip to main content
-            </a>
+      <ThemeProvider defaultTheme="light" storageKey="flavorbot-theme">
+        <div className="min-h-screen bg-background font-sans antialiased">
+          <AccessibilityAnnouncement />
+          <Router>
             <Navigation />
-            <main id="main-content" role="main" aria-label="Main content">
-              <Router />
+            <main id="main-content" tabIndex={-1} className="outline-none">
+              <Switch>
+                <Route path="/" component={Landing} />
+                <Route path="/home" component={Home} />
+                <Route path="/recipes" component={Recipes} />
+                <Route path="/chatbot" component={Chatbot} />
+                <Route path="/settings" component={Settings} />
+                <Route component={NotFound} />
+              </Switch>
             </main>
-            <Toaster aria-live="polite" aria-atomic="true" />
-          </div>
-        </TooltipProvider>
+          </Router>
+          <Toaster />
+        </div>
       </ThemeProvider>
     </QueryClientProvider>
   );
