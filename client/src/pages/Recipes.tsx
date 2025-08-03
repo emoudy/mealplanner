@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RecipeCard } from '@/components/RecipeCard';
 import { AddRecipeModal } from '@/components/AddRecipeModal';
+import { EditRecipeModal } from '@/components/EditRecipeModal';
 import { Link } from 'wouter';
 import { 
   Search, 
@@ -32,6 +33,7 @@ export default function Recipes() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -86,11 +88,7 @@ export default function Recipes() {
   }, [error, toast]);
 
   const handleEditRecipe = (recipe: Recipe) => {
-    // TODO: Implement recipe editing
-    toast({
-      title: "Coming Soon",
-      description: "Recipe editing will be available soon!",
-    });
+    setEditingRecipe(recipe);
   };
 
   const handleDeleteRecipe = (recipeId: number) => {
@@ -252,6 +250,16 @@ export default function Recipes() {
       <AddRecipeModal
         open={showAddModal}
         onOpenChange={setShowAddModal}
+      />
+
+      <EditRecipeModal
+        recipe={editingRecipe}
+        open={!!editingRecipe}
+        onOpenChange={(open) => {
+          if (!open) {
+            setEditingRecipe(null);
+          }
+        }}
       />
     </div>
   );
