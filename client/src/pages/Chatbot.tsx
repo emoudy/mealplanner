@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { Separator } from '@/components/ui/separator';
 import { 
   MessageCircle, 
@@ -229,13 +231,30 @@ export default function Chatbot() {
                   ? 'bg-blue-600 dark:bg-blue-500' 
                   : 'bg-gray-100 dark:bg-gray-700'
               } rounded-lg p-3`}>
-                <p className={`text-sm ${
-                  message.role === 'user' 
-                    ? 'text-white' 
-                    : 'text-gray-900 dark:text-white'
-                }`}>
-                  {message.content}
-                </p>
+                {message.role === 'user' ? (
+                  <p className="text-sm text-white">
+                    {message.content}
+                  </p>
+                ) : (
+                  <div className="text-sm text-gray-900 dark:text-white prose prose-sm max-w-none dark:prose-invert">
+                    <ReactMarkdown 
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        // Custom styling for markdown elements
+                        h1: ({children}) => <h1 className="text-lg font-bold mb-2 text-gray-900 dark:text-white">{children}</h1>,
+                        h2: ({children}) => <h2 className="text-base font-bold mb-2 text-gray-900 dark:text-white">{children}</h2>,
+                        h3: ({children}) => <h3 className="text-sm font-bold mb-1 text-gray-900 dark:text-white">{children}</h3>,
+                        strong: ({children}) => <strong className="font-bold text-gray-900 dark:text-white">{children}</strong>,
+                        ul: ({children}) => <ul className="list-disc list-inside space-y-1 mb-2">{children}</ul>,
+                        ol: ({children}) => <ol className="list-decimal list-inside space-y-1 mb-2">{children}</ol>,
+                        li: ({children}) => <li className="text-gray-700 dark:text-gray-300">{children}</li>,
+                        p: ({children}) => <p className="mb-2 text-gray-700 dark:text-gray-300">{children}</p>,
+                      }}
+                    >
+                      {message.content}
+                    </ReactMarkdown>
+                  </div>
+                )}
                 
                 {/* Recipe Display */}
                 {message.recipe && (
