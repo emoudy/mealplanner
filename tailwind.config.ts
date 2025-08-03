@@ -36,6 +36,10 @@ export default {
         accent: {
           DEFAULT: "var(--accent)",
           foreground: "var(--accent-foreground)",
+          500: "var(--accent-500)",
+          600: "var(--accent-600)",
+          700: "var(--accent-700)",
+          900: "var(--accent-900)",
         },
         destructive: {
           DEFAULT: "var(--destructive)",
@@ -60,6 +64,13 @@ export default {
           "accent-foreground": "var(--sidebar-accent-foreground)",
           border: "var(--sidebar-border)",
           ring: "var(--sidebar-ring)",
+        },
+        brand: {
+          50: "var(--brand-50)",
+          500: "var(--brand-500)",
+          600: "var(--brand-600)",
+          700: "var(--brand-700)",
+          900: "var(--brand-900)",
         },
       },
       keyframes: {
