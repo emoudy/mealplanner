@@ -1,6 +1,6 @@
 import * as React from "react"
 import { OTPInput, OTPInputContext } from "input-otp"
-import { Dot } from "lucide-react"
+// Dot icon removed as it's not used in this component
 
 import { cn } from "@/lib/utils"
 

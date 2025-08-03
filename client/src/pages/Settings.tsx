@@ -4,7 +4,7 @@ import { useThemeContext } from '@/components/ThemeProvider';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
-import { isUnauthorizedError } from '@/lib/authUtils';
+// Error handling now inline instead of using authUtils
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -84,7 +84,7 @@ export default function Settings() {
       queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
     },
     onError: (error) => {
-      if (isUnauthorizedError(error)) {
+      if (/^401: .*Unauthorized/.test((error as Error).message)) {
         toast({
           title: "Unauthorized",
           description: "You are logged out. Logging in again...",
@@ -114,7 +114,7 @@ export default function Settings() {
       });
     },
     onError: (error) => {
-      if (isUnauthorizedError(error)) {
+      if (/^401: .*Unauthorized/.test((error as Error).message)) {
         toast({
           title: "Unauthorized",
           description: "You are logged out. Logging in again...",

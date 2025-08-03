@@ -10,8 +10,7 @@ import {
   MessageCircle, 
   UtensilsCrossed,
   TrendingUp,
-  Clock,
-  Plus
+  Clock
 } from 'lucide-react';
 import type { Recipe } from '@shared/schema';
 

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
-import { isUnauthorizedError } from '@/lib/authUtils';
+// Error handling now inline instead of using authUtils
 import { Recipe } from '@shared/schema';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -52,7 +52,7 @@ export default function Recipes() {
       });
     },
     onError: (error) => {
-      if (isUnauthorizedError(error)) {
+      if (/^401: .*Unauthorized/.test((error as Error).message)) {
         toast({
           title: "Unauthorized",
           description: "You are logged out. Logging in again...",
@@ -73,7 +73,7 @@ export default function Recipes() {
 
   // Handle unauthorized error at page level
   useEffect(() => {
-    if (error && isUnauthorizedError(error)) {
+    if (error && /^401: .*Unauthorized/.test((error as Error).message)) {
       toast({
         title: "Unauthorized",
         description: "You are logged out. Logging in again...",

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
-import { isUnauthorizedError } from '@/lib/authUtils';
+// Error handling now inline instead of using authUtils
 import { insertRecipeSchema } from '@shared/schema';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -73,7 +73,7 @@ export function AddRecipeModal({ open, onOpenChange }: AddRecipeModalProps) {
       setInstructions(['']);
     },
     onError: (error) => {
-      if (isUnauthorizedError(error)) {
+      if (/^401: .*Unauthorized/.test((error as Error).message)) {
         toast({
           title: "Unauthorized",
           description: "You are logged out. Logging in again...",

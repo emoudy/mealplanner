@@ -6,8 +6,7 @@ import {
   MessageCircle, 
   Bookmark, 
   Share2,
-  Check,
-  Star
+  Check
 } from 'lucide-react';
 
 export default function Landing() {

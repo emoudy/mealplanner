@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
-import { isUnauthorizedError } from '@/lib/authUtils';
+// Error handling now inline instead of using authUtils
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -77,7 +77,7 @@ export default function Chatbot() {
       setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
     },
     onError: (error) => {
-      if (isUnauthorizedError(error)) {
+      if (/^401: .*Unauthorized/.test((error as Error).message)) {
         toast({
           title: "Unauthorized",
           description: "You are logged out. Logging in again...",
@@ -112,7 +112,7 @@ export default function Chatbot() {
     },
     onError: (error) => {
       setIsGeneratingRecipe(false);
-      if (isUnauthorizedError(error)) {
+      if (/^401: .*Unauthorized/.test((error as Error).message)) {
         toast({
           title: "Unauthorized",
           description: "You are logged out. Logging in again...",
@@ -125,7 +125,7 @@ export default function Chatbot() {
       }
       toast({
         title: "Error",
-        description: error.message || "Failed to generate recipe",
+        description: (error as Error).message || "Failed to generate recipe",
         variant: "destructive",
       });
     },
@@ -152,7 +152,7 @@ export default function Chatbot() {
       queryClient.invalidateQueries({ queryKey: ['/api/recipes'] });
     },
     onError: (error) => {
-      if (isUnauthorizedError(error)) {
+      if (/^401: .*Unauthorized/.test((error as Error).message)) {
         toast({
           title: "Unauthorized",
           description: "You are logged out. Logging in again...",
