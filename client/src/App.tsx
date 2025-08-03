@@ -6,6 +6,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Navigation } from "@/components/Navigation";
 import { useAuth } from "@/hooks/useAuth";
+import { AddRecipeProvider } from "@/contexts/AddRecipeContext";
+import { GlobalAddRecipeModal } from "@/components/GlobalAddRecipeModal";
 import Landing from "@/pages/Landing";
 import Home from "@/pages/Home";
 import Recipes from "@/pages/Recipes";
@@ -37,20 +39,23 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <TooltipProvider>
-          <div className="min-h-screen bg-background text-foreground">
-            <a href="#main-content" className="skip-link">
-              Skip to main content
-            </a>
-            <Navigation />
-            <main id="main-content" role="main" aria-label="Main content">
-              <Router />
-            </main>
-            <Toaster aria-live="polite" aria-atomic="true" />
-          </div>
-        </TooltipProvider>
-      </ThemeProvider>
+      <AddRecipeProvider>
+        <ThemeProvider>
+          <TooltipProvider>
+            <div className="min-h-screen bg-background text-foreground">
+              <a href="#main-content" className="skip-link">
+                Skip to main content
+              </a>
+              <Navigation />
+              <main id="main-content" role="main" aria-label="Main content">
+                <Router />
+              </main>
+              <GlobalAddRecipeModal />
+              <Toaster aria-live="polite" aria-atomic="true" />
+            </div>
+          </TooltipProvider>
+        </ThemeProvider>
+      </AddRecipeProvider>
     </QueryClientProvider>
   );
 }

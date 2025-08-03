@@ -1,5 +1,6 @@
 import { useAuth } from '@/hooks/useAuth';
 import { useThemeContext } from '@/components/ThemeProvider';
+import { useAddRecipe } from '@/contexts/AddRecipeContext';
 import { Button } from '@/components/ui/button';
 import { Link, useLocation } from 'wouter';
 import { 
@@ -25,6 +26,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 export function Navigation() {
   const { user, isAuthenticated } = useAuth();
   const { isDarkMode, toggleTheme } = useThemeContext();
+  const { openAddRecipeModal } = useAddRecipe();
   const [location] = useLocation();
 
   const handleLogout = () => {
@@ -74,9 +76,7 @@ export function Navigation() {
                 variant="ghost"
                 size="icon"
                 className="w-10 h-10"
-                onClick={() => {
-                  window.dispatchEvent(new CustomEvent('openAddRecipeModal'));
-                }}
+                onClick={openAddRecipeModal}
                 aria-label="Add new recipe"
                 role="menuitem"
               >
@@ -106,12 +106,12 @@ export function Navigation() {
                   <Button 
                     variant="ghost" 
                     className="flex items-center space-x-2 p-2"
-                    aria-label={`User menu for ${user?.firstName} ${user?.lastName}` || user?.email || 'User'}
+                    aria-label={`User menu for ${(user as any)?.name}` || (user as any)?.email || 'User'}
                   >
                     <Avatar className="w-8 h-8">
                       <AvatarImage 
-                        src={user?.profileImageUrl} 
-                        alt={`${user?.firstName} ${user?.lastName}` || user?.email || 'User'}
+                        src={(user as any)?.profileImageUrl} 
+                        alt={`${(user as any)?.name}` || (user as any)?.email || 'User'}
                       />
                       <AvatarFallback>
                         <User className="w-4 h-4" aria-hidden="true" />
@@ -121,8 +121,8 @@ export function Navigation() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <div className="px-2 py-1.5" role="presentation">
-                    <p className="text-sm font-medium">{user?.firstName} {user?.lastName}</p>
-                    <p className="text-xs text-muted-foreground">{user?.email}</p>
+                    <p className="text-sm font-medium">{(user as any)?.name}</p>
+                    <p className="text-xs text-muted-foreground">{(user as any)?.email}</p>
                   </div>
                   <DropdownMenuSeparator />
                   <Link href="/settings">
