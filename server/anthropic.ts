@@ -43,7 +43,7 @@ export async function generateRecipe(prompt: string): Promise<RecipeResponse> {
       max_tokens: 1000,
     });
 
-    let responseText = response.content[0].text || "{}";
+    let responseText = (response.content[0] as any).text || "{}";
     
     // Clean up markdown code blocks if present
     responseText = responseText.replace(/^```json\n?/, '').replace(/\n?```$/, '').trim();
@@ -76,17 +76,31 @@ export async function getChatResponse(messages: Array<{role: string, content: st
   try {
     const response = await anthropic.messages.create({
       model: DEFAULT_MODEL_STR,
-      system: `You are FlavorBot, a friendly AI chef assistant. Help users with cooking questions, 
-      recipe suggestions, ingredient substitutions, and cooking techniques. Be encouraging and helpful.
-      If users ask for specific recipes, suggest they use the recipe generation feature.`,
+      system: `You are FlavorBot, a friendly AI chef assistant. Help users with cooking questions, recipe suggestions, ingredient substitutions, and cooking techniques. Be encouraging and helpful.
+
+IMPORTANT FORMATTING GUIDELINES:
+- Use clear headings with **bold text** for sections
+- Use bullet points (•) for lists and options
+- Use numbered lists (1. 2. 3.) for steps or instructions
+- Add line breaks between sections for readability
+- Keep paragraphs short and scannable
+- Use formatting like **Quick Options:** or **Hearty Dishes:** for categories
+- End with engaging questions to continue the conversation
+
+When suggesting multiple recipes or options:
+- Group them by category (Quick & Easy, Hearty Options, etc.)
+- Use bullet points for each suggestion
+- Add brief descriptions
+
+If users ask for specific recipes, recommend the recipe generation feature and ask follow-up questions about preferences, ingredients, time, and dietary restrictions.`,
       messages: messages.map(msg => ({
         role: msg.role as 'user' | 'assistant',
         content: msg.content
       })),
-      max_tokens: 500,
+      max_tokens: 600,
     });
 
-    return response.content[0].text || "I'm sorry, I couldn't process that request.";
+    return (response.content[0] as any).text || "I'm sorry, I couldn't process that request.";
   } catch (error) {
     console.error("Error getting chat response:", error);
     throw new Error("Failed to get response. Please try again.");
