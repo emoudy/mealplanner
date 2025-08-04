@@ -473,31 +473,18 @@ export default function Chatbot() {
           
           {/* Dynamic or Quick Suggestions */}
           <div className="mt-3 grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-            {(dynamicSuggestions.length > 0 ? dynamicSuggestions : quickSuggestions).map((suggestion) => {
-              // Truncate suggestion text only for mobile view (under 640px)
-              const getTruncatedText = (text: string) => {
-                // Check if we're on mobile by using a more reliable method
-                const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
-                if (isMobile) {
-                  return text.length > 8 ? text.substring(0, 8) + '...' : text;
-                } else {
-                  return text; // Show full text on tablet and desktop
-                }
-              };
-
-              return (
-                <Button
-                  key={suggestion}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleQuickSuggestion(suggestion)}
-                  className="text-xs text-left justify-start min-h-[2rem] w-full px-2"
-                  title={suggestion} // Show full text on hover for mobile
-                >
-                  {getTruncatedText(suggestion)}
-                </Button>
-              );
-            })}
+            {(dynamicSuggestions.length > 0 ? dynamicSuggestions : quickSuggestions).map((suggestion) => (
+              <Button
+                key={suggestion}
+                variant="outline"
+                size="sm"
+                onClick={() => handleQuickSuggestion(suggestion)}
+                className="text-xs text-left justify-start min-h-[2rem] w-full px-2 sm:whitespace-normal whitespace-nowrap overflow-hidden text-ellipsis"
+                title={suggestion} // Show full text on hover
+              >
+                {suggestion}
+              </Button>
+            ))}
           </div>
         </div>
       </Card>
