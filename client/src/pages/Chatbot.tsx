@@ -332,7 +332,6 @@ export default function Chatbot() {
       generateRecipeMutation.mutate(`Give me a recipe for ${suggestion}`);
     } else {
       // For static quick suggestions (categories), just send as chat to get options
-      setMessages((prev) => [...prev, { role: "user", content: suggestion }]);
       chatMutation.mutate(suggestion);
     }
   };

@@ -68,6 +68,12 @@ export async function generateRecipe(
       .replace(/\n?```$/, "")
       .trim();
 
+    // Additional cleaning: extract JSON from mixed content
+    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      responseText = jsonMatch[0];
+    }
+
     const result = JSON.parse(responseText);
 
     // Validate the response has required fields
