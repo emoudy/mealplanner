@@ -17,7 +17,8 @@ import {
   Bookmark,
   Clock,
   Users,
-  Loader2
+  Loader2,
+  Check
 } from 'lucide-react';
 
 interface Message {
@@ -39,6 +40,7 @@ export default function Chatbot() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isGeneratingRecipe, setIsGeneratingRecipe] = useState(false);
+  const [savedRecipes, setSavedRecipes] = useState<Set<string>>(new Set());
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -146,7 +148,9 @@ export default function Chatbot() {
         isFromAI: true,
       });
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
+      // Mark this recipe as saved using its title as a unique identifier
+      setSavedRecipes(prev => new Set(prev).add(variables.title));
       toast({
         title: "Success",
         description: "Recipe saved successfully!",
@@ -305,15 +309,35 @@ export default function Chatbot() {
                       </div>
                     </div>
                     
-                    <Button 
-                      onClick={() => handleSaveRecipe(message.recipe)}
-                      disabled={saveRecipeMutation.isPending}
-                      className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium flex items-center justify-center"
-                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}
-                    >
-                      <Bookmark className="w-4 h-4 mr-2" style={{ display: 'inline-block' }} />
-                      {saveRecipeMutation.isPending ? 'Saving...' : 'Save Recipe'}
-                    </Button>
+                    {(() => {
+                      const isRecipeSaved = savedRecipes.has(message.recipe.title);
+                      const isPending = saveRecipeMutation.isPending;
+                      
+                      return (
+                        <Button 
+                          onClick={() => handleSaveRecipe(message.recipe)}
+                          disabled={isPending || isRecipeSaved}
+                          className={`w-full mt-4 px-4 py-2 rounded-md font-medium flex items-center justify-center ${
+                            isRecipeSaved 
+                              ? 'bg-green-600 hover:bg-green-700 text-white' 
+                              : 'bg-blue-600 hover:bg-blue-700 text-white'
+                          }`}
+                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}
+                        >
+                          {isRecipeSaved ? (
+                            <>
+                              <Check className="w-4 h-4 mr-2" style={{ display: 'inline-block' }} />
+                              Recipe Saved!
+                            </>
+                          ) : (
+                            <>
+                              <Bookmark className="w-4 h-4 mr-2" style={{ display: 'inline-block' }} />
+                              {isPending ? 'Saving...' : 'Save Recipe'}
+                            </>
+                          )}
+                        </Button>
+                      );
+                    })()}
                   </div>
                 )}
               </div>
