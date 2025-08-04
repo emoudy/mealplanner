@@ -1,14 +1,11 @@
 import {
   users,
   recipes,
-  chatConversations,
   usageTracking,
   type User,
   type UpsertUser,
   type Recipe,
   type InsertRecipe,
-  type ChatConversation,
-  type InsertChatConversation,
   type UpdateUser,
   type UsageTracking,
 } from "@shared/schema";
@@ -31,12 +28,7 @@ export interface IStorage {
   deleteRecipe(id: number, userId: string): Promise<void>;
   searchRecipes(userId: string, query: string): Promise<Recipe[]>;
   
-  // Chat operations
-  createChatConversation(userId: string, sessionId: string, conversation: InsertChatConversation): Promise<ChatConversation>;
-  getChatConversation(userId: string, sessionId: string): Promise<ChatConversation | undefined>;
-  updateChatConversation(id: number, userId: string, messages: any[]): Promise<ChatConversation>;
-  getAllChatHistory(userId: string): Promise<any[]>;
-  cleanupExpiredSessions(): Promise<void>;
+  // Chat operations - Now session-based only, no database storage needed
   
   // Usage tracking
   getUsageForMonth(userId: string, month: string): Promise<UsageTracking | undefined>;
@@ -132,83 +124,7 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(recipes.createdAt));
   }
 
-  // Chat operations
-  async createChatConversation(userId: string, sessionId: string, conversation: InsertChatConversation): Promise<ChatConversation> {
-    const [newConversation] = await db
-      .insert(chatConversations)
-      .values({ ...conversation, userId, sessionId })
-      .returning();
-    return newConversation;
-  }
-
-  async getChatConversation(userId: string, sessionId: string): Promise<ChatConversation | undefined> {
-    const [conversation] = await db
-      .select()
-      .from(chatConversations)
-      .where(and(eq(chatConversations.userId, userId), eq(chatConversations.sessionId, sessionId)))
-      .limit(1);
-    return conversation;
-  }
-
-  async updateChatConversation(id: number, userId: string, messages: any[]): Promise<ChatConversation> {
-    const [conversation] = await db
-      .update(chatConversations)
-      .set({ messages, updatedAt: new Date() })
-      .where(and(eq(chatConversations.id, id), eq(chatConversations.userId, userId)))
-      .returning();
-    return conversation;
-  }
-
-  async getAllChatHistory(userId: string): Promise<any[]> {
-    // Get all sessions from last 7 days, ordered by creation date
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
-    const sessions = await db
-      .select()
-      .from(chatConversations)
-      .where(
-        and(
-          eq(chatConversations.userId, userId),
-          gte(chatConversations.createdAt, sevenDaysAgo)
-        )
-      )
-      .orderBy(chatConversations.createdAt);
-
-    // Flatten all messages from all sessions into one continuous conversation
-    // Filter out duplicate welcome messages
-    const welcomeMessage = "Hi! I'm FlavorBot, your AI recipe assistant. I can help you find recipes based on ingredients, dietary preferences, cooking time, or cuisine type. What would you like to cook today?";
-    const allMessages: any[] = [];
-    let hasAddedWelcome = false;
-
-    sessions.forEach(session => {
-      if (session.messages && Array.isArray(session.messages)) {
-        session.messages.forEach((message: any) => {
-          if (message.role === 'assistant' && message.content === welcomeMessage) {
-            // Only add welcome message once, at the beginning
-            if (!hasAddedWelcome && allMessages.length === 0) {
-              allMessages.push(message);
-              hasAddedWelcome = true;
-            }
-          } else {
-            allMessages.push(message);
-          }
-        });
-      }
-    });
-
-    return allMessages;
-  }
-
-  async cleanupExpiredSessions(): Promise<void> {
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
-    // Delete old conversations (sessions are managed by Express)
-    await db
-      .delete(chatConversations)
-      .where(lt(chatConversations.updatedAt, sevenDaysAgo));
-  }
+  // Chat operations removed - now session-based only
 
   // Usage tracking
   async getUsageForMonth(userId: string, month: string): Promise<UsageTracking | undefined> {

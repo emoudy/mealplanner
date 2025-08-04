@@ -305,17 +305,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const response = await getChatResponse(messages);
       
-      // Save conversation for current session
-      const sessionId = req.sessionID;
+      // Store conversation in session only (not database)
       const newMessages = [...messages, { role: 'assistant', content: response }];
-      
-      // Try to update existing conversation for this session, or create new one
-      const existingConversation = await dbStorage.getChatConversation(userId, sessionId);
-      if (existingConversation) {
-        await dbStorage.updateChatConversation(existingConversation.id, userId, newMessages);
-      } else {
-        await dbStorage.createChatConversation(userId, sessionId, { sessionId, messages: newMessages });
-      }
+      req.session.chatMessages = newMessages;
       
       res.json({ response });
     } catch (error) {
@@ -326,25 +318,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/chatbot/conversation', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const sessionId = req.sessionID;
+      // Get conversation from session only (temporary storage)
+      const sessionMessages = req.session.chatMessages;
       
-      // Get all conversation history
-      const allHistory = await dbStorage.getAllChatHistory(userId);
-      const hasHistory = allHistory.length > 0;
-      
-      // If no history exists, create welcome message for current session
-      if (!hasHistory) {
+      // If no session messages exist, return welcome message
+      if (!sessionMessages || !Array.isArray(sessionMessages) || sessionMessages.length === 0) {
         const welcomeMessage = [{
           role: 'assistant',
           content: "Hi! I'm FlavorBot, your AI recipe assistant. I can help you find recipes based on ingredients, dietary preferences, cooking time, or cuisine type. What would you like to cook today?"
         }];
         
-        await dbStorage.createChatConversation(userId, sessionId, { sessionId, messages: welcomeMessage });
+        // Store welcome message in session
+        req.session.chatMessages = welcomeMessage;
         
         res.json({ messages: welcomeMessage });
       } else {
-        res.json({ messages: allHistory });
+        res.json({ messages: sessionMessages });
       }
     } catch (error) {
       console.error("Error fetching conversation:", error);

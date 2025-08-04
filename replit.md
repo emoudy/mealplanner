@@ -152,6 +152,13 @@ Implemented comprehensive WCAG 2.2 accessibility compliance including:
 
 ## Recent Changes
 
+### **2025-08-04**: Chat Storage Optimization - Session-Based Only
+- **Storage Optimization**: Converted chat conversations from permanent database storage to session-based only
+- **Session Lifecycle**: Chat messages now stored in Express session, automatically cleared when session ends
+- **Database Cleanup**: Removed chat_conversations table and related schema to reduce storage overhead
+- **Temporary Storage**: Chat history only persists during active user session, lost on logout/session expiry
+- **Performance**: Reduced database queries and storage requirements for chat functionality
+
 ### **2025-08-04**: Subscription System Structure Clarification
 - **Subscription Tiers**: Clarified that FlavorBot has three tiers: Free (default), Basic, Pro
 - **Upgrade-Only Model**: Users start with Free tier and can only upgrade, never downgrade

@@ -60,15 +60,8 @@ export const recipes = pgTable("recipes", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Chat conversations table
-export const chatConversations = pgTable("chat_conversations", {
-  id: serial("id").primaryKey(),
-  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  sessionId: varchar("session_id").notNull(), // maps to Express session ID
-  messages: jsonb("messages").notNull(), // array of {role: 'user'|'assistant', content: string}
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
+// Note: Chat conversations are now session-based only, not stored in database
+// This reduces storage usage and ensures conversations are temporary
 
 // Usage tracking table
 export const usageTracking = pgTable("usage_tracking", {
@@ -84,7 +77,6 @@ export const usageTracking = pgTable("usage_tracking", {
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   recipes: many(recipes),
-  chatConversations: many(chatConversations),
   usageTracking: many(usageTracking),
 }));
 
@@ -95,12 +87,7 @@ export const recipesRelations = relations(recipes, ({ one }) => ({
   }),
 }));
 
-export const chatConversationsRelations = relations(chatConversations, ({ one }) => ({
-  user: one(users, {
-    fields: [chatConversations.userId],
-    references: [users.id],
-  }),
-}));
+// Chat conversations relations removed - now session-based only
 
 export const usageTrackingRelations = relations(usageTracking, ({ one }) => ({
   user: one(users, {
@@ -117,13 +104,6 @@ export const insertRecipeSchema = createInsertSchema(recipes).omit({
   updatedAt: true,
 });
 
-export const insertChatConversationSchema = createInsertSchema(chatConversations).omit({
-  id: true,
-  userId: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
 export const updateUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
@@ -134,7 +114,5 @@ export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 export type Recipe = typeof recipes.$inferSelect;
 export type InsertRecipe = z.infer<typeof insertRecipeSchema>;
-export type ChatConversation = typeof chatConversations.$inferSelect;
-export type InsertChatConversation = z.infer<typeof insertChatConversationSchema>;
 export type UpdateUser = z.infer<typeof updateUserSchema>;
 export type UsageTracking = typeof usageTracking.$inferSelect;
