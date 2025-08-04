@@ -51,6 +51,12 @@ export default function Chatbot() {
     retry: false,
   });
 
+  // Load user's saved recipes to check for duplicates
+  const { data: userRecipes } = useQuery({
+    queryKey: ['/api/recipes'],
+    retry: false,
+  });
+
   useEffect(() => {
     if (conversation?.messages) {
       setMessages(conversation.messages);
@@ -310,7 +316,13 @@ export default function Chatbot() {
                     </div>
                     
                     {(() => {
-                      const isRecipeSaved = savedRecipes.has(message.recipe.title);
+                      // Check if recipe is already saved in database or in current session
+                      const isInDatabase = userRecipes?.some((recipe: any) => 
+                        recipe.title === message.recipe.title && 
+                        recipe.isFromAI === true
+                      ) || false;
+                      const isInSession = savedRecipes.has(message.recipe.title);
+                      const isRecipeSaved = isInDatabase || isInSession;
                       const isPending = saveRecipeMutation.isPending;
                       
                       return (
