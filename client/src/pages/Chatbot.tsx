@@ -479,10 +479,12 @@ export default function Chatbot() {
                 variant="outline"
                 size="sm"
                 onClick={() => handleQuickSuggestion(suggestion)}
-                className="text-xs text-left justify-start min-h-[2rem] w-full px-2 sm:whitespace-normal whitespace-nowrap overflow-hidden text-ellipsis"
+                className="text-xs text-left justify-start min-h-[2rem] w-full px-2"
                 title={suggestion} // Show full text on hover
               >
-                {suggestion}
+                <span className="block w-full sm:whitespace-normal whitespace-nowrap overflow-hidden text-ellipsis">
+                  {suggestion}
+                </span>
               </Button>
             ))}
           </div>
