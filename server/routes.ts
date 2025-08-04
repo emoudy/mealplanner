@@ -3,6 +3,7 @@ import express from "express";
 import { createServer, type Server } from "http";
 import { storage as dbStorage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
+import { setupEmailAuth } from "./auth";
 import { generateRecipe, getChatResponse } from "./anthropic";
 import { insertRecipeSchema, updateUserSchema } from "@shared/schema";
 import { z } from "zod";
@@ -58,13 +59,15 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Auth middleware
+  // Auth middleware and routes
   await setupAuth(app);
+  setupEmailAuth(app);
 
-  // Auth routes
+  // Universal auth user route - works for both Replit OAuth and email/password users
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      // Get user ID from either OAuth claims or session user
+      const userId = req.user.claims ? req.user.claims.sub : req.user.id;
       const user = await dbStorage.getUser(userId);
       res.json(user);
     } catch (error) {

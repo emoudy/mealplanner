@@ -15,6 +15,7 @@ import Recipes from "@/pages/Recipes";
 import Chatbot from "@/pages/Chatbot";
 import Settings from "@/pages/Settings";
 import NotFound from "@/pages/not-found";
+import AuthPage from "@/pages/auth-page";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -24,7 +25,10 @@ function Router() {
       {isAuthenticated && <EmailVerificationBanner />}
       <Switch>
         {isLoading || !isAuthenticated ? (
-          <Route path="/" component={Landing} />
+          <>
+            <Route path="/" component={Landing} />
+            <Route path="/auth" component={AuthPage} />
+          </>
         ) : (
           <>
             <Route path="/" component={Home} />

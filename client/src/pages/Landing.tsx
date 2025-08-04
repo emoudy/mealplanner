@@ -30,14 +30,23 @@ export default function Landing() {
             Discover, save, and organize thousands of recipes with the help of AI. 
             Get personalized recommendations and never run out of meal ideas again.
           </p>
-          <div className="flex justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
-              onClick={handleGetStarted}
+              onClick={() => window.location.href = '/auth'}
               size="lg"
-              className="px-8 py-4 text-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
+              className="px-8 py-4 text-lg font-semibold bg-gradient-to-r from-red-500 to-yellow-500 hover:from-red-600 hover:to-yellow-600 text-white shadow-lg"
               aria-label="Sign up to start using FlavorBot today"
             >
               Start Cooking Today
+            </Button>
+            <Button 
+              onClick={handleGetStarted}
+              size="lg"
+              variant="outline"
+              className="px-8 py-4 text-lg font-semibold border-2 border-gray-300 hover:border-red-500 hover:text-red-500 transition-all duration-200"
+              aria-label="Continue with your Replit account"
+            >
+              Continue with Replit
             </Button>
           </div>
         </div>
@@ -144,7 +153,7 @@ export default function Landing() {
                 <Button 
                   variant="outline" 
                   className="w-full border-blue-600 text-blue-700 hover:bg-blue-50 dark:border-blue-400 dark:text-blue-400 dark:hover:bg-blue-950"
-                  onClick={handleGetStarted}
+                  onClick={() => window.location.href = '/auth'}
                 >
                   Get Started
                 </Button>
