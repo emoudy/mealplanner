@@ -255,9 +255,9 @@ export default function Chatbot() {
                         h2: ({children}) => <h2 className="text-base font-bold mb-2 text-gray-900 dark:text-white">{children}</h2>,
                         h3: ({children}) => <h3 className="text-sm font-bold mb-1 text-gray-900 dark:text-white">{children}</h3>,
                         strong: ({children}) => <strong className="font-bold text-gray-900 dark:text-white">{children}</strong>,
-                        ul: ({children}) => <ul className="list-disc list-inside space-y-1 mb-2">{children}</ul>,
-                        ol: ({children}) => <ol className="list-decimal list-inside space-y-1 mb-2">{children}</ol>,
-                        li: ({children}) => <li className="text-gray-700 dark:text-gray-300">{children}</li>,
+                        ul: ({children}) => <ul className="list-disc ml-4 space-y-1 mb-3">{children}</ul>,
+                        ol: ({children}) => <ol className="list-decimal ml-4 space-y-1 mb-3">{children}</ol>,
+                        li: ({children}) => <li className="text-gray-700 dark:text-gray-300 mb-1">{children}</li>,
                         p: ({children}) => <p className="mb-2 text-gray-700 dark:text-gray-300">{children}</p>,
                       }}
                     >
