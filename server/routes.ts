@@ -307,6 +307,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log(content);
         console.log('=== End Response ===');
         
+        // Check if the missing suggestions are in the content
+        if (content.includes('Hard-boiled eggs')) {
+          console.log('✓ Found "Hard-boiled eggs" in response');
+        } else {
+          console.log('✗ "Hard-boiled eggs" NOT found in response');
+        }
+        
+        if (content.includes('Homemade granola')) {
+          console.log('✓ Found "Homemade granola" in response');
+        } else {
+          console.log('✗ "Homemade granola" NOT found in response');
+        }
+        
         const listPattern = /^[\s]*[•\-]\s*(.+)$/gm;
         let match;
         
