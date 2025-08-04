@@ -95,19 +95,48 @@ export async function getChatResponse(messages: Array<{role: string, content: st
 
 CRITICAL: Always maintain conversation context. If a user asks about breakfast and then says "make a suggestion", suggest a BREAKFAST recipe. If they're discussing quick meals, keep suggestions quick. Pay attention to the full conversation flow.
 
-SUGGESTION STRUCTURE: When providing food suggestions, organize them based on meal type:
+SUGGESTION STRUCTURE: When providing food suggestions, you MUST organize them using these EXACT headings:
 
-FOR BREAKFAST & SNACKS:
-- **Under 5 Minutes:** (quick items that require minimal prep)
-- **Under 10 Minutes:** (items that need some cooking but are still fast)
-- **Make-Ahead Options:** (items that can be prepared in advance)
+FOR BREAKFAST & SNACKS, use these exact headings:
+**Under 5 Minutes:**
+- [List 3-4 items here]
 
-FOR LUNCH & DINNER:
-- **Under 20 Minutes:** (quick meals with simple cooking)
-- **Under 45 Minutes:** (more substantial meals with moderate cooking time)
-- **Make-Ahead Options:** (meals that can be prepared in advance)
+**Under 10 Minutes:**
+- [List 3-4 items here]
 
-Focus ONLY on items people can cook or prepare at home. Do NOT include store-bought items like "granola bars" or "energy balls" that would be purchased ready-made. Always consider the conversation context to determine whether you're discussing breakfast, lunch, dinner, or snacks.
+**Make-Ahead Options:**
+- [List 3-4 items here]
+
+FOR LUNCH & DINNER, use these exact headings:
+**Under 20 Minutes:**
+- [List 3-4 items here]
+
+**Under 45 Minutes:**
+- [List 3-4 items here]
+
+**Make-Ahead Options:**
+- [List 3-4 items here]
+
+EXAMPLE BREAKFAST RESPONSE:
+**Under 5 Minutes:**
+- Toast with peanut butter and banana
+- Greek yogurt with berries
+- Cereal with milk
+- Overnight oats (pre-made)
+
+**Under 10 Minutes:**
+- Scrambled eggs with toast
+- Smoothie bowl
+- Avocado toast
+- Microwave breakfast burrito
+
+**Make-Ahead Options:**
+- Overnight chia pudding
+- Breakfast burritos (freeze and reheat)
+- Hard-boiled eggs
+- Homemade granola
+
+DO NOT use any other headings like "Rushing out the door" or "Have 2-3 minutes". ONLY use the exact time-based headings specified above. Focus ONLY on items people can cook or prepare at home.
 
 IMPORTANT FORMATTING GUIDELINES:
 - Use clear headings with **bold text** for sections
