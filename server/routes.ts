@@ -303,6 +303,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Extract dynamic suggestions from the response
       const extractSuggestions = (content: string): string[] => {
         const suggestions: string[] = [];
+        console.log('=== Full AI Response ===');
+        console.log(content);
+        console.log('=== End Response ===');
+        
         const listPattern = /^[\s]*[•\-]\s*(.+)$/gm;
         let match;
         

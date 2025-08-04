@@ -1,116 +1,122 @@
-import { useState, useEffect, useRef } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useToast } from '@/hooks/use-toast';
-import { apiRequest } from '@/lib/queryClient';
+import { useState, useEffect, useRef } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 // Error handling now inline instead of using authUtils
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import { Separator } from '@/components/ui/separator';
-import { 
-  MessageCircle, 
-  Send, 
-  User, 
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Separator } from "@/components/ui/separator";
+import {
+  MessageCircle,
+  Send,
+  User,
   Bookmark,
   Clock,
   Users,
   Loader2,
-  Check
-} from 'lucide-react';
+  Check,
+} from "lucide-react";
 
 interface Message {
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   content: string;
   recipe?: any;
 }
 
 const quickSuggestions = [
-  'Vegetarian pasta',
-  'Quick breakfast',
-  'Healthy snacks',
-  'Italian cuisine',
-  'Chicken recipes',
-  'Dessert ideas'
+  "Snacks",
+  "Breakfast",
+  "Lunch",
+  "Dinner",
+  "Italian cuisine",
+  "Chicken recipes",
 ];
 
 // Function to extract suggestions from FlavorBot responses
 function extractSuggestions(content: string): string[] {
   const suggestions: string[] = [];
-  
+
   // Look for bullet point patterns in markdown lists
   // This regex captures everything after bullet points until the end of the line
   const listPattern = /^[\s]*[•\-]\s*(.+)$/gm;
   let match;
-  
+
   while ((match = listPattern.exec(content)) !== null) {
     let suggestion = match[1].trim();
-    
+
     // Remove markdown formatting (asterisks)
-    suggestion = suggestion.replace(/\*\*/g, '');
-    
+    suggestion = suggestion.replace(/\*\*/g, "");
+
     // Filter out section headers, transition phrases, and non-actionable items
-    if (suggestion.length > 5 && suggestion.length < 100 && 
-        !suggestion.toLowerCase().includes('minutes:') && 
-        !suggestion.toLowerCase().includes('servings') &&
-        !suggestion.toLowerCase().includes('options:') &&
-        !suggestion.toLowerCase().includes('5-minute') &&
-        !suggestion.toLowerCase().includes('10-minute') &&
-        !suggestion.toLowerCase().includes('20-minute') &&
-        !suggestion.toLowerCase().includes('45-minute') &&
-        !suggestion.toLowerCase().includes('under 5') &&
-        !suggestion.toLowerCase().includes('under 10') &&
-        !suggestion.toLowerCase().includes('under 20') &&
-        !suggestion.toLowerCase().includes('under 45') &&
-        !suggestion.toLowerCase().includes('make-ahead options') &&
-        !suggestion.toLowerCase().includes('protein-packed') &&
-        !suggestion.toLowerCase().includes('energy-boosting') &&
-        !suggestion.toLowerCase().includes('grab-and-go') &&
-        !suggestion.toLowerCase().includes('here are') &&
-        !suggestion.toLowerCase().includes('breakfast ideas') &&
-        !suggestion.toLowerCase().includes('what i can help') &&
-        !suggestion.toLowerCase().includes('speaking of food') &&
-        !suggestion.toLowerCase().includes('let me help') &&
-        !suggestion.toLowerCase().includes('i noticed') &&
-        !suggestion.toLowerCase().includes('were you able') &&
-        !suggestion.toLowerCase().includes('would you like') &&
-        !suggestion.toLowerCase().includes('what would you') &&
-        !suggestion.toLowerCase().includes('in the kitchen') &&
-        !suggestion.toLowerCase().includes('today?') &&
-        !suggestion.toLowerCase().includes('right now?') &&
-        !suggestion.toLowerCase().startsWith('what ') &&
-        !suggestion.toLowerCase().startsWith('speaking ') &&
-        !suggestion.toLowerCase().startsWith('let') &&
-        !suggestion.toLowerCase().includes('help you with:')) {
+    if (
+      suggestion.length > 5 &&
+      suggestion.length < 100 &&
+      !suggestion.toLowerCase().includes("minutes:") &&
+      !suggestion.toLowerCase().includes("servings") &&
+      !suggestion.toLowerCase().includes("options:") &&
+      !suggestion.toLowerCase().includes("5-minute") &&
+      !suggestion.toLowerCase().includes("10-minute") &&
+      !suggestion.toLowerCase().includes("20-minute") &&
+      !suggestion.toLowerCase().includes("45-minute") &&
+      !suggestion.toLowerCase().includes("under 5") &&
+      !suggestion.toLowerCase().includes("under 10") &&
+      !suggestion.toLowerCase().includes("under 20") &&
+      !suggestion.toLowerCase().includes("under 45") &&
+      !suggestion.toLowerCase().includes("make-ahead options") &&
+      !suggestion.toLowerCase().includes("protein-packed") &&
+      !suggestion.toLowerCase().includes("energy-boosting") &&
+      !suggestion.toLowerCase().includes("grab-and-go") &&
+      !suggestion.toLowerCase().includes("here are") &&
+      !suggestion.toLowerCase().includes("breakfast ideas") &&
+      !suggestion.toLowerCase().includes("what i can help") &&
+      !suggestion.toLowerCase().includes("speaking of food") &&
+      !suggestion.toLowerCase().includes("let me help") &&
+      !suggestion.toLowerCase().includes("i noticed") &&
+      !suggestion.toLowerCase().includes("were you able") &&
+      !suggestion.toLowerCase().includes("would you like") &&
+      !suggestion.toLowerCase().includes("what would you") &&
+      !suggestion.toLowerCase().includes("in the kitchen") &&
+      !suggestion.toLowerCase().includes("today?") &&
+      !suggestion.toLowerCase().includes("right now?") &&
+      !suggestion.toLowerCase().startsWith("what ") &&
+      !suggestion.toLowerCase().startsWith("speaking ") &&
+      !suggestion.toLowerCase().startsWith("let") &&
+      !suggestion.toLowerCase().includes("help you with:")
+    ) {
       suggestions.push(suggestion);
     }
   }
-  
+
   // Also look for bold items like "**Item name**" (recipe titles)
   const boldPattern = /\*\*([^*]+)\*\*/g;
   while ((match = boldPattern.exec(content)) !== null) {
     const suggestion = match[1].trim();
-    if (suggestion.length > 3 && suggestion.length < 50 && 
-        !suggestion.toLowerCase().includes('quick') && 
-        !suggestion.toLowerCase().includes('minutes') &&
-        !suggestion.toLowerCase().includes('options') &&
-        !suggestion.toLowerCase().includes('ideas') &&
-        !suggestion.toLowerCase().includes('grab-and-go') &&
-        !suggestion.toLowerCase().includes('protein-packed') &&
-        !suggestion.toLowerCase().includes('energy-boosting')) {
+    if (
+      suggestion.length > 3 &&
+      suggestion.length < 50 &&
+      !suggestion.toLowerCase().includes("quick") &&
+      !suggestion.toLowerCase().includes("minutes") &&
+      !suggestion.toLowerCase().includes("options") &&
+      !suggestion.toLowerCase().includes("ideas") &&
+      !suggestion.toLowerCase().includes("grab-and-go") &&
+      !suggestion.toLowerCase().includes("protein-packed") &&
+      !suggestion.toLowerCase().includes("energy-boosting")
+    ) {
       suggestions.push(suggestion);
     }
   }
-  
+
   // Return unique suggestions, limited to 10 to capture even more options
   return [...new Set(suggestions)].slice(0, 10);
 }
 
 export default function Chatbot() {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [inputMessage, setInputMessage] = useState('');
+  const [inputMessage, setInputMessage] = useState("");
   const [isGeneratingRecipe, setIsGeneratingRecipe] = useState(false);
   const [savedRecipes, setSavedRecipes] = useState<Set<string>>(new Set());
   const [dynamicSuggestions, setDynamicSuggestions] = useState<string[]>([]);
@@ -120,18 +126,22 @@ export default function Chatbot() {
 
   // Load conversation history
   const { data: conversation } = useQuery({
-    queryKey: ['/api/chatbot/conversation'],
+    queryKey: ["/api/chatbot/conversation"],
     retry: false,
   });
 
   // Load user's saved recipes to check for duplicates
   const { data: userRecipes } = useQuery({
-    queryKey: ['/api/recipes'],
+    queryKey: ["/api/recipes"],
     retry: false,
   });
 
   useEffect(() => {
-    if (conversation && conversation.messages && Array.isArray(conversation.messages)) {
+    if (
+      conversation &&
+      conversation.messages &&
+      Array.isArray(conversation.messages)
+    ) {
       setMessages(conversation.messages);
       // Restore dynamic suggestions from session
       if (conversation.suggestions && Array.isArray(conversation.suggestions)) {
@@ -139,35 +149,44 @@ export default function Chatbot() {
       }
     } else {
       // Fallback to default welcome message if no history
-      setMessages([{
-        role: 'assistant',
-        content: "Hi! I'm FlavorBot, your AI recipe assistant. I can help you find recipes based on ingredients, dietary preferences, cooking time, or cuisine type. What would you like to cook today?"
-      }]);
+      setMessages([
+        {
+          role: "assistant",
+          content:
+            "Hi! I'm FlavorBot, your AI recipe assistant. I can help you find recipes based on ingredients, dietary preferences, cooking time, or cuisine type. What would you like to cook today?",
+        },
+      ]);
       setDynamicSuggestions([]);
     }
   }, [conversation]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const chatMutation = useMutation({
     mutationFn: async (message: string) => {
-      const newMessages = [...messages, { role: 'user' as const, content: message }];
+      const newMessages = [
+        ...messages,
+        { role: "user" as const, content: message },
+      ];
       setMessages(newMessages);
-      
-      const response = await apiRequest('POST', '/api/chatbot/chat', {
-        messages: newMessages
+
+      const response = await apiRequest("POST", "/api/chatbot/chat", {
+        messages: newMessages,
       });
       return response.json();
     },
     onSuccess: (data) => {
-      setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
-      
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: data.response },
+      ]);
+
       // Use suggestions from backend if available, otherwise extract locally
       const suggestions = data.suggestions || extractSuggestions(data.response);
-      console.log('Extracted suggestions:', suggestions);
-      console.log('Full response:', data.response);
+      console.log("Extracted suggestions:", suggestions);
+      console.log("Full response:", data.response);
       setDynamicSuggestions(suggestions);
     },
     onError: (error) => {
@@ -192,16 +211,20 @@ export default function Chatbot() {
 
   const generateRecipeMutation = useMutation({
     mutationFn: async (prompt: string) => {
-      const response = await apiRequest('POST', '/api/chatbot/generate-recipe', { prompt });
+      const response = await apiRequest(
+        "POST",
+        "/api/chatbot/generate-recipe",
+        { prompt },
+      );
       return response.json();
     },
     onSuccess: (recipe) => {
       const recipeMessage: Message = {
-        role: 'assistant',
+        role: "assistant",
         content: `Perfect! Here's a delicious recipe I found for you:`,
-        recipe: recipe
+        recipe: recipe,
       };
-      setMessages(prev => [...prev, recipeMessage]);
+      setMessages((prev) => [...prev, recipeMessage]);
       setIsGeneratingRecipe(false);
     },
     onError: (error) => {
@@ -227,7 +250,7 @@ export default function Chatbot() {
 
   const saveRecipeMutation = useMutation({
     mutationFn: async (recipe: any) => {
-      await apiRequest('POST', '/api/recipes', {
+      await apiRequest("POST", "/api/recipes", {
         title: recipe.title,
         description: recipe.description,
         ingredients: recipe.ingredients,
@@ -240,12 +263,12 @@ export default function Chatbot() {
     },
     onSuccess: (data, variables) => {
       // Mark this recipe as saved using its title as a unique identifier
-      setSavedRecipes(prev => new Set(prev).add(variables.title));
+      setSavedRecipes((prev) => new Set(prev).add(variables.title));
       toast({
         title: "Success",
         description: "Recipe saved successfully!",
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/recipes'] });
+      queryClient.invalidateQueries({ queryKey: ["/api/recipes"] });
     },
     onError: (error) => {
       if (/^401: .*Unauthorized/.test((error as Error).message)) {
@@ -269,21 +292,28 @@ export default function Chatbot() {
 
   const handleSendMessage = () => {
     if (!inputMessage.trim()) return;
-    
+
     const message = inputMessage.trim();
-    setInputMessage('');
+    setInputMessage("");
     // Clear dynamic suggestions when user types their own message
     setDynamicSuggestions([]);
 
     // Check if this looks like a recipe request
-    const recipeKeywords = ['recipe', 'cook', 'make', 'ingredients', 'dish', 'meal'];
-    const isRecipeRequest = recipeKeywords.some(keyword => 
-      message.toLowerCase().includes(keyword)
+    const recipeKeywords = [
+      "recipe",
+      "cook",
+      "make",
+      "ingredients",
+      "dish",
+      "meal",
+    ];
+    const isRecipeRequest = recipeKeywords.some((keyword) =>
+      message.toLowerCase().includes(keyword),
     );
 
     if (isRecipeRequest) {
       setIsGeneratingRecipe(true);
-      setMessages(prev => [...prev, { role: 'user', content: message }]);
+      setMessages((prev) => [...prev, { role: "user", content: message }]);
       generateRecipeMutation.mutate(message);
     } else {
       chatMutation.mutate(message);
@@ -304,7 +334,9 @@ export default function Chatbot() {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Page Header */}
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Ask FlavorBot</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+          Ask FlavorBot
+        </h1>
         <p className="text-gray-600 dark:text-gray-300">
           Get personalized recipe recommendations from our AI assistant
         </p>
@@ -315,45 +347,80 @@ export default function Chatbot() {
         {/* Chat Messages */}
         <div className="h-96 overflow-y-auto p-6 space-y-4">
           {messages.map((message, index) => (
-            <div key={index} className={`flex items-start space-x-3 ${
-              message.role === 'user' ? 'justify-end' : ''
-            }`}>
-              {message.role === 'assistant' && (
+            <div
+              key={index}
+              className={`flex items-start space-x-3 ${
+                message.role === "user" ? "justify-end" : ""
+              }`}
+            >
+              {message.role === "assistant" && (
                 <div className="w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center flex-shrink-0">
                   <MessageCircle className="w-4 h-4 text-white" />
                 </div>
               )}
-              
-              <div className={`max-w-lg ${
-                message.role === 'user' 
-                  ? 'bg-blue-600 dark:bg-blue-500' 
-                  : 'bg-gray-100 dark:bg-gray-700'
-              } rounded-lg p-3`}>
-                {message.role === 'user' ? (
-                  <p className="text-sm text-white">
-                    {message.content}
-                  </p>
+
+              <div
+                className={`max-w-lg ${
+                  message.role === "user"
+                    ? "bg-blue-600 dark:bg-blue-500"
+                    : "bg-gray-100 dark:bg-gray-700"
+                } rounded-lg p-3`}
+              >
+                {message.role === "user" ? (
+                  <p className="text-sm text-white">{message.content}</p>
                 ) : (
                   <div className="text-sm text-gray-900 dark:text-white prose prose-sm max-w-none dark:prose-invert">
-                    <ReactMarkdown 
+                    <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
                       components={{
                         // Custom styling for markdown elements
-                        h1: ({children}) => <h1 className="text-lg font-bold mb-2 text-gray-900 dark:text-white">{children}</h1>,
-                        h2: ({children}) => <h2 className="text-base font-bold mb-2 text-gray-900 dark:text-white">{children}</h2>,
-                        h3: ({children}) => <h3 className="text-sm font-bold mb-1 text-gray-900 dark:text-white">{children}</h3>,
-                        strong: ({children}) => <strong className="font-bold text-gray-900 dark:text-white">{children}</strong>,
-                        ul: ({children}) => <ul className="list-disc ml-4 space-y-1 mb-3">{children}</ul>,
-                        ol: ({children}) => <ol className="list-decimal ml-4 space-y-1 mb-3">{children}</ol>,
-                        li: ({children}) => <li className="text-gray-700 dark:text-gray-300 mb-1">{children}</li>,
-                        p: ({children}) => <p className="mb-2 text-gray-700 dark:text-gray-300">{children}</p>,
+                        h1: ({ children }) => (
+                          <h1 className="text-lg font-bold mb-2 text-gray-900 dark:text-white">
+                            {children}
+                          </h1>
+                        ),
+                        h2: ({ children }) => (
+                          <h2 className="text-base font-bold mb-2 text-gray-900 dark:text-white">
+                            {children}
+                          </h2>
+                        ),
+                        h3: ({ children }) => (
+                          <h3 className="text-sm font-bold mb-1 text-gray-900 dark:text-white">
+                            {children}
+                          </h3>
+                        ),
+                        strong: ({ children }) => (
+                          <strong className="font-bold text-gray-900 dark:text-white">
+                            {children}
+                          </strong>
+                        ),
+                        ul: ({ children }) => (
+                          <ul className="list-disc ml-4 space-y-1 mb-3">
+                            {children}
+                          </ul>
+                        ),
+                        ol: ({ children }) => (
+                          <ol className="list-decimal ml-4 space-y-1 mb-3">
+                            {children}
+                          </ol>
+                        ),
+                        li: ({ children }) => (
+                          <li className="text-gray-700 dark:text-gray-300 mb-1">
+                            {children}
+                          </li>
+                        ),
+                        p: ({ children }) => (
+                          <p className="mb-2 text-gray-700 dark:text-gray-300">
+                            {children}
+                          </p>
+                        ),
                       }}
                     >
                       {message.content}
                     </ReactMarkdown>
                   </div>
                 )}
-                
+
                 {/* Recipe Display */}
                 {message.recipe && (
                   <div className="mt-4 p-4 bg-white dark:bg-gray-800 rounded-lg border">
@@ -365,11 +432,11 @@ export default function Chatbot() {
                         {message.recipe.category}
                       </Badge>
                     </div>
-                    
+
                     <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
                       {message.recipe.description}
                     </p>
-                    
+
                     <div className="flex items-center space-x-4 mb-4 text-sm text-gray-500 dark:text-gray-400">
                       <span className="flex items-center">
                         <Clock className="w-4 h-4 mr-1" />
@@ -380,59 +447,83 @@ export default function Chatbot() {
                         {message.recipe.servings} servings
                       </span>
                     </div>
-                    
+
                     <div className="space-y-3">
                       <div>
-                        <h5 className="font-semibold text-gray-900 dark:text-white mb-2">Ingredients:</h5>
+                        <h5 className="font-semibold text-gray-900 dark:text-white mb-2">
+                          Ingredients:
+                        </h5>
                         <ul className="list-disc list-inside text-sm text-gray-700 dark:text-gray-300 space-y-1">
-                          {message.recipe.ingredients.map((ingredient: string, i: number) => (
-                            <li key={i}>{ingredient}</li>
-                          ))}
+                          {message.recipe.ingredients.map(
+                            (ingredient: string, i: number) => (
+                              <li key={i}>{ingredient}</li>
+                            ),
+                          )}
                         </ul>
                       </div>
-                      
+
                       <Separator />
-                      
+
                       <div>
-                        <h5 className="font-semibold text-gray-900 dark:text-white mb-2">Instructions:</h5>
+                        <h5 className="font-semibold text-gray-900 dark:text-white mb-2">
+                          Instructions:
+                        </h5>
                         <ol className="list-decimal list-inside text-sm text-gray-700 dark:text-gray-300 space-y-1">
-                          {message.recipe.instructions.map((instruction: string, i: number) => (
-                            <li key={i}>{instruction}</li>
-                          ))}
+                          {message.recipe.instructions.map(
+                            (instruction: string, i: number) => (
+                              <li key={i}>{instruction}</li>
+                            ),
+                          )}
                         </ol>
                       </div>
                     </div>
-                    
+
                     {(() => {
                       // Check if recipe is already saved in database or in current session
-                      const isInDatabase = Array.isArray(userRecipes) ? userRecipes.some((recipe: any) => 
-                        recipe.title === message.recipe.title && 
-                        recipe.isFromAI === true
-                      ) : false;
-                      const isInSession = savedRecipes.has(message.recipe.title);
+                      const isInDatabase = Array.isArray(userRecipes)
+                        ? userRecipes.some(
+                            (recipe: any) =>
+                              recipe.title === message.recipe.title &&
+                              recipe.isFromAI === true,
+                          )
+                        : false;
+                      const isInSession = savedRecipes.has(
+                        message.recipe.title,
+                      );
                       const isRecipeSaved = isInDatabase || isInSession;
                       const isPending = saveRecipeMutation.isPending;
-                      
+
                       return (
-                        <Button 
+                        <Button
                           onClick={() => handleSaveRecipe(message.recipe)}
                           disabled={isPending || isRecipeSaved}
                           className={`w-full mt-4 px-4 py-2 rounded-md font-medium flex items-center justify-center ${
-                            isRecipeSaved 
-                              ? 'bg-green-600 hover:bg-green-700 text-white' 
-                              : 'bg-blue-600 hover:bg-blue-700 text-white'
+                            isRecipeSaved
+                              ? "bg-green-600 hover:bg-green-700 text-white"
+                              : "bg-blue-600 hover:bg-blue-700 text-white"
                           }`}
-                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            width: "100%",
+                          }}
                         >
                           {isRecipeSaved ? (
                             <>
-                              <Check className="w-4 h-4 mr-2" style={{ display: 'inline-block' }} />
+                              <Check
+                                className="w-4 h-4 mr-2"
+                                style={{ display: "inline-block" }}
+                              />
                               Recipe Saved!
                             </>
                           ) : (
                             <>
-                              <Bookmark className="w-4 h-4 mr-2" style={{ display: 'inline-block' }} />
-                              {isPending ? 'Saving...' : 'Save Recipe'}
+                              <Bookmark
+                                className="w-4 h-4 mr-2"
+                                style={{ display: "inline-block" }}
+                              />
+                              {isPending ? "Saving..." : "Save Recipe"}
                             </>
                           )}
                         </Button>
@@ -441,15 +532,15 @@ export default function Chatbot() {
                   </div>
                 )}
               </div>
-              
-              {message.role === 'user' && (
+
+              {message.role === "user" && (
                 <div className="w-8 h-8 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center flex-shrink-0">
                   <User className="w-4 h-4 text-gray-600 dark:text-gray-300" />
                 </div>
               )}
             </div>
           ))}
-          
+
           {/* Loading State */}
           {(chatMutation.isPending || isGeneratingRecipe) && (
             <div className="flex items-start space-x-3">
@@ -460,13 +551,15 @@ export default function Chatbot() {
                 <div className="flex items-center space-x-2">
                   <Loader2 className="w-4 h-4 animate-spin text-brand-500" />
                   <span className="text-gray-600 dark:text-gray-300 text-sm">
-                    {isGeneratingRecipe ? 'Creating your recipe...' : 'FlavorBot is thinking...'}
+                    {isGeneratingRecipe
+                      ? "Creating your recipe..."
+                      : "FlavorBot is thinking..."}
                   </span>
                 </div>
               </div>
             </div>
           )}
-          
+
           <div ref={messagesEndRef} />
         </div>
 
@@ -476,25 +569,36 @@ export default function Chatbot() {
             <Input
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+              onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
               placeholder="Ask about ingredients, cuisines, dietary restrictions..."
               className="flex-1"
               disabled={chatMutation.isPending || isGeneratingRecipe}
             />
-            <Button 
+            <Button
               onClick={handleSendMessage}
-              disabled={chatMutation.isPending || isGeneratingRecipe || !inputMessage.trim()}
+              disabled={
+                chatMutation.isPending ||
+                isGeneratingRecipe ||
+                !inputMessage.trim()
+              }
               className="bg-brand-500 hover:bg-brand-600"
             >
               <Send className="w-4 h-4" />
             </Button>
           </div>
-          
+
           {/* Dynamic or Quick Suggestions */}
           <div className="mt-3 grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-4 gap-2">
             {(() => {
-              const suggestionList = dynamicSuggestions.length > 0 ? dynamicSuggestions : quickSuggestions;
-              console.log('Rendering suggestions:', suggestionList.length, suggestionList);
+              const suggestionList =
+                dynamicSuggestions.length > 0
+                  ? dynamicSuggestions
+                  : quickSuggestions;
+              console.log(
+                "Rendering suggestions:",
+                suggestionList.length,
+                suggestionList,
+              );
               return suggestionList;
             })().map((suggestion) => (
               <Button
