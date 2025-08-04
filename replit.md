@@ -152,6 +152,31 @@ Implemented comprehensive WCAG 2.2 accessibility compliance including:
 
 ## Recent Changes
 
+### **2025-08-04**: Subscription System Structure Clarification
+- **Subscription Tiers**: Clarified that FlavorBot has three tiers: Free (default), Basic, Pro
+- **Upgrade-Only Model**: Users start with Free tier and can only upgrade, never downgrade
+- **No Payment Processing**: Current implementation is demo-only with UI elements but no actual billing
+- **Default Behavior**: All new users should start with "free" tier by default
+- **Feature Access**: Tiers control recipe generation limits (Free: 5/month, Basic: 50/month, Pro: unlimited)
+
+### **2025-08-04**: Enhanced Save Recipe Button with State Persistence
+- **Button State Management**: Save Recipe button now correctly shows "Recipe Saved!" with check icon after saving
+- **Persistent State**: Button state persists across page navigation by checking database for existing recipes
+- **Database Integration**: Enhanced logic checks both current session and saved recipes in database
+- **Proper Status Indicators**: Green button with check mark for saved recipes, blue with bookmark for unsaved
+
+### **2025-08-04**: Improved Conversation Context for AI Recipe Generation
+- **Context Awareness**: Enhanced Anthropic prompts to maintain conversation context (last 4 messages)
+- **Better Recipe Matching**: FlavorBot now generates contextually appropriate recipes (e.g., breakfast when discussing breakfast)
+- **Enhanced Prompts**: Added critical instructions for AI to maintain conversation flow and topic relevance
+- **Conversation Integration**: Recipe generation now receives full conversation history for better suggestions
+
+### **2025-08-04**: React Markdown Rendering for Chatbot Responses
+- **Formatted Responses**: Implemented react-markdown with remark-gfm for proper text formatting
+- **Better Readability**: Bold headings, bullet points, and structured lists now render correctly
+- **Custom Styling**: Added tailored component styling for markdown elements with dark mode support
+- **Enhanced UX**: Chatbot responses now display with proper formatting instead of plain text with asterisks
+
 ### **2025-08-03**: Code Cleanup and Unused File Removal
 - **Comprehensive Cleanup**: Systematically removed unused code and duplicate files
   - ✅ Removed duplicate multi-repo directories (flavorbot-web/, flavorbot-mobile/, flavorbot-backend/, flavorbot-shared/)
