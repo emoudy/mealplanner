@@ -472,19 +472,14 @@ export default function Chatbot() {
           </div>
           
           {/* Dynamic or Quick Suggestions */}
-          <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+          <div className="mt-3 grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-4 gap-2">
             {(dynamicSuggestions.length > 0 ? dynamicSuggestions : quickSuggestions).map((suggestion) => {
-              // Truncate suggestion text for mobile view
+              // Truncate suggestion text only for mobile view (under 640px)
               const getTruncatedText = (text: string) => {
-                // For mobile (sm and below): max ~8-10 characters to fit 3 buttons
-                // For tablet (md): max ~12-15 characters
-                // For desktop: full text
-                if (window.innerWidth < 640) { // mobile
+                if (window.innerWidth < 640) { // mobile only
                   return text.length > 8 ? text.substring(0, 8) + '...' : text;
-                } else if (window.innerWidth < 768) { // tablet
-                  return text.length > 12 ? text.substring(0, 12) + '...' : text;
-                } else { // desktop
-                  return text.length > 20 ? text.substring(0, 20) + '...' : text;
+                } else { // tablet and desktop - show full text
+                  return text;
                 }
               };
 
@@ -494,8 +489,8 @@ export default function Chatbot() {
                   variant="outline"
                   size="sm"
                   onClick={() => handleQuickSuggestion(suggestion)}
-                  className="text-xs truncate text-left justify-start min-h-[2rem] w-full"
-                  title={suggestion} // Show full text on hover
+                  className="text-xs text-left justify-start min-h-[2rem] w-full"
+                  title={suggestion} // Show full text on hover for mobile
                 >
                   {getTruncatedText(suggestion)}
                 </Button>
