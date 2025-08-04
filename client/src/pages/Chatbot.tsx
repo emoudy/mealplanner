@@ -41,17 +41,24 @@ function extractSuggestions(content: string): string[] {
   const suggestions: string[] = [];
   
   // Look for patterns like "• Item name - description" or "- Item name - description"
-  const listPattern = /^[\s]*[•\-]\s*([^•\-\n]+?)(?:\s*-\s*.+)?$/gm;
+  // Updated regex to capture the food name before the first dash that follows whitespace
+  const listPattern = /^[\s]*[•\-]\s*([^•\n]+?)(?:\s+\-\s+.+)?$/gm;
   let match;
   
   while ((match = listPattern.exec(content)) !== null) {
-    const suggestion = match[1].trim();
+    let suggestion = match[1].trim();
+    
+    // Remove markdown formatting (asterisks)
+    suggestion = suggestion.replace(/\*\*/g, '');
+    
     // Filter out very short items and common words, but allow food items
     if (suggestion.length > 3 && suggestion.length < 60 && 
         !suggestion.toLowerCase().includes('minutes:') && 
         !suggestion.toLowerCase().includes('servings') &&
         !suggestion.toLowerCase().includes('under ') &&
-        !suggestion.toLowerCase().includes('5-10 ')) {
+        !suggestion.toLowerCase().includes('5-10 ') &&
+        !suggestion.toLowerCase().includes('protein-packed') &&
+        !suggestion.toLowerCase().includes('energy-boosting')) {
       suggestions.push(suggestion);
     }
   }
@@ -64,7 +71,9 @@ function extractSuggestions(content: string): string[] {
         !suggestion.toLowerCase().includes('quick') && 
         !suggestion.toLowerCase().includes('minutes') &&
         !suggestion.toLowerCase().includes('under') &&
-        !suggestion.toLowerCase().includes('hearty')) {
+        !suggestion.toLowerCase().includes('hearty') &&
+        !suggestion.toLowerCase().includes('protein-packed') &&
+        !suggestion.toLowerCase().includes('energy-boosting')) {
       suggestions.push(suggestion);
     }
   }
