@@ -133,12 +133,17 @@ export default function Chatbot() {
   useEffect(() => {
     if (conversation && conversation.messages && Array.isArray(conversation.messages)) {
       setMessages(conversation.messages);
+      // Restore dynamic suggestions from session
+      if (conversation.suggestions && Array.isArray(conversation.suggestions)) {
+        setDynamicSuggestions(conversation.suggestions);
+      }
     } else {
       // Fallback to default welcome message if no history
       setMessages([{
         role: 'assistant',
         content: "Hi! I'm FlavorBot, your AI recipe assistant. I can help you find recipes based on ingredients, dietary preferences, cooking time, or cuisine type. What would you like to cook today?"
       }]);
+      setDynamicSuggestions([]);
     }
   }, [conversation]);
 
@@ -159,8 +164,8 @@ export default function Chatbot() {
     onSuccess: (data) => {
       setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
       
-      // Extract dynamic suggestions from FlavorBot's response
-      const suggestions = extractSuggestions(data.response);
+      // Use suggestions from backend if available, otherwise extract locally
+      const suggestions = data.suggestions || extractSuggestions(data.response);
       console.log('Extracted suggestions:', suggestions);
       console.log('Full response:', data.response);
       setDynamicSuggestions(suggestions);

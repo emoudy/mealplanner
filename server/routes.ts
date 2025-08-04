@@ -300,11 +300,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .replace(/• /g, '- ')  // Convert bullet characters to markdown hyphens
         .replace(/•\s/g, '- '); // Handle various spacing
       
-      // Store conversation in session only (not database)
+      // Extract dynamic suggestions from the response
+      const extractSuggestions = (content: string): string[] => {
+        const suggestions: string[] = [];
+        const listPattern = /^[\s]*[•\-]\s*(.+)$/gm;
+        let match;
+        
+        while ((match = listPattern.exec(content)) !== null) {
+          let suggestion = match[1].trim();
+          suggestion = suggestion.replace(/\*\*/g, '');
+          
+          if (suggestion.length > 5 && suggestion.length < 100 && 
+              !suggestion.toLowerCase().includes('minutes:') && 
+              !suggestion.toLowerCase().includes('servings') &&
+              !suggestion.toLowerCase().includes('options:') &&
+              !suggestion.toLowerCase().includes('what i can help') &&
+              !suggestion.toLowerCase().includes('speaking of food') &&
+              !suggestion.toLowerCase().includes('help you with:') &&
+              !suggestion.toLowerCase().startsWith('what ') &&
+              !suggestion.toLowerCase().startsWith('speaking ')) {
+            suggestions.push(suggestion);
+          }
+        }
+        
+        return [...new Set(suggestions)].slice(0, 10);
+      };
+      
+      const dynamicSuggestions = extractSuggestions(formattedResponse);
+      
+      // Store conversation and suggestions in session only (not database)
       const newMessages = [...messages, { role: 'assistant', content: formattedResponse }];
       req.session.chatMessages = newMessages;
+      req.session.dynamicSuggestions = dynamicSuggestions;
       
-      res.json({ response: formattedResponse });
+      res.json({ response: formattedResponse, suggestions: dynamicSuggestions });
     } catch (error) {
       console.error("Error in chat:", error);
       res.status(500).json({ message: "Failed to get chat response" });
@@ -325,10 +354,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Store welcome message in session
         req.session.chatMessages = welcomeMessage;
+        req.session.dynamicSuggestions = [];
         
-        res.json({ messages: welcomeMessage });
+        res.json({ messages: welcomeMessage, suggestions: [] });
       } else {
-        res.json({ messages: sessionMessages });
+        const suggestions = req.session.dynamicSuggestions || [];
+        res.json({ messages: sessionMessages, suggestions });
       }
     } catch (error) {
       console.error("Error fetching conversation:", error);
