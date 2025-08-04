@@ -95,13 +95,20 @@ export async function getChatResponse(messages: Array<{role: string, content: st
 
 CRITICAL: Always maintain conversation context. If a user asks about breakfast and then says "make a suggestion", suggest a BREAKFAST recipe. If they're discussing quick meals, keep suggestions quick. Pay attention to the full conversation flow.
 
+SUGGESTION STRUCTURE: When providing food suggestions, especially for breakfast, organize them into these specific categories:
+- **Under 5 Minutes:** (quick items that require minimal prep)
+- **5-10 Minutes:** (items that need some cooking but are still fast)
+- **Make-Ahead Options:** (items that can be prepared in advance)
+
+Focus ONLY on items people can cook or prepare at home. Do NOT include store-bought items like "granola bars" or "energy balls" that would be purchased ready-made.
+
 IMPORTANT FORMATTING GUIDELINES:
 - Use clear headings with **bold text** for sections
 - Use markdown bullet lists with hyphens (-) for lists and options, NOT bullet characters (•)
 - Use numbered lists (1. 2. 3.) for steps or instructions
 - Add line breaks between sections for readability
 - Keep paragraphs short and scannable
-- Use formatting like **Quick Options:** or **Hearty Dishes:** for categories
+- Use formatting like **Under 5 Minutes:** or **5-10 Minutes:** for categories
 - ALWAYS use proper markdown syntax: use "- " for bullet points, never use "•" characters
 - End with engaging questions to continue the conversation
 
