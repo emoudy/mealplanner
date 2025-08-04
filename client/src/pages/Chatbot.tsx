@@ -331,26 +331,9 @@ export default function Chatbot() {
       setMessages((prev) => [...prev, { role: "user", content: `Give me a recipe for ${suggestion}` }]);
       generateRecipeMutation.mutate(`Give me a recipe for ${suggestion}`);
     } else {
-      // For static quick suggestions, check if they're recipe-related
-      const recipeKeywords = [
-        "recipe", "cook", "make", "ingredients", "dish", "meal",
-        "breakfast", "lunch", "dinner", "snack", "snacks",
-        "prepare", "bake", "fry", "grill", "roast", "sauté",
-        "how to make", "how do i cook", "what can i cook",
-        "show me a recipe", "give me a recipe", "create a recipe"
-      ];
-      const isRecipeRequest = recipeKeywords.some((keyword) =>
-        suggestion.toLowerCase().includes(keyword),
-      );
-
-      if (isRecipeRequest) {
-        setIsGeneratingRecipe(true);
-        setMessages((prev) => [...prev, { role: "user", content: suggestion }]);
-        generateRecipeMutation.mutate(suggestion);
-      } else {
-        // For category suggestions like "Breakfast", "Italian cuisine", etc., just send as chat
-        chatMutation.mutate(suggestion);
-      }
+      // For static quick suggestions (categories), just send as chat to get options
+      setMessages((prev) => [...prev, { role: "user", content: suggestion }]);
+      chatMutation.mutate(suggestion);
     }
   };
 
@@ -631,7 +614,7 @@ export default function Chatbot() {
                   className={`text-xs text-left justify-start min-h-[2rem] w-full px-2 ${
                     willGenerateRecipe ? 'border-brand-500 text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-950' : ''
                   }`}
-                  title={willGenerateRecipe ? `Generate recipe for: ${suggestion}` : suggestion}
+                  title={willGenerateRecipe ? `Generate recipe for: ${suggestion}` : `Ask FlavorBot about: ${suggestion}`}
                 >
                   <span className="block w-full sm:whitespace-normal whitespace-nowrap overflow-hidden text-ellipsis">
                     {suggestion}
