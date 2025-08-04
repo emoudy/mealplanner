@@ -44,6 +44,7 @@ export function setupEmailAuth(app: Express) {
   const sessionStore = new PostgresSessionStore({
     conString: process.env.DATABASE_URL,
     createTableIfMissing: true,
+    tableName: 'user_sessions', // Use unique table name
   });
 
   app.use(session({
