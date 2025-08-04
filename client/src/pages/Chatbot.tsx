@@ -322,41 +322,34 @@ export default function Chatbot() {
     // Clear dynamic suggestions when a suggestion is clicked
     setDynamicSuggestions([]);
     
-    // Automatically trigger recipe generation for food suggestion buttons
-    // Check if this looks like a recipe request (expanded keywords)
-    const recipeKeywords = [
-      "recipe", "cook", "make", "ingredients", "dish", "meal",
-      "breakfast", "lunch", "dinner", "snack", "snacks",
-      "prepare", "bake", "fry", "grill", "roast", "sauté",
-      "how to make", "how do i cook", "what can i cook",
-      "show me a recipe", "give me a recipe", "create a recipe"
-    ];
-    const isRecipeRequest = recipeKeywords.some((keyword) =>
-      suggestion.toLowerCase().includes(keyword),
-    );
-
-    if (isRecipeRequest) {
+    // If this is a dynamic suggestion from FlavorBot, always generate a recipe
+    const isDynamicSuggestion = dynamicSuggestions.includes(suggestion);
+    
+    if (isDynamicSuggestion) {
+      // All FlavorBot suggestions should generate recipes
       setIsGeneratingRecipe(true);
-      setMessages((prev) => [...prev, { role: "user", content: suggestion }]);
-      generateRecipeMutation.mutate(suggestion);
+      setMessages((prev) => [...prev, { role: "user", content: `Give me a recipe for ${suggestion}` }]);
+      generateRecipeMutation.mutate(`Give me a recipe for ${suggestion}`);
     } else {
-      // For food items (like "Scrambled eggs with buttered toast"), automatically generate recipe
-      const foodItems = [
-        "eggs", "toast", "pasta", "chicken", "beef", "fish", "salmon", 
-        "rice", "noodles", "soup", "salad", "sandwich", "burger", "pizza",
-        "tacos", "quesadilla", "stir-fry", "casserole", "smoothie", "oats",
-        "pancakes", "waffles", "muffins", "cookies", "cake", "bread"
+      // For static quick suggestions, check if they're recipe-related
+      const recipeKeywords = [
+        "recipe", "cook", "make", "ingredients", "dish", "meal",
+        "breakfast", "lunch", "dinner", "snack", "snacks",
+        "prepare", "bake", "fry", "grill", "roast", "sauté",
+        "how to make", "how do i cook", "what can i cook",
+        "show me a recipe", "give me a recipe", "create a recipe"
       ];
-      const isFoodItem = foodItems.some((food) =>
-        suggestion.toLowerCase().includes(food),
+      const isRecipeRequest = recipeKeywords.some((keyword) =>
+        suggestion.toLowerCase().includes(keyword),
       );
-      
-      if (isFoodItem) {
+
+      if (isRecipeRequest) {
         setIsGeneratingRecipe(true);
-        setMessages((prev) => [...prev, { role: "user", content: `Give me a recipe for ${suggestion}` }]);
-        generateRecipeMutation.mutate(`Give me a recipe for ${suggestion}`);
+        setMessages((prev) => [...prev, { role: "user", content: suggestion }]);
+        generateRecipeMutation.mutate(suggestion);
       } else {
-        setInputMessage(suggestion);
+        // For category suggestions like "Breakfast", "Italian cuisine", etc., just send as chat
+        chatMutation.mutate(suggestion);
       }
     }
   };
@@ -625,28 +618,9 @@ export default function Chatbot() {
           {/* Dynamic or Quick Suggestions */}
           <div className="mt-3 grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-4 gap-2">
             {(dynamicSuggestions.length > 0 ? dynamicSuggestions : quickSuggestions).map((suggestion) => {
-              // Check if this suggestion will trigger recipe generation
-              const recipeKeywords = [
-                "recipe", "cook", "make", "ingredients", "dish", "meal",
-                "breakfast", "lunch", "dinner", "snack", "snacks",
-                "prepare", "bake", "fry", "grill", "roast", "sauté",
-                "how to make", "how do i cook", "what can i cook",
-                "show me a recipe", "give me a recipe", "create a recipe"
-              ];
-              const foodItems = [
-                "eggs", "toast", "pasta", "chicken", "beef", "fish", "salmon", 
-                "rice", "noodles", "soup", "salad", "sandwich", "burger", "pizza",
-                "tacos", "quesadilla", "stir-fry", "casserole", "smoothie", "oats",
-                "pancakes", "waffles", "muffins", "cookies", "cake", "bread"
-              ];
-              
-              const isRecipeRequest = recipeKeywords.some((keyword) =>
-                suggestion.toLowerCase().includes(keyword),
-              );
-              const isFoodItem = foodItems.some((food) =>
-                suggestion.toLowerCase().includes(food),
-              );
-              const willGenerateRecipe = isRecipeRequest || isFoodItem;
+              // All dynamic suggestions from FlavorBot should generate recipes
+              const isDynamicSuggestion = dynamicSuggestions.includes(suggestion);
+              const willGenerateRecipe = isDynamicSuggestion;
               
               return (
                 <Button
