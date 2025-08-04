@@ -52,7 +52,7 @@ function extractSuggestions(content: string): string[] {
     suggestion = suggestion.replace(/\*\*/g, '');
     
     // Filter out section headers and non-food items
-    if (suggestion.length > 5 && suggestion.length < 80 && 
+    if (suggestion.length > 5 && suggestion.length < 100 && 
         !suggestion.toLowerCase().includes('minutes:') && 
         !suggestion.toLowerCase().includes('servings') &&
         !suggestion.toLowerCase().includes('options:') &&
@@ -60,6 +60,7 @@ function extractSuggestions(content: string): string[] {
         !suggestion.toLowerCase().includes('10-minute') &&
         !suggestion.toLowerCase().includes('protein-packed') &&
         !suggestion.toLowerCase().includes('energy-boosting') &&
+        !suggestion.toLowerCase().includes('grab-and-go') &&
         !suggestion.toLowerCase().includes('here are') &&
         !suggestion.toLowerCase().includes('breakfast ideas')) {
       suggestions.push(suggestion);
@@ -75,14 +76,15 @@ function extractSuggestions(content: string): string[] {
         !suggestion.toLowerCase().includes('minutes') &&
         !suggestion.toLowerCase().includes('options') &&
         !suggestion.toLowerCase().includes('ideas') &&
+        !suggestion.toLowerCase().includes('grab-and-go') &&
         !suggestion.toLowerCase().includes('protein-packed') &&
         !suggestion.toLowerCase().includes('energy-boosting')) {
       suggestions.push(suggestion);
     }
   }
   
-  // Return unique suggestions, limited to 8 to capture more options
-  return [...new Set(suggestions)].slice(0, 8);
+  // Return unique suggestions, limited to 10 to capture even more options
+  return [...new Set(suggestions)].slice(0, 10);
 }
 
 export default function Chatbot() {
@@ -138,6 +140,8 @@ export default function Chatbot() {
       
       // Extract dynamic suggestions from FlavorBot's response
       const suggestions = extractSuggestions(data.response);
+      console.log('Extracted suggestions:', suggestions);
+      console.log('Full response:', data.response);
       setDynamicSuggestions(suggestions);
     },
     onError: (error) => {
