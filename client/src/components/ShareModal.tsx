@@ -58,9 +58,10 @@ export function ShareModal({ recipe, open, onOpenChange }: ShareModalProps) {
       });
       onOpenChange(false);
     } catch (error) {
+      const errorMessage = (error as any)?.message || "Failed to share recipe via email";
       toast({
         title: "Error",
-        description: "Failed to share recipe via email",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -87,9 +88,10 @@ export function ShareModal({ recipe, open, onOpenChange }: ShareModalProps) {
       });
       onOpenChange(false);
     } catch (error) {
+      const errorMessage = (error as any)?.message || "Failed to share recipe via SMS";
       toast({
         title: "Error",
-        description: "Failed to share recipe via SMS",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
