@@ -51,7 +51,7 @@ function extractSuggestions(content: string): string[] {
     // Remove markdown formatting (asterisks)
     suggestion = suggestion.replace(/\*\*/g, '');
     
-    // Filter out section headers and non-food items
+    // Filter out section headers, transition phrases, and non-actionable items
     if (suggestion.length > 5 && suggestion.length < 100 && 
         !suggestion.toLowerCase().includes('minutes:') && 
         !suggestion.toLowerCase().includes('servings') &&
@@ -69,7 +69,21 @@ function extractSuggestions(content: string): string[] {
         !suggestion.toLowerCase().includes('energy-boosting') &&
         !suggestion.toLowerCase().includes('grab-and-go') &&
         !suggestion.toLowerCase().includes('here are') &&
-        !suggestion.toLowerCase().includes('breakfast ideas')) {
+        !suggestion.toLowerCase().includes('breakfast ideas') &&
+        !suggestion.toLowerCase().includes('what i can help') &&
+        !suggestion.toLowerCase().includes('speaking of food') &&
+        !suggestion.toLowerCase().includes('let me help') &&
+        !suggestion.toLowerCase().includes('i noticed') &&
+        !suggestion.toLowerCase().includes('were you able') &&
+        !suggestion.toLowerCase().includes('would you like') &&
+        !suggestion.toLowerCase().includes('what would you') &&
+        !suggestion.toLowerCase().includes('in the kitchen') &&
+        !suggestion.toLowerCase().includes('today?') &&
+        !suggestion.toLowerCase().includes('right now?') &&
+        !suggestion.toLowerCase().startsWith('what ') &&
+        !suggestion.toLowerCase().startsWith('speaking ') &&
+        !suggestion.toLowerCase().startsWith('let') &&
+        !suggestion.toLowerCase().includes('help you with:')) {
       suggestions.push(suggestion);
     }
   }
