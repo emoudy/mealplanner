@@ -476,10 +476,12 @@ export default function Chatbot() {
             {(dynamicSuggestions.length > 0 ? dynamicSuggestions : quickSuggestions).map((suggestion) => {
               // Truncate suggestion text only for mobile view (under 640px)
               const getTruncatedText = (text: string) => {
-                if (window.innerWidth < 640) { // mobile only
+                // Check if we're on mobile by using a more reliable method
+                const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+                if (isMobile) {
                   return text.length > 8 ? text.substring(0, 8) + '...' : text;
-                } else { // tablet and desktop - show full text
-                  return text;
+                } else {
+                  return text; // Show full text on tablet and desktop
                 }
               };
 
@@ -489,7 +491,7 @@ export default function Chatbot() {
                   variant="outline"
                   size="sm"
                   onClick={() => handleQuickSuggestion(suggestion)}
-                  className="text-xs text-left justify-start min-h-[2rem] w-full"
+                  className="text-xs text-left justify-start min-h-[2rem] w-full px-2"
                   title={suggestion} // Show full text on hover for mobile
                 >
                   {getTruncatedText(suggestion)}
