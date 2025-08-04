@@ -36,11 +36,49 @@ const quickSuggestions = [
   'Dessert ideas'
 ];
 
+// Function to extract suggestions from FlavorBot responses
+function extractSuggestions(content: string): string[] {
+  const suggestions: string[] = [];
+  
+  // Look for patterns like "• Item name - description" or "- Item name - description"
+  const listPattern = /^[\s]*[•\-]\s*([^•\-\n]+?)(?:\s*-\s*.+)?$/gm;
+  let match;
+  
+  while ((match = listPattern.exec(content)) !== null) {
+    const suggestion = match[1].trim();
+    // Filter out very short items and common words, but allow food items
+    if (suggestion.length > 3 && suggestion.length < 60 && 
+        !suggestion.toLowerCase().includes('minutes:') && 
+        !suggestion.toLowerCase().includes('servings') &&
+        !suggestion.toLowerCase().includes('under ') &&
+        !suggestion.toLowerCase().includes('5-10 ')) {
+      suggestions.push(suggestion);
+    }
+  }
+  
+  // Also look for bold items like "**Item name**" (recipe titles)
+  const boldPattern = /\*\*([^*]+)\*\*/g;
+  while ((match = boldPattern.exec(content)) !== null) {
+    const suggestion = match[1].trim();
+    if (suggestion.length > 3 && suggestion.length < 50 && 
+        !suggestion.toLowerCase().includes('quick') && 
+        !suggestion.toLowerCase().includes('minutes') &&
+        !suggestion.toLowerCase().includes('under') &&
+        !suggestion.toLowerCase().includes('hearty')) {
+      suggestions.push(suggestion);
+    }
+  }
+  
+  // Return unique suggestions, limited to 6
+  return [...new Set(suggestions)].slice(0, 6);
+}
+
 export default function Chatbot() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isGeneratingRecipe, setIsGeneratingRecipe] = useState(false);
   const [savedRecipes, setSavedRecipes] = useState<Set<string>>(new Set());
+  const [dynamicSuggestions, setDynamicSuggestions] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -85,6 +123,10 @@ export default function Chatbot() {
     },
     onSuccess: (data) => {
       setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
+      
+      // Extract dynamic suggestions from FlavorBot's response
+      const suggestions = extractSuggestions(data.response);
+      setDynamicSuggestions(suggestions);
     },
     onError: (error) => {
       if (/^401: .*Unauthorized/.test((error as Error).message)) {
@@ -188,6 +230,8 @@ export default function Chatbot() {
     
     const message = inputMessage.trim();
     setInputMessage('');
+    // Clear dynamic suggestions when user types their own message
+    setDynamicSuggestions([]);
 
     // Check if this looks like a recipe request
     const recipeKeywords = ['recipe', 'cook', 'make', 'ingredients', 'dish', 'meal'];
@@ -206,6 +250,8 @@ export default function Chatbot() {
 
   const handleQuickSuggestion = (suggestion: string) => {
     setInputMessage(suggestion);
+    // Clear dynamic suggestions when a suggestion is clicked
+    setDynamicSuggestions([]);
   };
 
   const handleSaveRecipe = (recipe: any) => {
@@ -402,9 +448,9 @@ export default function Chatbot() {
             </Button>
           </div>
           
-          {/* Quick Suggestions */}
+          {/* Dynamic or Quick Suggestions */}
           <div className="mt-3 flex flex-wrap gap-2">
-            {quickSuggestions.map((suggestion) => (
+            {(dynamicSuggestions.length > 0 ? dynamicSuggestions : quickSuggestions).map((suggestion) => (
               <Button
                 key={suggestion}
                 variant="outline"
