@@ -362,7 +362,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         }
         
-        return [...new Set(suggestions)].slice(0, 10);
+        const uniqueSuggestions = [...new Set(suggestions)];
+        console.log(`Total unique suggestions before slicing: ${uniqueSuggestions.length}`);
+        return uniqueSuggestions.slice(0, 12); // Increase limit to capture all suggestions
       };
       
       const dynamicSuggestions = extractSuggestions(formattedResponse);

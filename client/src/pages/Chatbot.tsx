@@ -110,8 +110,8 @@ function extractSuggestions(content: string): string[] {
     }
   }
 
-  // Return unique suggestions, limited to 10 to capture even more options
-  return [...new Set(suggestions)].slice(0, 10);
+  // Return unique suggestions, increased limit to capture all options
+  return [...new Set(suggestions)].slice(0, 12);
 }
 
 export default function Chatbot() {
