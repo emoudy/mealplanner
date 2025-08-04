@@ -62,7 +62,6 @@ export async function generateRecipe(
     });
 
     let responseText = (response.content[0] as any).text || "{}";
-    console.log("responseText: ", responseText);
     // Clean up markdown code blocks if present
     responseText = responseText
       .replace(/^```json\n?/, "")

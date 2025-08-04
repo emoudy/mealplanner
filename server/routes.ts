@@ -341,7 +341,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         }
         
-        return [...new Set(suggestions)].slice(0, 12); // Support up to 12 suggestions
+        return Array.from(new Set(suggestions)).slice(0, 12); // Support up to 12 suggestions
       };
       
       const dynamicSuggestions = extractSuggestions(formattedResponse);

@@ -111,7 +111,7 @@ function extractSuggestions(content: string): string[] {
   }
 
   // Return unique suggestions, increased limit to capture all options
-  return [...new Set(suggestions)].slice(0, 12);
+  return Array.from(new Set(suggestions)).slice(0, 12);
 }
 
 export default function Chatbot() {
@@ -139,13 +139,13 @@ export default function Chatbot() {
   useEffect(() => {
     if (
       conversation &&
-      conversation.messages &&
-      Array.isArray(conversation.messages)
+      (conversation as any).messages &&
+      Array.isArray((conversation as any).messages)
     ) {
-      setMessages(conversation.messages);
+      setMessages((conversation as any).messages);
       // Restore dynamic suggestions from session
-      if (conversation.suggestions && Array.isArray(conversation.suggestions)) {
-        setDynamicSuggestions(conversation.suggestions);
+      if ((conversation as any).suggestions && Array.isArray((conversation as any).suggestions)) {
+        setDynamicSuggestions((conversation as any).suggestions);
       }
     } else {
       // Fallback to default welcome message if no history
@@ -185,8 +185,7 @@ export default function Chatbot() {
 
       // Use suggestions from backend if available, otherwise extract locally
       const suggestions = data.suggestions || extractSuggestions(data.response);
-      console.log("Extracted suggestions:", suggestions);
-      console.log("Full response:", data.response);
+
       setDynamicSuggestions(suggestions);
     },
     onError: (error) => {
