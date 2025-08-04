@@ -33,7 +33,7 @@ FlavorBot is structured as a cross-platform application with a high degree of co
 **Key Features:**
 - AI-powered recipe generation and recommendations.
 - Recipe collection management (save, edit, delete, categorize).
-- Interactive chatbot for culinary assistance.
+- Interactive chatbot for culinary assistance with intelligent suggestion routing.
 - User authentication and personalized experience.
 - Responsive design with dark/light theme support.
 - Search and filter functionality.
@@ -41,6 +41,10 @@ FlavorBot is structured as a cross-platform application with a high degree of co
 - Dynamic suggestion buttons and structured AI responses.
 - Session-based suggestion persistence and complete 12-suggestion display.
 - Subscription tiers controlling recipe generation limits (Free, Basic, Pro).
+- Full recipe detail viewing with modal interface.
+- Simplified recipe editing with numbered text instructions.
+- Smart suggestion button behavior (category vs. recipe generation).
+- Enhanced recipe save functionality from AI-generated recipes.
 
 **UI/UX Decisions:**
 - Clean, modern interface.

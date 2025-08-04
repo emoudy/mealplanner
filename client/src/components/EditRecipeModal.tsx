@@ -36,11 +36,8 @@ import { z } from 'zod';
 
 const formSchema = insertRecipeSchema.extend({
   ingredients: z.array(z.string().min(1, "Ingredient cannot be empty")),
-  instructions: z.string().min(1, "Instructions cannot be empty"),
-}).transform((data) => ({
-  ...data,
-  instructions: data.instructions.split('\n').filter(line => line.trim() !== '').map(line => line.replace(/^\d+\.\s*/, '')),
-}));
+  instructionsText: z.string().min(1, "Instructions cannot be empty"),
+});
 
 interface EditRecipeModalProps {
   recipe: Recipe | null;
@@ -62,7 +59,7 @@ export function EditRecipeModal({ recipe, open, onOpenChange }: EditRecipeModalP
       cookTime: undefined,
       servings: undefined,
       ingredients: [''],
-      instructions: '',
+      instructionsText: '',
     },
   });
 
@@ -86,7 +83,7 @@ export function EditRecipeModal({ recipe, open, onOpenChange }: EditRecipeModalP
         cookTime: recipe.cookTime || undefined,
         servings: recipe.servings || undefined,
         ingredients: recipeIngredients.length > 0 ? recipeIngredients : [''],
-        instructions: instructionsText,
+        instructionsText: instructionsText,
       });
     }
   }, [recipe, open, form]);
@@ -148,12 +145,21 @@ export function EditRecipeModal({ recipe, open, onOpenChange }: EditRecipeModalP
 
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    // Filter out empty ingredients
+    // Convert instructionsText back to array and filter out empty ingredients
+    const instructions = data.instructionsText
+      .split('\n')
+      .filter(line => line.trim() !== '')
+      .map(line => line.replace(/^\d+\.\s*/, ''));
+    
     const filteredData = {
       ...data,
       ingredients: ingredients.filter(ingredient => ingredient.trim() !== ''),
+      instructions: instructions,
     };
-    updateRecipeMutation.mutate(filteredData);
+    
+    // Remove instructionsText from the final data
+    const { instructionsText, ...finalData } = filteredData;
+    updateRecipeMutation.mutate(finalData);
   };
 
   return (
@@ -308,7 +314,7 @@ export function EditRecipeModal({ recipe, open, onOpenChange }: EditRecipeModalP
 
             <FormField
               control={form.control}
-              name="instructions"
+              name="instructionsText"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-base font-medium">Instructions</FormLabel>
