@@ -36,8 +36,11 @@ import { z } from 'zod';
 
 const formSchema = insertRecipeSchema.extend({
   ingredients: z.array(z.string().min(1, "Ingredient cannot be empty")),
-  instructions: z.array(z.string().min(1, "Instruction cannot be empty")),
-});
+  instructions: z.string().min(1, "Instructions cannot be empty"),
+}).transform((data) => ({
+  ...data,
+  instructions: data.instructions.split('\n').filter(line => line.trim() !== '').map(line => line.replace(/^\d+\.\s*/, '')),
+}));
 
 interface EditRecipeModalProps {
   recipe: Recipe | null;
@@ -47,7 +50,6 @@ interface EditRecipeModalProps {
 
 export function EditRecipeModal({ recipe, open, onOpenChange }: EditRecipeModalProps) {
   const [ingredients, setIngredients] = useState<string[]>(['']);
-  const [instructions, setInstructions] = useState<string[]>(['']);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -60,7 +62,7 @@ export function EditRecipeModal({ recipe, open, onOpenChange }: EditRecipeModalP
       cookTime: undefined,
       servings: undefined,
       ingredients: [''],
-      instructions: [''],
+      instructions: '',
     },
   });
 
@@ -68,10 +70,14 @@ export function EditRecipeModal({ recipe, open, onOpenChange }: EditRecipeModalP
   useEffect(() => {
     if (recipe && open) {
       const recipeIngredients = Array.isArray(recipe.ingredients) ? recipe.ingredients : [''];
-      const recipeInstructions = Array.isArray(recipe.instructions) ? recipe.instructions : [''];
+      const recipeInstructions = Array.isArray(recipe.instructions) ? recipe.instructions : [];
       
       setIngredients(recipeIngredients.length > 0 ? recipeIngredients : ['']);
-      setInstructions(recipeInstructions.length > 0 ? recipeInstructions : ['']);
+      
+      // Convert instructions array to numbered text format
+      const instructionsText = recipeInstructions.length > 0 
+        ? recipeInstructions.map((instruction, index) => `${index + 1}. ${instruction}`).join('\n')
+        : '';
       
       form.reset({
         title: recipe.title || '',
@@ -80,7 +86,7 @@ export function EditRecipeModal({ recipe, open, onOpenChange }: EditRecipeModalP
         cookTime: recipe.cookTime || undefined,
         servings: recipe.servings || undefined,
         ingredients: recipeIngredients.length > 0 ? recipeIngredients : [''],
-        instructions: recipeInstructions.length > 0 ? recipeInstructions : [''],
+        instructions: instructionsText,
       });
     }
   }, [recipe, open, form]);
@@ -139,33 +145,13 @@ export function EditRecipeModal({ recipe, open, onOpenChange }: EditRecipeModalP
     form.setValue('ingredients', newIngredients);
   };
 
-  const addInstruction = () => {
-    const newInstructions = [...instructions, ''];
-    setInstructions(newInstructions);
-    form.setValue('instructions', newInstructions);
-  };
 
-  const removeInstruction = (index: number) => {
-    if (instructions.length > 1) {
-      const newInstructions = instructions.filter((_, i) => i !== index);
-      setInstructions(newInstructions);
-      form.setValue('instructions', newInstructions);
-    }
-  };
-
-  const updateInstruction = (index: number, value: string) => {
-    const newInstructions = [...instructions];
-    newInstructions[index] = value;
-    setInstructions(newInstructions);
-    form.setValue('instructions', newInstructions);
-  };
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    // Filter out empty ingredients and instructions
+    // Filter out empty ingredients
     const filteredData = {
       ...data,
       ingredients: ingredients.filter(ingredient => ingredient.trim() !== ''),
-      instructions: instructions.filter(instruction => instruction.trim() !== ''),
     };
     updateRecipeMutation.mutate(filteredData);
   };
@@ -320,45 +306,31 @@ export function EditRecipeModal({ recipe, open, onOpenChange }: EditRecipeModalP
               </div>
             </div>
 
-            <div>
-              <FormLabel className="text-base font-medium">Instructions</FormLabel>
-              <div className="space-y-2 mt-2">
-                {instructions.map((instruction, index) => (
-                  <div key={index} className="flex items-start space-x-2">
-                    <div className="w-8 h-10 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded text-sm font-medium text-gray-600 dark:text-gray-400 flex-shrink-0">
-                      {index + 1}
-                    </div>
+            <FormField
+              control={form.control}
+              name="instructions"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-base font-medium">Instructions</FormLabel>
+                  <FormControl>
                     <Textarea
-                      placeholder={`Step ${index + 1} instructions`}
-                      value={instruction}
-                      onChange={(e) => updateInstruction(index, e.target.value)}
-                      className="flex-1 resize-none"
-                      rows={2}
+                      placeholder={`Write your cooking instructions, one step per line. For example:
+1. Preheat oven to 350°F
+2. Mix dry ingredients in a large bowl
+3. Add wet ingredients and stir until combined
+4. Bake for 25-30 minutes until golden brown`}
+                      className="resize-none min-h-[200px]"
+                      {...field}
+                      value={field.value || ''}
                     />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      onClick={() => removeInstruction(index)}
-                      disabled={instructions.length === 1}
-                      className="h-10 w-10 flex-shrink-0"
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
-                  </div>
-                ))}
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={addInstruction}
-                  className="w-full"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Step
-                </Button>
-              </div>
-            </div>
+                  </FormControl>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    Write each step on a new line. Numbers will be added automatically if not included.
+                  </p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <div className="flex justify-end space-x-2 pt-4">
               <Button
