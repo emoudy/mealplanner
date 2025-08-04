@@ -310,6 +310,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           let suggestion = match[1].trim();
           suggestion = suggestion.replace(/\*\*/g, '');
           
+          // Debug logging for each suggestion being processed
+          console.log(`Processing suggestion: "${suggestion}"`);
+          
           // Use the same filtering logic as frontend for consistency
           if (suggestion.length > 5 && suggestion.length < 100 && 
               !suggestion.toLowerCase().includes('minutes:') && 
@@ -343,7 +346,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
               !suggestion.toLowerCase().startsWith('speaking ') &&
               !suggestion.toLowerCase().startsWith('let') &&
               !suggestion.toLowerCase().includes('help you with:')) {
+            console.log(`✓ Accepted suggestion: "${suggestion}"`);
             suggestions.push(suggestion);
+          } else {
+            console.log(`✗ Filtered out suggestion: "${suggestion}"`);
           }
         }
         
@@ -367,6 +373,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       
       const dynamicSuggestions = extractSuggestions(formattedResponse);
+      console.log(`Final suggestions count: ${dynamicSuggestions.length}`, dynamicSuggestions);
       
       // Store conversation and suggestions in session only (not database)
       const newMessages = [...messages, { role: 'assistant', content: formattedResponse }];
