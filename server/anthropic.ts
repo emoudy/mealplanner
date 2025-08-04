@@ -1,4 +1,4 @@
-import Anthropic from '@anthropic-ai/sdk';
+import Anthropic from "@anthropic-ai/sdk";
 
 /*
 <important_code_snippet_instructions>
@@ -23,18 +23,21 @@ export interface RecipeResponse {
   instructions: string[];
   cookTime: number;
   servings: number;
-  category: 'breakfast' | 'lunch' | 'dinner' | 'snacks';
+  category: "breakfast" | "lunch" | "dinner" | "snacks";
 }
 
-export async function generateRecipe(prompt: string, conversationContext?: Array<{role: string, content: string}>): Promise<RecipeResponse> {
+export async function generateRecipe(
+  prompt: string,
+  conversationContext?: Array<{ role: string; content: string }>,
+): Promise<RecipeResponse> {
   try {
     // Build context-aware prompt
     let contextPrompt = prompt;
     if (conversationContext && conversationContext.length > 0) {
       const recentMessages = conversationContext.slice(-4); // Get last 4 messages for context
       const contextSummary = recentMessages
-        .map(msg => `${msg.role}: ${msg.content}`)
-        .join('\n');
+        .map((msg) => `${msg.role}: ${msg.content}`)
+        .join("\n");
       contextPrompt = `Based on our conversation:\n${contextSummary}\n\nUser's current request: ${prompt}`;
     }
 
@@ -52,19 +55,22 @@ export async function generateRecipe(prompt: string, conversationContext?: Array
       messages: [
         {
           role: "user",
-          content: contextPrompt
-        }
+          content: contextPrompt,
+        },
       ],
       max_tokens: 1000,
     });
 
     let responseText = (response.content[0] as any).text || "{}";
-    
+    console.log("responseText: ", responseText);
     // Clean up markdown code blocks if present
-    responseText = responseText.replace(/^```json\n?/, '').replace(/\n?```$/, '').trim();
-    
+    responseText = responseText
+      .replace(/^```json\n?/, "")
+      .replace(/\n?```$/, "")
+      .trim();
+
     const result = JSON.parse(responseText);
-    
+
     // Validate the response has required fields
     if (!result.title || !result.ingredients || !result.instructions) {
       throw new Error("Invalid recipe response from AI");
@@ -74,12 +80,16 @@ export async function generateRecipe(prompt: string, conversationContext?: Array
       title: result.title,
       description: result.description || "",
       ingredients: Array.isArray(result.ingredients) ? result.ingredients : [],
-      instructions: Array.isArray(result.instructions) ? result.instructions : [],
-      cookTime: typeof result.cookTime === 'number' ? result.cookTime : 30,
-      servings: typeof result.servings === 'number' ? result.servings : 4,
-      category: ['breakfast', 'lunch', 'dinner', 'snacks'].includes(result.category) 
-        ? result.category 
-        : 'dinner'
+      instructions: Array.isArray(result.instructions)
+        ? result.instructions
+        : [],
+      cookTime: typeof result.cookTime === "number" ? result.cookTime : 30,
+      servings: typeof result.servings === "number" ? result.servings : 4,
+      category: ["breakfast", "lunch", "dinner", "snacks"].includes(
+        result.category,
+      )
+        ? result.category
+        : "dinner",
     };
   } catch (error) {
     console.error("Error generating recipe:", error);
@@ -87,7 +97,9 @@ export async function generateRecipe(prompt: string, conversationContext?: Array
   }
 }
 
-export async function getChatResponse(messages: Array<{role: string, content: string}>): Promise<string> {
+export async function getChatResponse(
+  messages: Array<{ role: string; content: string }>,
+): Promise<string> {
   try {
     const response = await anthropic.messages.create({
       model: DEFAULT_MODEL_STR,
@@ -155,14 +167,17 @@ When suggesting multiple recipes or options:
 - ALWAYS consider the conversation context (breakfast vs dinner, quick vs elaborate, etc.)
 
 If users ask for specific recipes, recommend the recipe generation feature and ask follow-up questions about preferences, ingredients, time, and dietary restrictions that are relevant to the conversation topic.`,
-      messages: messages.map(msg => ({
-        role: msg.role as 'user' | 'assistant',
-        content: msg.content
+      messages: messages.map((msg) => ({
+        role: msg.role as "user" | "assistant",
+        content: msg.content,
       })),
       max_tokens: 600,
     });
 
-    return (response.content[0] as any).text || "I'm sorry, I couldn't process that request.";
+    return (
+      (response.content[0] as any).text ||
+      "I'm sorry, I couldn't process that request."
+    );
   } catch (error) {
     console.error("Error getting chat response:", error);
     throw new Error("Failed to get response. Please try again.");

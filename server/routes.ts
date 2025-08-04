@@ -313,39 +313,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Debug logging for each suggestion being processed
           console.log(`Processing suggestion: "${suggestion}"`);
           
-          // Use the same filtering logic as frontend for consistency
+          // Simplified filtering - only exclude obvious non-recipe items
           if (suggestion.length > 5 && suggestion.length < 100 && 
-              !suggestion.toLowerCase().includes('minutes:') && 
-              !suggestion.toLowerCase().includes('servings') &&
-              !suggestion.toLowerCase().includes('options:') &&
-              !suggestion.toLowerCase().includes('5-minute') &&
-              !suggestion.toLowerCase().includes('10-minute') &&
-              !suggestion.toLowerCase().includes('20-minute') &&
-              !suggestion.toLowerCase().includes('45-minute') &&
-              !suggestion.toLowerCase().includes('under 5') &&
-              !suggestion.toLowerCase().includes('under 10') &&
-              !suggestion.toLowerCase().includes('under 20') &&
-              !suggestion.toLowerCase().includes('under 45') &&
-              !suggestion.toLowerCase().includes('make-ahead options') &&
-              !suggestion.toLowerCase().includes('protein-packed') &&
-              !suggestion.toLowerCase().includes('energy-boosting') &&
-              !suggestion.toLowerCase().includes('grab-and-go') &&
-              !suggestion.toLowerCase().includes('here are') &&
-              !suggestion.toLowerCase().includes('breakfast ideas') &&
               !suggestion.toLowerCase().includes('what i can help') &&
               !suggestion.toLowerCase().includes('speaking of food') &&
-              !suggestion.toLowerCase().includes('let me help') &&
-              !suggestion.toLowerCase().includes('i noticed') &&
-              !suggestion.toLowerCase().includes('were you able') &&
-              !suggestion.toLowerCase().includes('would you like') &&
-              !suggestion.toLowerCase().includes('what would you') &&
-              !suggestion.toLowerCase().includes('in the kitchen') &&
+              !suggestion.toLowerCase().includes('help you with:') &&
               !suggestion.toLowerCase().includes('today?') &&
               !suggestion.toLowerCase().includes('right now?') &&
               !suggestion.toLowerCase().startsWith('what ') &&
-              !suggestion.toLowerCase().startsWith('speaking ') &&
-              !suggestion.toLowerCase().startsWith('let') &&
-              !suggestion.toLowerCase().includes('help you with:')) {
+              !suggestion.toLowerCase().startsWith('speaking ')) {
             console.log(`✓ Accepted suggestion: "${suggestion}"`);
             suggestions.push(suggestion);
           } else {
