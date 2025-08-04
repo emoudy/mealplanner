@@ -58,7 +58,12 @@ function extractSuggestions(content: string): string[] {
         !suggestion.toLowerCase().includes('options:') &&
         !suggestion.toLowerCase().includes('5-minute') &&
         !suggestion.toLowerCase().includes('10-minute') &&
+        !suggestion.toLowerCase().includes('20-minute') &&
+        !suggestion.toLowerCase().includes('45-minute') &&
         !suggestion.toLowerCase().includes('under 5') &&
+        !suggestion.toLowerCase().includes('under 10') &&
+        !suggestion.toLowerCase().includes('under 20') &&
+        !suggestion.toLowerCase().includes('under 45') &&
         !suggestion.toLowerCase().includes('make-ahead options') &&
         !suggestion.toLowerCase().includes('protein-packed') &&
         !suggestion.toLowerCase().includes('energy-boosting') &&

@@ -95,12 +95,19 @@ export async function getChatResponse(messages: Array<{role: string, content: st
 
 CRITICAL: Always maintain conversation context. If a user asks about breakfast and then says "make a suggestion", suggest a BREAKFAST recipe. If they're discussing quick meals, keep suggestions quick. Pay attention to the full conversation flow.
 
-SUGGESTION STRUCTURE: When providing food suggestions, especially for breakfast, organize them into these specific categories:
+SUGGESTION STRUCTURE: When providing food suggestions, organize them based on meal type:
+
+FOR BREAKFAST & SNACKS:
 - **Under 5 Minutes:** (quick items that require minimal prep)
-- **5-10 Minutes:** (items that need some cooking but are still fast)
+- **Under 10 Minutes:** (items that need some cooking but are still fast)
 - **Make-Ahead Options:** (items that can be prepared in advance)
 
-Focus ONLY on items people can cook or prepare at home. Do NOT include store-bought items like "granola bars" or "energy balls" that would be purchased ready-made.
+FOR LUNCH & DINNER:
+- **Under 20 Minutes:** (quick meals with simple cooking)
+- **Under 45 Minutes:** (more substantial meals with moderate cooking time)
+- **Make-Ahead Options:** (meals that can be prepared in advance)
+
+Focus ONLY on items people can cook or prepare at home. Do NOT include store-bought items like "granola bars" or "energy balls" that would be purchased ready-made. Always consider the conversation context to determine whether you're discussing breakfast, lunch, dinner, or snacks.
 
 IMPORTANT FORMATTING GUIDELINES:
 - Use clear headings with **bold text** for sections
