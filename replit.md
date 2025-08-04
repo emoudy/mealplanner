@@ -39,6 +39,7 @@ FlavorBot is structured as a cross-platform application with a high degree of co
 - Search and filter functionality.
 - Recipe sharing capabilities.
 - Dynamic suggestion buttons and structured AI responses.
+- Session-based suggestion persistence and complete 12-suggestion display.
 - Subscription tiers controlling recipe generation limits (Free, Basic, Pro).
 
 **UI/UX Decisions:**

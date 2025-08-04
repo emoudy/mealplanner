@@ -303,22 +303,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Extract dynamic suggestions from the response
       const extractSuggestions = (content: string): string[] => {
         const suggestions: string[] = [];
-        console.log('=== Full AI Response ===');
-        console.log(content);
-        console.log('=== End Response ===');
-        
-        // Check if the missing suggestions are in the content
-        if (content.includes('Hard-boiled eggs')) {
-          console.log('✓ Found "Hard-boiled eggs" in response');
-        } else {
-          console.log('✗ "Hard-boiled eggs" NOT found in response');
-        }
-        
-        if (content.includes('Homemade granola')) {
-          console.log('✓ Found "Homemade granola" in response');
-        } else {
-          console.log('✗ "Homemade granola" NOT found in response');
-        }
+
         
         const listPattern = /^[\s]*[•\-]\s*(.+)$/gm;
         let match;
@@ -326,9 +311,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         while ((match = listPattern.exec(content)) !== null) {
           let suggestion = match[1].trim();
           suggestion = suggestion.replace(/\*\*/g, '');
-          
-          // Debug logging for each suggestion being processed
-          console.log(`Processing suggestion: "${suggestion}"`);
           
           // Simplified filtering - only exclude obvious non-recipe items
           if (suggestion.length > 5 && suggestion.length < 100 && 
@@ -339,10 +321,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               !suggestion.toLowerCase().includes('right now?') &&
               !suggestion.toLowerCase().startsWith('what ') &&
               !suggestion.toLowerCase().startsWith('speaking ')) {
-            console.log(`✓ Accepted suggestion: "${suggestion}"`);
             suggestions.push(suggestion);
-          } else {
-            console.log(`✗ Filtered out suggestion: "${suggestion}"`);
           }
         }
         
@@ -362,13 +341,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         }
         
-        const uniqueSuggestions = [...new Set(suggestions)];
-        console.log(`Total unique suggestions before slicing: ${uniqueSuggestions.length}`);
-        return uniqueSuggestions.slice(0, 12); // Increase limit to capture all suggestions
+        return [...new Set(suggestions)].slice(0, 12); // Support up to 12 suggestions
       };
       
       const dynamicSuggestions = extractSuggestions(formattedResponse);
-      console.log(`Final suggestions count: ${dynamicSuggestions.length}`, dynamicSuggestions);
       
       // Store conversation and suggestions in session only (not database)
       const newMessages = [...messages, { role: 'assistant', content: formattedResponse }];

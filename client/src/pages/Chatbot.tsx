@@ -589,18 +589,7 @@ export default function Chatbot() {
 
           {/* Dynamic or Quick Suggestions */}
           <div className="mt-3 grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-            {(() => {
-              const suggestionList =
-                dynamicSuggestions.length > 0
-                  ? dynamicSuggestions
-                  : quickSuggestions;
-              console.log(
-                "Rendering suggestions:",
-                suggestionList.length,
-                suggestionList,
-              );
-              return suggestionList;
-            })().map((suggestion) => (
+            {(dynamicSuggestions.length > 0 ? dynamicSuggestions : quickSuggestions).map((suggestion) => (
               <Button
                 key={suggestion}
                 variant="outline"
