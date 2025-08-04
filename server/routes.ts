@@ -234,13 +234,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Monthly recipe limit reached. Please upgrade your plan." });
       }
 
-      const recipe = await generateRecipe(prompt);
+      // Get conversation context for better recipe generation
+      const sessionId = req.sessionID;
+      const conversation = await dbStorage.getChatConversation(userId, sessionId);
+      const conversationContext = conversation?.messages ? 
+        (conversation.messages as Array<{role: string, content: string}>) : [];
+
+      const recipe = await generateRecipe(prompt, conversationContext);
       
       // Track usage
       await dbStorage.incrementUsage(userId, currentMonth, 'recipeQueries');
       
       // Create conversation record for recipe generation if needed
-      const sessionId = req.sessionID;
       const userMessage = { role: 'user', content: prompt };
       const recipeMessage = { 
         role: 'assistant', 
@@ -249,10 +254,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       
       // Update existing conversation or create new one with recipe
-      let conversation = await dbStorage.getChatConversation(userId, sessionId);
-      if (conversation) {
-        const updatedMessages = [...(conversation.messages as any[]), userMessage, recipeMessage];
-        await dbStorage.updateChatConversation(conversation.id, userId, updatedMessages);
+      let existingConversation = await dbStorage.getChatConversation(userId, sessionId);
+      if (existingConversation) {
+        const updatedMessages = [...(existingConversation.messages as any[]), userMessage, recipeMessage];
+        await dbStorage.updateChatConversation(existingConversation.id, userId, updatedMessages);
       } else {
         await dbStorage.createChatConversation(userId, sessionId, { 
           sessionId,

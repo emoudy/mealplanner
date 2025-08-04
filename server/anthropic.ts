@@ -26,18 +26,33 @@ export interface RecipeResponse {
   category: 'breakfast' | 'lunch' | 'dinner' | 'snacks';
 }
 
-export async function generateRecipe(prompt: string): Promise<RecipeResponse> {
+export async function generateRecipe(prompt: string, conversationContext?: Array<{role: string, content: string}>): Promise<RecipeResponse> {
   try {
+    // Build context-aware prompt
+    let contextPrompt = prompt;
+    if (conversationContext && conversationContext.length > 0) {
+      const recentMessages = conversationContext.slice(-4); // Get last 4 messages for context
+      const contextSummary = recentMessages
+        .map(msg => `${msg.role}: ${msg.content}`)
+        .join('\n');
+      contextPrompt = `Based on our conversation:\n${contextSummary}\n\nUser's current request: ${prompt}`;
+    }
+
     const response = await anthropic.messages.create({
       model: DEFAULT_MODEL_STR,
-      system: `You are FlavorBot, an expert AI chef assistant. Generate detailed recipes based on user requests. 
+      system: `You are FlavorBot, an expert AI chef assistant. Generate detailed recipes based on user requests and conversation context. 
+      
+      IMPORTANT: Pay close attention to the conversation context to understand what type of recipe the user wants (breakfast, lunch, dinner, snack, cuisine type, dietary restrictions, etc.).
+      
       Always respond with a JSON object containing: title, description, ingredients (array of strings), 
       instructions (array of strings), cookTime (in minutes), servings (number), and category 
-      (must be one of: breakfast, lunch, dinner, snacks). Make recipes practical and delicious.`,
+      (must be one of: breakfast, lunch, dinner, snacks). 
+      
+      Make recipes practical, delicious, and appropriate for the conversation context. If the user was discussing breakfast, generate a breakfast recipe. If they mentioned quick meals, keep it simple and fast.`,
       messages: [
         {
           role: "user",
-          content: prompt
+          content: contextPrompt
         }
       ],
       max_tokens: 1000,
@@ -78,6 +93,8 @@ export async function getChatResponse(messages: Array<{role: string, content: st
       model: DEFAULT_MODEL_STR,
       system: `You are FlavorBot, a friendly AI chef assistant. Help users with cooking questions, recipe suggestions, ingredient substitutions, and cooking techniques. Be encouraging and helpful.
 
+CRITICAL: Always maintain conversation context. If a user asks about breakfast and then says "make a suggestion", suggest a BREAKFAST recipe. If they're discussing quick meals, keep suggestions quick. Pay attention to the full conversation flow.
+
 IMPORTANT FORMATTING GUIDELINES:
 - Use clear headings with **bold text** for sections
 - Use bullet points (•) for lists and options
@@ -91,8 +108,9 @@ When suggesting multiple recipes or options:
 - Group them by category (Quick & Easy, Hearty Options, etc.)
 - Use bullet points for each suggestion
 - Add brief descriptions
+- ALWAYS consider the conversation context (breakfast vs dinner, quick vs elaborate, etc.)
 
-If users ask for specific recipes, recommend the recipe generation feature and ask follow-up questions about preferences, ingredients, time, and dietary restrictions.`,
+If users ask for specific recipes, recommend the recipe generation feature and ask follow-up questions about preferences, ingredients, time, and dietary restrictions that are relevant to the conversation topic.`,
       messages: messages.map(msg => ({
         role: msg.role as 'user' | 'assistant',
         content: msg.content
