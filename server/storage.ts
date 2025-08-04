@@ -33,6 +33,10 @@ export interface IStorage {
   // Usage tracking
   getUsageForMonth(userId: string, month: string): Promise<UsageTracking | undefined>;
   incrementUsage(userId: string, month: string, field: 'recipeQueries' | 'recipesGenerated'): Promise<void>;
+  
+  // Email verification
+  verifyEmail(userId: string, token: string): Promise<boolean>;
+  generateEmailVerificationToken(userId: string, email: string): Promise<string>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -155,6 +159,43 @@ export class DatabaseStorage implements IStorage {
           [field]: 1,
         });
     }
+  }
+
+  // Email verification methods
+  async generateEmailVerificationToken(userId: string, email: string): Promise<string> {
+    const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    
+    await db
+      .update(users)
+      .set({
+        emailVerificationToken: token,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId));
+    
+    return token;
+  }
+
+  async verifyEmail(userId: string, token: string): Promise<boolean> {
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(and(eq(users.id, userId), eq(users.emailVerificationToken, token)));
+    
+    if (!user) {
+      return false;
+    }
+
+    await db
+      .update(users)
+      .set({
+        emailVerified: true,
+        emailVerificationToken: null,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId));
+    
+    return true;
   }
 }
 

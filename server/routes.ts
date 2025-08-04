@@ -385,9 +385,103 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Email verification routes
+  app.post('/api/auth/send-verification', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const email = req.user.claims.email;
+      
+      if (!email) {
+        return res.status(400).json({ message: "No email address found" });
+      }
+
+      const user = await dbStorage.getUser(userId);
+      if (user?.emailVerified) {
+        return res.status(400).json({ message: "Email already verified" });
+      }
+
+      // Check if email credentials are configured
+      if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+        return res.status(500).json({ 
+          message: "Email service not configured. Please contact support." 
+        });
+      }
+
+      const token = await dbStorage.generateEmailVerificationToken(userId, email);
+      const verificationUrl = `${req.protocol}://${req.hostname}/api/auth/verify-email?token=${token}&userId=${userId}`;
+      
+      const emailContent = `
+        <h2>Welcome to FlavorBot!</h2>
+        <p>Please verify your email address to start using all FlavorBot features:</p>
+        <p><a href="${verificationUrl}" style="background-color: #4F46E5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Verify Email Address</a></p>
+        <p>Or copy and paste this link: ${verificationUrl}</p>
+        <p>This link will expire in 24 hours.</p>
+      `;
+
+      await emailTransporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: "Verify your FlavorBot email address",
+        html: emailContent,
+      });
+
+      res.json({ message: "Verification email sent successfully" });
+    } catch (error) {
+      console.error("Error sending verification email:", error);
+      res.status(500).json({ message: "Failed to send verification email" });
+    }
+  });
+
+  app.get('/api/auth/verify-email', async (req, res) => {
+    try {
+      const { token, userId } = req.query as { token: string; userId: string };
+      
+      if (!token || !userId) {
+        return res.status(400).send("Invalid verification link");
+      }
+
+      const success = await dbStorage.verifyEmail(userId, token);
+      
+      if (success) {
+        res.send(`
+          <html>
+            <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; text-align: center;">
+              <h1 style="color: #10B981;">Email Verified!</h1>
+              <p>Your email has been successfully verified. You can now close this window and enjoy all FlavorBot features!</p>
+              <a href="/" style="background-color: #4F46E5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Return to FlavorBot</a>
+            </body>
+          </html>
+        `);
+      } else {
+        res.status(400).send(`
+          <html>
+            <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; text-align: center;">
+              <h1 style="color: #EF4444;">Verification Failed</h1>
+              <p>This verification link is invalid or has expired. Please request a new verification email.</p>
+              <a href="/" style="background-color: #4F46E5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Return to FlavorBot</a>
+            </body>
+          </html>
+        `);
+      }
+    } catch (error) {
+      console.error("Error verifying email:", error);
+      res.status(500).send("Error verifying email");
+    }
+  });
+
   // Recipe sharing routes
   app.post('/api/recipes/:id/share/email', isAuthenticated, async (req: any, res) => {
     try {
+      const userId = req.user.claims.sub;
+      const user = await dbStorage.getUser(userId);
+      
+      // Check if user's email is verified
+      if (!user?.emailVerified) {
+        return res.status(400).json({ 
+          message: "Please verify your email address before sharing recipes. Check your inbox for a verification email." 
+        });
+      }
+
       // Check if email credentials are configured
       if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
         return res.status(500).json({ 
@@ -395,7 +489,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      const userId = req.user.claims.sub;
       const recipeId = parseInt(req.params.id);
       const { email, message } = req.body;
       

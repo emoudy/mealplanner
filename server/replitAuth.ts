@@ -57,13 +57,27 @@ function updateUserSession(
 async function upsertUser(
   claims: any,
 ) {
-  await storage.upsertUser({
+  const existingUser = await storage.getUser(claims["sub"]);
+  const userData = {
     id: claims["sub"],
     email: claims["email"],
     firstName: claims["first_name"],
     lastName: claims["last_name"],
     profileImageUrl: claims["profile_image_url"],
-  });
+  };
+
+  await storage.upsertUser(userData);
+
+  // If this is a new user (no existing user found), generate verification token and send email
+  if (!existingUser && claims["email"]) {
+    try {
+      const token = await storage.generateEmailVerificationToken(claims["sub"], claims["email"]);
+      // Send verification email (we'll implement this next)
+      console.log(`New user ${claims["email"]} needs email verification. Token: ${token}`);
+    } catch (error) {
+      console.error("Error generating email verification token:", error);
+    }
+  }
 }
 
 export async function setupAuth(app: Express) {

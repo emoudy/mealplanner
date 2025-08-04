@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Navigation } from "@/components/Navigation";
+import { EmailVerificationBanner } from "@/components/EmailVerificationBanner";
 import { useAuth } from "@/hooks/useAuth";
 import { AddRecipeProvider } from "@/contexts/AddRecipeContext";
 import { GlobalAddRecipeModal } from "@/components/GlobalAddRecipeModal";
@@ -19,20 +20,23 @@ function Router() {
   const { isAuthenticated, isLoading } = useAuth();
 
   return (
-    <Switch>
-      {isLoading || !isAuthenticated ? (
-        <Route path="/" component={Landing} />
-      ) : (
-        <>
-          <Route path="/" component={Home} />
-          <Route path="/recipes" component={Recipes} />
-          <Route path="/chatbot" component={Chatbot} />
-          <Route path="/settings" component={Settings} />
-        </>
-      )}
-      {/* Fallback to 404 */}
-      <Route component={NotFound} />
-    </Switch>
+    <>
+      {isAuthenticated && <EmailVerificationBanner />}
+      <Switch>
+        {isLoading || !isAuthenticated ? (
+          <Route path="/" component={Landing} />
+        ) : (
+          <>
+            <Route path="/" component={Home} />
+            <Route path="/recipes" component={Recipes} />
+            <Route path="/chatbot" component={Chatbot} />
+            <Route path="/settings" component={Settings} />
+          </>
+        )}
+        {/* Fallback to 404 */}
+        <Route component={NotFound} />
+      </Switch>
+    </>
   );
 }
 
