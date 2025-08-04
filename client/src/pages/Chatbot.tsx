@@ -297,14 +297,13 @@ export default function Chatbot() {
     // Clear dynamic suggestions when user types their own message
     setDynamicSuggestions([]);
 
-    // Check if this looks like a recipe request
+    // Check if this looks like a recipe request (expanded keywords)
     const recipeKeywords = [
-      "recipe",
-      "cook",
-      "make",
-      "ingredients",
-      "dish",
-      "meal",
+      "recipe", "cook", "make", "ingredients", "dish", "meal",
+      "breakfast", "lunch", "dinner", "snack", "snacks",
+      "prepare", "bake", "fry", "grill", "roast", "sauté",
+      "how to make", "how do i cook", "what can i cook",
+      "show me a recipe", "give me a recipe", "create a recipe"
     ];
     const isRecipeRequest = recipeKeywords.some((keyword) =>
       message.toLowerCase().includes(keyword),
@@ -320,9 +319,46 @@ export default function Chatbot() {
   };
 
   const handleQuickSuggestion = (suggestion: string) => {
-    setInputMessage(suggestion);
     // Clear dynamic suggestions when a suggestion is clicked
     setDynamicSuggestions([]);
+    
+    // Automatically trigger recipe generation for food suggestion buttons
+    // Check if this looks like a recipe request (expanded keywords)
+    const recipeKeywords = [
+      "recipe", "cook", "make", "ingredients", "dish", "meal",
+      "breakfast", "lunch", "dinner", "snack", "snacks",
+      "prepare", "bake", "fry", "grill", "roast", "sauté",
+      "how to make", "how do i cook", "what can i cook",
+      "show me a recipe", "give me a recipe", "create a recipe"
+    ];
+    const isRecipeRequest = recipeKeywords.some((keyword) =>
+      suggestion.toLowerCase().includes(keyword),
+    );
+
+    if (isRecipeRequest) {
+      setIsGeneratingRecipe(true);
+      setMessages((prev) => [...prev, { role: "user", content: suggestion }]);
+      generateRecipeMutation.mutate(suggestion);
+    } else {
+      // For food items (like "Scrambled eggs with buttered toast"), automatically generate recipe
+      const foodItems = [
+        "eggs", "toast", "pasta", "chicken", "beef", "fish", "salmon", 
+        "rice", "noodles", "soup", "salad", "sandwich", "burger", "pizza",
+        "tacos", "quesadilla", "stir-fry", "casserole", "smoothie", "oats",
+        "pancakes", "waffles", "muffins", "cookies", "cake", "bread"
+      ];
+      const isFoodItem = foodItems.some((food) =>
+        suggestion.toLowerCase().includes(food),
+      );
+      
+      if (isFoodItem) {
+        setIsGeneratingRecipe(true);
+        setMessages((prev) => [...prev, { role: "user", content: `Give me a recipe for ${suggestion}` }]);
+        generateRecipeMutation.mutate(`Give me a recipe for ${suggestion}`);
+      } else {
+        setInputMessage(suggestion);
+      }
+    }
   };
 
   const handleSaveRecipe = (recipe: any) => {
@@ -588,20 +624,47 @@ export default function Chatbot() {
 
           {/* Dynamic or Quick Suggestions */}
           <div className="mt-3 grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-            {(dynamicSuggestions.length > 0 ? dynamicSuggestions : quickSuggestions).map((suggestion) => (
-              <Button
-                key={suggestion}
-                variant="outline"
-                size="sm"
-                onClick={() => handleQuickSuggestion(suggestion)}
-                className="text-xs text-left justify-start min-h-[2rem] w-full px-2"
-                title={suggestion} // Show full text on hover
-              >
-                <span className="block w-full sm:whitespace-normal whitespace-nowrap overflow-hidden text-ellipsis">
-                  {suggestion}
-                </span>
-              </Button>
-            ))}
+            {(dynamicSuggestions.length > 0 ? dynamicSuggestions : quickSuggestions).map((suggestion) => {
+              // Check if this suggestion will trigger recipe generation
+              const recipeKeywords = [
+                "recipe", "cook", "make", "ingredients", "dish", "meal",
+                "breakfast", "lunch", "dinner", "snack", "snacks",
+                "prepare", "bake", "fry", "grill", "roast", "sauté",
+                "how to make", "how do i cook", "what can i cook",
+                "show me a recipe", "give me a recipe", "create a recipe"
+              ];
+              const foodItems = [
+                "eggs", "toast", "pasta", "chicken", "beef", "fish", "salmon", 
+                "rice", "noodles", "soup", "salad", "sandwich", "burger", "pizza",
+                "tacos", "quesadilla", "stir-fry", "casserole", "smoothie", "oats",
+                "pancakes", "waffles", "muffins", "cookies", "cake", "bread"
+              ];
+              
+              const isRecipeRequest = recipeKeywords.some((keyword) =>
+                suggestion.toLowerCase().includes(keyword),
+              );
+              const isFoodItem = foodItems.some((food) =>
+                suggestion.toLowerCase().includes(food),
+              );
+              const willGenerateRecipe = isRecipeRequest || isFoodItem;
+              
+              return (
+                <Button
+                  key={suggestion}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleQuickSuggestion(suggestion)}
+                  className={`text-xs text-left justify-start min-h-[2rem] w-full px-2 ${
+                    willGenerateRecipe ? 'border-brand-500 text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-950' : ''
+                  }`}
+                  title={willGenerateRecipe ? `Generate recipe for: ${suggestion}` : suggestion}
+                >
+                  <span className="block w-full sm:whitespace-normal whitespace-nowrap overflow-hidden text-ellipsis">
+                    {suggestion}
+                  </span>
+                </Button>
+              );
+            })}
           </div>
         </div>
       </Card>
