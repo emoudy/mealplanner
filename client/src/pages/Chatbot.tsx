@@ -40,9 +40,9 @@ const quickSuggestions = [
 function extractSuggestions(content: string): string[] {
   const suggestions: string[] = [];
   
-  // Look for patterns like "• Item name - description" or "- Item name - description"
-  // Updated regex to capture the food name before the first dash that follows whitespace
-  const listPattern = /^[\s]*[•\-]\s*([^•\n]+?)(?:\s+\-\s+.+)?$/gm;
+  // Look for bullet point patterns in markdown lists
+  // This regex captures everything after bullet points until the end of the line
+  const listPattern = /^[\s]*[•\-]\s*(.+)$/gm;
   let match;
   
   while ((match = listPattern.exec(content)) !== null) {
@@ -51,14 +51,17 @@ function extractSuggestions(content: string): string[] {
     // Remove markdown formatting (asterisks)
     suggestion = suggestion.replace(/\*\*/g, '');
     
-    // Filter out very short items and common words, but allow food items
-    if (suggestion.length > 3 && suggestion.length < 60 && 
+    // Filter out section headers and non-food items
+    if (suggestion.length > 5 && suggestion.length < 80 && 
         !suggestion.toLowerCase().includes('minutes:') && 
         !suggestion.toLowerCase().includes('servings') &&
-        !suggestion.toLowerCase().includes('under ') &&
-        !suggestion.toLowerCase().includes('5-10 ') &&
+        !suggestion.toLowerCase().includes('options:') &&
+        !suggestion.toLowerCase().includes('5-minute') &&
+        !suggestion.toLowerCase().includes('10-minute') &&
         !suggestion.toLowerCase().includes('protein-packed') &&
-        !suggestion.toLowerCase().includes('energy-boosting')) {
+        !suggestion.toLowerCase().includes('energy-boosting') &&
+        !suggestion.toLowerCase().includes('here are') &&
+        !suggestion.toLowerCase().includes('breakfast ideas')) {
       suggestions.push(suggestion);
     }
   }
@@ -70,16 +73,16 @@ function extractSuggestions(content: string): string[] {
     if (suggestion.length > 3 && suggestion.length < 50 && 
         !suggestion.toLowerCase().includes('quick') && 
         !suggestion.toLowerCase().includes('minutes') &&
-        !suggestion.toLowerCase().includes('under') &&
-        !suggestion.toLowerCase().includes('hearty') &&
+        !suggestion.toLowerCase().includes('options') &&
+        !suggestion.toLowerCase().includes('ideas') &&
         !suggestion.toLowerCase().includes('protein-packed') &&
         !suggestion.toLowerCase().includes('energy-boosting')) {
       suggestions.push(suggestion);
     }
   }
   
-  // Return unique suggestions, limited to 6
-  return [...new Set(suggestions)].slice(0, 6);
+  // Return unique suggestions, limited to 8 to capture more options
+  return [...new Set(suggestions)].slice(0, 8);
 }
 
 export default function Chatbot() {
