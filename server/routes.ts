@@ -2,8 +2,7 @@ import type { Express } from "express";
 import express from "express";
 import { createServer, type Server } from "http";
 import { storage as dbStorage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
-import { setupEmailAuth } from "./auth";
+import { setupEmailAuth, isAuthenticated } from "./auth";
 import { generateRecipe, getChatResponse } from "./anthropic";
 import { insertRecipeSchema, updateUserSchema } from "@shared/schema";
 import { z } from "zod";
@@ -59,16 +58,13 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Auth middleware and routes
-  await setupAuth(app);
+  // Email/password authentication only - removed Replit OAuth
   setupEmailAuth(app);
 
-  // Universal auth user route - works for both Replit OAuth and email/password users
+  // Auth user route for email/password authentication
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      // Get user ID from either OAuth claims or session user
-      const userId = req.user.claims ? req.user.claims.sub : req.user.id;
-      const user = await dbStorage.getUser(userId);
+      const user = req.user; // User is already available from session
       res.json(user);
     } catch (error) {
       console.error("Error fetching user:", error);
@@ -79,7 +75,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User profile routes
   app.patch('/api/user/profile', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const updates = updateUserSchema.parse(req.body);
       const user = await dbStorage.updateUser(userId, updates);
       res.json(user);
@@ -91,7 +87,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete('/api/user/account', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       // In a real app, you'd implement account deletion logic
       res.json({ message: "Account deletion requested" });
     } catch (error) {
@@ -107,7 +103,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No file uploaded" });
       }
 
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const photoUrl = `/uploads/${req.file.filename}`;
       
       // Update user profile with new photo URL
@@ -132,7 +128,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Recipe routes
   app.get('/api/recipes', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const category = req.query.category as string;
       const recipes = await dbStorage.getRecipesByUser(userId, category);
       res.json(recipes);
@@ -144,7 +140,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/recipes', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const recipeData = insertRecipeSchema.parse(req.body);
       const recipe = await dbStorage.createRecipe(userId, recipeData);
       res.json(recipe);
@@ -156,7 +152,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/recipes/:id', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const recipeId = parseInt(req.params.id);
       const recipe = await dbStorage.getRecipe(recipeId, userId);
       
@@ -173,7 +169,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch('/api/recipes/:id', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const recipeId = parseInt(req.params.id);
       const updates = insertRecipeSchema.partial().parse(req.body);
       const recipe = await dbStorage.updateRecipe(recipeId, userId, updates);
@@ -186,7 +182,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete('/api/recipes/:id', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const recipeId = parseInt(req.params.id);
       await dbStorage.deleteRecipe(recipeId, userId);
       res.json({ message: "Recipe deleted successfully" });
@@ -198,7 +194,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/recipes/search/:query', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const query = req.params.query;
       const recipes = await dbStorage.searchRecipes(userId, query);
       res.json(recipes);
@@ -212,7 +208,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/chatbot/generate-recipe', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const { prompt } = req.body;
       
       if (!prompt) {
@@ -268,7 +264,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get user usage stats
   app.get('/api/usage/stats', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
       const usage = await dbStorage.getUsageForMonth(userId, currentMonth);
       
@@ -285,7 +281,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/chatbot/chat', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const { messages } = req.body;
       
       if (!Array.isArray(messages)) {
@@ -391,7 +387,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Email verification routes
   app.post('/api/auth/send-verification', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const email = req.user.claims.email;
       
       if (!email) {
@@ -475,7 +471,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Recipe sharing routes
   app.post('/api/recipes/:id/share/email', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await dbStorage.getUser(userId);
       
       // Check if user's email is verified
@@ -536,7 +532,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/recipes/:id/share/sms', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const recipeId = parseInt(req.params.id);
       const { phoneNumber, message } = req.body;
       
@@ -567,7 +563,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Usage tracking route
   app.get('/api/usage/:month', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const month = req.params.month;
       const usage = await dbStorage.getUsageForMonth(userId, month);
       res.json(usage || { recipeQueries: 0, recipesGenerated: 0 });

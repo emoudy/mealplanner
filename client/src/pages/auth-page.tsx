@@ -111,10 +111,6 @@ export default function AuthPage() {
     registerMutation.mutate(data);
   };
 
-  const handleReplitLogin = () => {
-    window.location.href = "/api/login";
-  };
-
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -228,24 +224,6 @@ export default function AuthPage() {
                       )}
                     </Button>
                   </form>
-
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-gray-300 dark:border-gray-600" />
-                    </div>
-                    <div className="relative flex justify-center text-sm">
-                      <span className="px-2 bg-white dark:bg-gray-800 text-gray-500">or</span>
-                    </div>
-                  </div>
-
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    onClick={handleReplitLogin}
-                  >
-                    Continue with Replit
-                  </Button>
                 </TabsContent>
 
                 <TabsContent value="register" className="space-y-4">
@@ -345,24 +323,6 @@ export default function AuthPage() {
                       )}
                     </Button>
                   </form>
-
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-gray-300 dark:border-gray-600" />
-                    </div>
-                    <div className="relative flex justify-center text-sm">
-                      <span className="px-2 bg-white dark:bg-gray-800 text-gray-500">or</span>
-                    </div>
-                  </div>
-
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    onClick={handleReplitLogin}
-                  >
-                    Continue with Replit
-                  </Button>
                 </TabsContent>
               </Tabs>
             </CardContent>

@@ -34,7 +34,7 @@ FlavorBot is structured as a cross-platform application with a high degree of co
 - AI-powered recipe generation and recommendations.
 - Recipe collection management (save, edit, delete, categorize).
 - Interactive chatbot for culinary assistance with intelligent suggestion routing.
-- **Universal Authentication System:** Dual authentication supporting both email/password registration and Replit OAuth for maximum accessibility.
+- **Universal Authentication System:** Email/password registration and login for worldwide accessibility.
 - Email verification system with professional email templates and verification flow.
 - Responsive design with dark/light theme support.
 - Search and filter functionality.
@@ -58,15 +58,16 @@ FlavorBot is structured as a cross-platform application with a high degree of co
 ## External Dependencies
 - **Database:** PostgreSQL (with Drizzle ORM)
 - **AI Model:** Anthropic Claude
-- **Authentication:** Dual system - Passport.js with Local Strategy (email/password) + Replit OAuth 2.0
+- **Authentication:** Passport.js with Local Strategy (email/password) for universal access
 - **Email Service:** Configurable SMTP (Gmail, SendGrid, etc.) for verification emails
 - **Session Management:** PostgreSQL-backed sessions with connect-pg-simple
 - **Password Security:** Node.js crypto with scrypt hashing and salt
 - **Deployment:** Replit (for web and backend), Expo EAS Build (for mobile iOS/Android app stores)
 
 ## Recent Architectural Changes (August 2025)
-- **Universal Authentication Implementation:** Added comprehensive email/password authentication system alongside existing Replit OAuth to serve all users, not just Replit customers.
-- **Database Schema Updates:** Added `password`, `authProvider` fields to users table for dual authentication support.
-- **Email Verification Enhancement:** Implemented complete email verification workflow with professional templates and security tokens.
-- **Authentication UI/UX:** Created dedicated `/auth` page with tabbed login/registration forms and seamless Replit OAuth integration.
-- **Landing Page Enhancement:** Updated with dual authentication options - primary email/password flow and secondary Replit OAuth option.
+- **Simplified Authentication System:** Removed complex Replit OAuth and implemented clean email/password authentication for universal access.
+- **Database Schema Updates:** Added `password`, `authProvider` fields to users table for email/password authentication.
+- **Email Verification System:** Complete email verification workflow with professional templates and security tokens.
+- **Authentication UI/UX:** Clean `/auth` page with tabbed login/registration forms, removed Replit-specific elements.
+- **Session Management:** PostgreSQL-backed sessions with Passport.js LocalStrategy for secure authentication.
+- **Universal Access:** FlavorBot now serves all users worldwide, not limited to Replit customers.

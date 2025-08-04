@@ -1,11 +1,13 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Express } from "express";
+import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { storage } from "./storage";
 import { User as SelectUser } from "@shared/schema";
 import { createId } from "@paralleldrive/cuid2";
+import connectPg from "connect-pg-simple";
 
 declare global {
   namespace Express {
@@ -28,7 +30,37 @@ async function comparePasswords(supplied: string, stored: string) {
   return timingSafeEqual(hashedBuf, suppliedBuf);
 }
 
+// Authentication middleware
+export const isAuthenticated = (req: any, res: any, next: any) => {
+  if (req.isAuthenticated && req.isAuthenticated()) {
+    return next();
+  }
+  return res.status(401).json({ message: "Unauthorized" });
+};
+
 export function setupEmailAuth(app: Express) {
+  // Setup session management
+  const PostgresSessionStore = connectPg(session);
+  const sessionStore = new PostgresSessionStore({
+    conString: process.env.DATABASE_URL,
+    createTableIfMissing: true,
+  });
+
+  app.use(session({
+    secret: process.env.SESSION_SECRET || 'fallback-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    store: sessionStore,
+    cookie: {
+      httpOnly: true,
+      secure: false, // Set to true in production with HTTPS
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
+    },
+  }));
+
+  app.use(passport.initialize());
+  app.use(passport.session());
+
   passport.use(
     new LocalStrategy(
       { usernameField: 'email' },
