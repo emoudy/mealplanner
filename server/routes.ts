@@ -305,11 +305,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const response = await getChatResponse(messages);
       
+      // Convert bullet characters to proper markdown format
+      const formattedResponse = response
+        .replace(/• /g, '- ')  // Convert bullet characters to markdown hyphens
+        .replace(/•\s/g, '- '); // Handle various spacing
+      
       // Store conversation in session only (not database)
-      const newMessages = [...messages, { role: 'assistant', content: response }];
+      const newMessages = [...messages, { role: 'assistant', content: formattedResponse }];
       req.session.chatMessages = newMessages;
       
-      res.json({ response });
+      res.json({ response: formattedResponse });
     } catch (error) {
       console.error("Error in chat:", error);
       res.status(500).json({ message: "Failed to get chat response" });
