@@ -20,6 +20,7 @@ interface RecipeCardProps {
   recipe: Recipe;
   onEdit: (recipe: Recipe) => void;
   onDelete: (id: number) => void;
+  onView?: (recipe: Recipe) => void;
 }
 
 const categoryIcons = {
@@ -36,13 +37,22 @@ const categoryColors = {
   snacks: 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300',
 };
 
-export function RecipeCard({ recipe, onEdit, onDelete }: RecipeCardProps) {
+export function RecipeCard({ recipe, onEdit, onDelete, onView }: RecipeCardProps) {
   const [showShareModal, setShowShareModal] = useState(false);
   const CategoryIcon = categoryIcons[recipe.category as keyof typeof categoryIcons] || UtensilsCrossed;
 
+  const handleCardClick = () => {
+    if (onView) {
+      onView(recipe);
+    }
+  };
+
   return (
     <>
-      <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+      <Card 
+        className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+        onClick={handleCardClick}
+      >
         {recipe.imageUrl && (
           <img 
             src={recipe.imageUrl} 
@@ -60,7 +70,10 @@ export function RecipeCard({ recipe, onEdit, onDelete }: RecipeCardProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => onEdit(recipe)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(recipe);
+                }}
                 className="h-8 w-8 text-gray-400 hover:text-brand-500"
               >
                 <Edit className="w-4 h-4" />
@@ -68,7 +81,10 @@ export function RecipeCard({ recipe, onEdit, onDelete }: RecipeCardProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => setShowShareModal(true)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowShareModal(true);
+                }}
                 className="h-8 w-8 text-gray-400 hover:text-indigo-500"
               >
                 <Share className="w-4 h-4" />
@@ -76,7 +92,10 @@ export function RecipeCard({ recipe, onEdit, onDelete }: RecipeCardProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => onDelete(recipe.id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(recipe.id);
+                }}
                 className="h-8 w-8 text-gray-400 hover:text-red-500"
               >
                 <Trash2 className="w-4 h-4" />

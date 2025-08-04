@@ -10,6 +10,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RecipeCard } from '@/components/RecipeCard';
 import { AddRecipeModal } from '@/components/AddRecipeModal';
 import { EditRecipeModal } from '@/components/EditRecipeModal';
+import { RecipeDetailModal } from '@/components/RecipeDetailModal';
 import { Link } from 'wouter';
 import { 
   Search, 
@@ -34,6 +35,7 @@ export default function Recipes() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
+  const [viewingRecipe, setViewingRecipe] = useState<Recipe | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -89,6 +91,10 @@ export default function Recipes() {
 
   const handleEditRecipe = (recipe: Recipe) => {
     setEditingRecipe(recipe);
+  };
+
+  const handleViewRecipe = (recipe: Recipe) => {
+    setViewingRecipe(recipe);
   };
 
   const handleDeleteRecipe = (recipeId: number) => {
@@ -216,6 +222,7 @@ export default function Recipes() {
                 recipe={recipe}
                 onEdit={handleEditRecipe}
                 onDelete={handleDeleteRecipe}
+                onView={handleViewRecipe}
               />
             ))}
           </div>
@@ -258,6 +265,16 @@ export default function Recipes() {
         onOpenChange={(open) => {
           if (!open) {
             setEditingRecipe(null);
+          }
+        }}
+      />
+
+      <RecipeDetailModal
+        recipe={viewingRecipe}
+        open={!!viewingRecipe}
+        onOpenChange={(open) => {
+          if (!open) {
+            setViewingRecipe(null);
           }
         }}
       />
