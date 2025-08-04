@@ -178,9 +178,12 @@ Implemented comprehensive WCAG 2.2 accessibility compliance including:
 - **Enhanced Prompts**: Added critical instructions for AI to maintain conversation flow and topic relevance
 - **Conversation Integration**: Recipe generation now receives full conversation history for better suggestions
 
-### **2025-08-04**: React Markdown Rendering for Chatbot Responses
+### **2025-08-04**: Enhanced FlavorBot List Formatting and Markdown Rendering
+- **Proper List Rendering**: Fixed FlavorBot responses to display bullet points as actual HTML lists instead of plain text
+- **AI Prompt Optimization**: Updated Anthropic system prompt to use markdown syntax (- instead of •) for lists
+- **Post-Processing**: Added automatic conversion of bullet characters to proper markdown format
+- **Improved Readability**: Lists now render with proper indentation, spacing, and visual hierarchy
 - **Formatted Responses**: Implemented react-markdown with remark-gfm for proper text formatting
-- **Better Readability**: Bold headings, bullet points, and structured lists now render correctly
 - **Custom Styling**: Added tailored component styling for markdown elements with dark mode support
 - **Enhanced UX**: Chatbot responses now display with proper formatting instead of plain text with asterisks
 

@@ -234,18 +234,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Monthly recipe limit reached. Please upgrade your plan." });
       }
 
-      // Get conversation context for better recipe generation
-      const sessionId = req.sessionID;
-      const conversation = await dbStorage.getChatConversation(userId, sessionId);
-      const conversationContext = conversation?.messages ? 
-        (conversation.messages as Array<{role: string, content: string}>) : [];
+      // Get conversation context from session for better recipe generation
+      const conversationContext = req.session.chatMessages ? 
+        (req.session.chatMessages as Array<{role: string, content: string}>) : [];
 
       const recipe = await generateRecipe(prompt, conversationContext);
       
       // Track usage
       await dbStorage.incrementUsage(userId, currentMonth, 'recipeQueries');
       
-      // Create conversation record for recipe generation if needed
+      // Add recipe generation to session conversation
       const userMessage = { role: 'user', content: prompt };
       const recipeMessage = { 
         role: 'assistant', 
@@ -253,17 +251,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         recipe: recipe
       };
       
-      // Update existing conversation or create new one with recipe
-      let existingConversation = await dbStorage.getChatConversation(userId, sessionId);
-      if (existingConversation) {
-        const updatedMessages = [...(existingConversation.messages as any[]), userMessage, recipeMessage];
-        await dbStorage.updateChatConversation(existingConversation.id, userId, updatedMessages);
-      } else {
-        await dbStorage.createChatConversation(userId, sessionId, { 
-          sessionId,
-          messages: [userMessage, recipeMessage] 
-        });
-      }
+      // Update session conversation with recipe
+      const currentMessages = req.session.chatMessages || [];
+      req.session.chatMessages = [...currentMessages, userMessage, recipeMessage];
       
       res.json(recipe);
     } catch (error) {

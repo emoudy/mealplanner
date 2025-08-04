@@ -58,7 +58,7 @@ export default function Chatbot() {
   });
 
   useEffect(() => {
-    if (conversation?.messages) {
+    if (conversation && conversation.messages && Array.isArray(conversation.messages)) {
       setMessages(conversation.messages);
     } else {
       // Fallback to default welcome message if no history
@@ -317,10 +317,10 @@ export default function Chatbot() {
                     
                     {(() => {
                       // Check if recipe is already saved in database or in current session
-                      const isInDatabase = userRecipes?.some((recipe: any) => 
+                      const isInDatabase = Array.isArray(userRecipes) ? userRecipes.some((recipe: any) => 
                         recipe.title === message.recipe.title && 
                         recipe.isFromAI === true
-                      ) || false;
+                      ) : false;
                       const isInSession = savedRecipes.has(message.recipe.title);
                       const isRecipeSaved = isInDatabase || isInSession;
                       const isPending = saveRecipeMutation.isPending;
