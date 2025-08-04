@@ -388,6 +388,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Recipe sharing routes
   app.post('/api/recipes/:id/share/email', isAuthenticated, async (req: any, res) => {
     try {
+      // Check if email credentials are configured
+      if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+        return res.status(500).json({ 
+          message: "Email service not configured. Please contact support to enable email sharing." 
+        });
+      }
+
       const userId = req.user.claims.sub;
       const recipeId = parseInt(req.params.id);
       const { email, message } = req.body;

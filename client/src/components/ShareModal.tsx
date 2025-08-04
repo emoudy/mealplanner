@@ -1,5 +1,5 @@
 import { Recipe } from '@shared/schema';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -27,6 +27,17 @@ export function ShareModal({ recipe, open, onOpenChange }: ShareModalProps) {
   const [copied, setCopied] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
   const { toast } = useToast();
+
+  // Reset form fields when modal opens/closes
+  useEffect(() => {
+    if (open) {
+      // Reset all form fields when modal opens
+      setEmailData({ email: '', message: '' });
+      setSmsData({ phoneNumber: '', message: '' });
+      setCopied(false);
+      setIsSharing(false);
+    }
+  }, [open]);
 
   const handleEmailShare = async () => {
     if (!emailData.email) {
