@@ -143,11 +143,11 @@ export function Navigation() {
               <div className="flex items-center space-x-3">
                 <Button 
                   variant="ghost" 
-                  onClick={() => window.location.href = '/api/login'}
+                  onClick={() => window.location.href = '/auth'}
                 >
                   Sign In
                 </Button>
-                <Button onClick={() => window.location.href = '/api/login'}>
+                <Button onClick={() => window.location.href = '/auth'}>
                   Get Started
                 </Button>
               </div>

@@ -11,7 +11,7 @@ import {
 
 export default function Landing() {
   const handleGetStarted = () => {
-    window.location.href = '/api/login';
+    window.location.href = '/auth';
   };
 
   return (
