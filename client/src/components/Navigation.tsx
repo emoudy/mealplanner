@@ -21,6 +21,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export function Navigation() {
@@ -59,56 +64,86 @@ export function Navigation() {
           {/* Navigation Links (Authenticated State) */}
           {isAuthenticated && (
             <div className="hidden md:flex items-center space-x-2" role="menubar" aria-label="Main menu">
-              <Link href="/chatbot">
-                <Button 
-                  variant={location === '/chatbot' ? 'default' : 'ghost'}
-                  size="icon"
-                  className="w-10 h-10"
-                  aria-label="Ask FlavorBot for recipe recommendations"
-                  aria-current={location === '/chatbot' ? 'page' : undefined}
-                  role="menuitem"
-                >
-                  <MessageCircle className="w-5 h-5" aria-hidden="true" />
-                </Button>
-              </Link>
-              <Link href="/recipes">
-                <Button 
-                  variant={location === '/recipes' ? 'default' : 'ghost'}
-                  size="icon"
-                  className="w-10 h-10"
-                  aria-label="View saved recipes"
-                  aria-current={location === '/recipes' ? 'page' : undefined}
-                  role="menuitem"
-                >
-                  <BookOpen className="w-5 h-5" aria-hidden="true" />
-                </Button>
-              </Link>
-              <Button 
-                variant="ghost"
-                size="icon"
-                className="w-10 h-10"
-                onClick={openAddRecipeModal}
-                aria-label="Add new recipe"
-                role="menuitem"
-              >
-                <UtensilsCrossed className="w-5 h-5" aria-hidden="true" />
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link href="/chatbot">
+                    <Button 
+                      variant={location === '/chatbot' ? 'default' : 'ghost'}
+                      size="icon"
+                      className="w-10 h-10"
+                      aria-label="Ask FlavorBot for recipe recommendations"
+                      aria-current={location === '/chatbot' ? 'page' : undefined}
+                      role="menuitem"
+                    >
+                      <MessageCircle className="w-5 h-5" aria-hidden="true" />
+                    </Button>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Chat with FlavorBot</p>
+                </TooltipContent>
+              </Tooltip>
+              
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link href="/recipes">
+                    <Button 
+                      variant={location === '/recipes' ? 'default' : 'ghost'}
+                      size="icon"
+                      className="w-10 h-10"
+                      aria-label="View saved recipes"
+                      aria-current={location === '/recipes' ? 'page' : undefined}
+                      role="menuitem"
+                    >
+                      <BookOpen className="w-5 h-5" aria-hidden="true" />
+                    </Button>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>My Recipes</p>
+                </TooltipContent>
+              </Tooltip>
+              
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="ghost"
+                    size="icon"
+                    className="w-10 h-10"
+                    onClick={openAddRecipeModal}
+                    aria-label="Add new recipe"
+                    role="menuitem"
+                  >
+                    <UtensilsCrossed className="w-5 h-5" aria-hidden="true" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Add Recipe</p>
+                </TooltipContent>
+              </Tooltip>
             </div>
           )}
 
           {/* User Menu & Controls */}
           <div className="flex items-center space-x-4">
             {/* Dark Mode Toggle */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleTheme}
-              className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-              aria-label={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
-              aria-pressed={isDarkMode}
-            >
-              {isDarkMode ? <Sun className="w-4 h-4" aria-hidden="true" /> : <Moon className="w-4 h-4" aria-hidden="true" />}
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={toggleTheme}
+                  className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                  aria-label={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
+                  aria-pressed={isDarkMode}
+                >
+                  {isDarkMode ? <Sun className="w-4 h-4" aria-hidden="true" /> : <Moon className="w-4 h-4" aria-hidden="true" />}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}</p>
+              </TooltipContent>
+            </Tooltip>
             
             {isAuthenticated ? (
               /* User Profile Dropdown */
