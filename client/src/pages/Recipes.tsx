@@ -177,29 +177,34 @@ export default function Recipes() {
       {/* Category Tabs */}
       <section aria-labelledby="categories-heading" className="mb-8">
         <h2 id="categories-heading" className="sr-only">Filter recipes by category</h2>
-        <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
-          <TabsList className="grid grid-cols-5 w-full max-w-2xl" role="tablist" aria-label="Recipe categories">
-            {categories.map((category, index) => {
-              const Icon = category.icon;
-              return (
-                <TabsTrigger 
-                  key={category.id} 
-                  value={category.id} 
-                  className="flex items-center space-x-2"
-                  aria-label={`Filter recipes by ${category.label}`}
-                >
-                  <Icon className="w-4 h-4" aria-hidden="true" />
-                  <span className="hidden sm:inline">{category.label}</span>
-                </TabsTrigger>
-              );
-            })}
-          </TabsList>
-        </Tabs>
+        <div className="flex flex-wrap gap-2 max-w-2xl" role="group" aria-label="Recipe categories">
+          {categories.map((category) => {
+            const Icon = category.icon;
+            const isActive = selectedCategory === category.id;
+            return (
+              <button
+                key={category.id}
+                onClick={() => setSelectedCategory(category.id)}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 ${
+                  isActive 
+                    ? 'bg-brand-500 text-white' 
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                }`}
+                aria-label={`Filter recipes by ${category.label}`}
+                aria-pressed={isActive}
+                tabIndex={0}
+              >
+                <Icon className="w-4 h-4" aria-hidden="true" />
+                <span className="hidden sm:inline">{category.label}</span>
+              </button>
+            );
+          })}
+        </div>
       </section>
 
       {/* Recipe Grid */}
       <section 
-        role="tabpanel" 
+        role="region" 
         id={`recipes-panel-${selectedCategory}`}
         aria-labelledby="recipes-heading"
       >
@@ -207,6 +212,14 @@ export default function Recipes() {
           {selectedCategory === 'all' ? 'All recipes' : `${categories.find(c => c.id === selectedCategory)?.label} recipes`}
           {searchQuery && ` matching "${searchQuery}"`}
         </h2>
+        
+        {filteredRecipes.length > 0 && (
+          <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+            <p className="sr-only">
+              Keyboard shortcuts: When focused on a recipe card, press E to edit, S to share, D to delete, or Enter/Space to view details.
+            </p>
+          </div>
+        )}
         
         {filteredRecipes.length > 0 ? (
           <div 
