@@ -58,14 +58,14 @@ FlavorBot is structured as a cross-platform application with a high degree of co
 ## External Dependencies
 - **Database:** PostgreSQL (with Drizzle ORM)
 - **AI Model:** Anthropic Claude
-- **Authentication:** Passport.js with Local Strategy (email/password) for universal access
+- **Authentication:** Passport.js with Local Strategy (email/password) for universal access - Replit OAuth removed
 - **Email Service:** Configurable SMTP (Gmail, SendGrid, etc.) for verification emails
 - **Session Management:** PostgreSQL-backed sessions with connect-pg-simple
 - **Password Security:** Node.js crypto with scrypt hashing and salt
 - **Deployment:** Replit (for web and backend), Expo EAS Build (for mobile iOS/Android app stores)
 
 ## Recent Architectural Changes (August 2025)
-- **Simplified Authentication System:** Removed complex Replit OAuth and implemented clean email/password authentication for universal access.
+- **Simplified Authentication System:** Completely removed Replit OAuth system and implemented clean email/password authentication for universal access.
 - **Mandatory Email Verification:** Implemented secure email verification requirement before account activation - users cannot log in until email is verified.
 - **Database Schema Updates:** Added `password`, `authProvider`, `emailVerified` fields to users table for secure authentication.
 - **Complete Email Verification Workflow:** Professional email verification system with tokens, dedicated verification page, and secure token validation.
