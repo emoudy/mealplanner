@@ -83,11 +83,16 @@ export function RecipeDetailModal({ recipe, open, onOpenChange }: RecipeDetailMo
               </DialogTitle>
               
               <DialogDescription id="recipe-modal-description" className="text-gray-600 dark:text-gray-300">
-                {recipe.description || 'Recipe details and instructions. Press Escape key or tab to the X button to close this modal.'}
+                {recipe.description || 'Recipe details and instructions. Use arrow keys, Page Up/Down, or scroll to navigate content. Press Escape to close.'}
               </DialogDescription>
             </DialogHeader>
 
-            <ScrollArea className="h-[calc(90vh-300px)] pr-4">
+            <ScrollArea 
+              className="h-[calc(90vh-300px)] pr-4 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2" 
+              tabIndex={0}
+              role="region"
+              aria-label="Recipe content - use arrow keys or Page Up/Down to scroll"
+            >
               <div className="space-y-6">
                 {/* Ingredients */}
                 {recipe.ingredients && Array.isArray(recipe.ingredients) && recipe.ingredients.length > 0 && (
