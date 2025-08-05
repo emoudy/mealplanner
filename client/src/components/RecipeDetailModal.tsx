@@ -87,13 +87,52 @@ export function RecipeDetailModal({ recipe, open, onOpenChange }: RecipeDetailMo
               </DialogDescription>
             </DialogHeader>
 
-            <ScrollArea 
-              className="h-[calc(90vh-300px)] pr-4 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2" 
+            <div 
+              className="h-[calc(90vh-300px)] pr-4 overflow-auto focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 rounded-md" 
               tabIndex={0}
               role="region"
               aria-label="Recipe content - use arrow keys or Page Up/Down to scroll"
+              onKeyDown={(e) => {
+                const scrollContainer = e.currentTarget;
+                const scrollAmount = 40;
+                
+                switch (e.key) {
+                  case 'ArrowDown':
+                    e.preventDefault();
+                    scrollContainer.scrollTop += scrollAmount;
+                    break;
+                  case 'ArrowUp':
+                    e.preventDefault();
+                    scrollContainer.scrollTop -= scrollAmount;
+                    break;
+                  case 'PageDown':
+                    e.preventDefault();
+                    scrollContainer.scrollTop += scrollContainer.clientHeight * 0.8;
+                    break;
+                  case 'PageUp':
+                    e.preventDefault();
+                    scrollContainer.scrollTop -= scrollContainer.clientHeight * 0.8;
+                    break;
+                  case 'Home':
+                    e.preventDefault();
+                    scrollContainer.scrollTop = 0;
+                    break;
+                  case 'End':
+                    e.preventDefault();
+                    scrollContainer.scrollTop = scrollContainer.scrollHeight;
+                    break;
+                  case ' ':
+                    e.preventDefault();
+                    if (e.shiftKey) {
+                      scrollContainer.scrollTop -= scrollContainer.clientHeight * 0.8;
+                    } else {
+                      scrollContainer.scrollTop += scrollContainer.clientHeight * 0.8;
+                    }
+                    break;
+                }
+              }}
             >
-              <div className="space-y-6">
+              <div className="space-y-6 p-1">
                 {/* Ingredients */}
                 {recipe.ingredients && Array.isArray(recipe.ingredients) && recipe.ingredients.length > 0 && (
                   <div>
@@ -130,7 +169,7 @@ export function RecipeDetailModal({ recipe, open, onOpenChange }: RecipeDetailMo
                   </div>
                 )}
               </div>
-            </ScrollArea>
+            </div>
           </div>
         </div>
       </DialogContent>
