@@ -36,11 +36,6 @@ export default function AuthPage() {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("login");
 
-  // Redirect if already authenticated
-  if (!isLoading && user) {
-    return <Redirect to="/" />;
-  }
-
   const loginForm = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -112,6 +107,11 @@ export default function AuthPage() {
   const onRegister = (data: z.infer<typeof registerSchema>) => {
     registerMutation.mutate(data);
   };
+
+  // Redirect if already authenticated
+  if (!isLoading && user) {
+    return <Redirect to="/" />;
+  }
 
   if (isLoading) {
     return (
