@@ -128,8 +128,8 @@ export default function Home() {
       </section>
 
       {/* Stats Overview */}
-      <div className="grid md:grid-cols-2 gap-6 mb-8">
-        <Card>
+      <div className="grid md:grid-cols-2 gap-6 mb-8" tabIndex={-1}>
+        <Card tabIndex={-1}>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
               Total Recipes
@@ -144,7 +144,7 @@ export default function Home() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card tabIndex={-1}>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
               This Month
@@ -161,7 +161,7 @@ export default function Home() {
       </div>
 
       {/* Getting Started */}
-      <Card>
+      <Card tabIndex={-1}>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <ChefHat className="w-5 h-5" />
