@@ -64,33 +64,31 @@ export function Navigation() {
           {/* Navigation Links (Authenticated State) */}
           {isAuthenticated && (
             <div className="hidden md:flex items-center space-x-2" role="menubar" aria-label="Main menu">
-              <Link href="/chatbot">
-                <Button 
-                  variant={location === '/chatbot' ? 'default' : 'ghost'}
-                  size="icon"
-                  className="w-10 h-10"
-                  aria-label="Chat with FlavorBot - Ask for recipe recommendations"
-                  aria-current={location === '/chatbot' ? 'page' : undefined}
-                  role="menuitem"
-                  title="Chat with FlavorBot"
-                >
-                  <MessageCircle className="w-5 h-5" aria-hidden="true" />
-                </Button>
-              </Link>
+              <Button 
+                variant={location === '/chatbot' ? 'default' : 'ghost'}
+                size="icon"
+                className="w-10 h-10"
+                onClick={() => window.location.href = '/chatbot'}
+                aria-label="Chat with FlavorBot - Ask for recipe recommendations"
+                aria-current={location === '/chatbot' ? 'page' : undefined}
+                role="menuitem"
+                title="Chat with FlavorBot"
+              >
+                <MessageCircle className="w-5 h-5" aria-hidden="true" />
+              </Button>
               
-              <Link href="/recipes">
-                <Button 
-                  variant={location === '/recipes' ? 'default' : 'ghost'}
-                  size="icon"
-                  className="w-10 h-10"
-                  aria-label="My Recipes - View saved recipes"
-                  aria-current={location === '/recipes' ? 'page' : undefined}
-                  role="menuitem"
-                  title="My Recipes"
-                >
-                  <BookOpen className="w-5 h-5" aria-hidden="true" />
-                </Button>
-              </Link>
+              <Button 
+                variant={location === '/recipes' ? 'default' : 'ghost'}
+                size="icon"
+                className="w-10 h-10"
+                onClick={() => window.location.href = '/recipes'}
+                aria-label="My Recipes - View saved recipes"
+                aria-current={location === '/recipes' ? 'page' : undefined}
+                role="menuitem"
+                title="My Recipes"
+              >
+                <BookOpen className="w-5 h-5" aria-hidden="true" />
+              </Button>
               
               <Button 
                 variant="ghost"
