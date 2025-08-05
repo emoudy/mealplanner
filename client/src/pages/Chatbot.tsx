@@ -121,6 +121,7 @@ export default function Chatbot() {
   const [savedRecipes, setSavedRecipes] = useState<Set<string>>(new Set());
   const [dynamicSuggestions, setDynamicSuggestions] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -353,15 +354,26 @@ export default function Chatbot() {
       </div>
 
       {/* Chat Container */}
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden" role="main" aria-labelledby="chat-heading">
+        <div className="sr-only">
+          <h2 id="chat-heading">Chat conversation with FlavorBot</h2>
+        </div>
         {/* Chat Messages */}
-        <div className="h-96 overflow-y-auto p-6 space-y-4">
+        <div 
+          className="h-96 overflow-y-auto p-6 space-y-4" 
+          role="log" 
+          aria-live="polite" 
+          aria-label="Chat messages"
+          ref={chatContainerRef}
+        >
           {messages.map((message, index) => (
             <div
               key={index}
               className={`flex items-start space-x-3 ${
                 message.role === "user" ? "justify-end" : ""
               }`}
+              role={message.role === "assistant" ? "status" : undefined}
+              aria-label={`${message.role === "user" ? "Your message" : "FlavorBot response"}: ${message.content.substring(0, 100)}${message.content.length > 100 ? '...' : ''}`}
             >
               {message.role === "assistant" && (
                 <div className="w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center flex-shrink-0">
@@ -512,6 +524,7 @@ export default function Chatbot() {
                               ? "bg-green-600 hover:bg-green-700 text-white"
                               : "bg-blue-600 hover:bg-blue-700 text-white"
                           }`}
+                          aria-label={isRecipeSaved ? `Recipe "${message.recipe.title}" is already saved` : `Save recipe "${message.recipe.title}" to your collection`}
                           style={{
                             display: "flex",
                             alignItems: "center",
@@ -575,30 +588,35 @@ export default function Chatbot() {
 
         {/* Message Input */}
         <div className="border-t border-gray-200 dark:border-gray-700 p-4">
-          <div className="flex space-x-3">
+          <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} className="flex space-x-3">
             <Input
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
               placeholder="Ask about ingredients, cuisines, dietary restrictions..."
               className="flex-1"
               disabled={chatMutation.isPending || isGeneratingRecipe}
+              aria-label="Type your message to FlavorBot"
+              aria-describedby="chat-input-help"
             />
+            <div className="sr-only" id="chat-input-help">
+              Press Enter or click Send to send your message to FlavorBot
+            </div>
             <Button
-              onClick={handleSendMessage}
+              type="submit"
               disabled={
                 chatMutation.isPending ||
                 isGeneratingRecipe ||
                 !inputMessage.trim()
               }
               className="bg-brand-500 hover:bg-brand-600"
+              aria-label="Send message to FlavorBot"
             >
-              <Send className="w-4 h-4" />
+              <Send className="w-4 h-4" aria-hidden="true" />
             </Button>
-          </div>
+          </form>
 
           {/* Dynamic or Quick Suggestions */}
-          <div className="mt-3 grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+          <div className="mt-3 grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-4 gap-2" role="group" aria-label="Suggested topics">
             {(dynamicSuggestions.length > 0 ? dynamicSuggestions : quickSuggestions).map((suggestion) => {
               // All dynamic suggestions from FlavorBot should generate recipes
               const isDynamicSuggestion = dynamicSuggestions.includes(suggestion);

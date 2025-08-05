@@ -72,6 +72,31 @@
   --accent-900: hsl(43, 96%, 86%);
 }
 
+/* Skip link for accessibility */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: hsl(0, 0%, 100%);
+  color: hsl(0, 0%, 0%);
+  padding: 8px 16px;
+  border-radius: 4px;
+  text-decoration: none;
+  z-index: 100;
+  border: 2px solid hsl(220, 100%, 50%);
+  font-weight: 600;
+  transition: top 0.3s;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+.dark .skip-link {
+  background: hsl(0, 0%, 15%);
+  color: hsl(0, 0%, 100%);
+}
+
 @layer base {
   * {
     @apply border-border;

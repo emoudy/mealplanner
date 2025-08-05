@@ -158,14 +158,14 @@ export default function Landing() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                  <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="login">Sign In</TabsTrigger>
-                    <TabsTrigger value="register">Register</TabsTrigger>
+                  <TabsList className="grid w-full grid-cols-2" role="tablist" aria-label="Authentication options">
+                    <TabsTrigger value="login" role="tab" aria-controls="login-panel">Sign In</TabsTrigger>
+                    <TabsTrigger value="register" role="tab" aria-controls="register-panel">Register</TabsTrigger>
                   </TabsList>
                   
-                  <TabsContent value="login">
+                  <TabsContent value="login" id="login-panel" role="tabpanel" aria-labelledby="login-tab">
                     <Form {...loginForm}>
-                      <form onSubmit={loginForm.handleSubmit((data) => loginMutation.mutate(data))} className="space-y-4">
+                      <form onSubmit={loginForm.handleSubmit((data) => loginMutation.mutate(data))} className="space-y-4" aria-label="Sign in form">
                         <FormField
                           control={loginForm.control}
                           name="email"
@@ -210,9 +210,9 @@ export default function Landing() {
                     </Form>
                   </TabsContent>
                   
-                  <TabsContent value="register">
+                  <TabsContent value="register" id="register-panel" role="tabpanel" aria-labelledby="register-tab">
                     <Form {...registerForm}>
-                      <form onSubmit={registerForm.handleSubmit((data) => registerMutation.mutate(data))} className="space-y-4">
+                      <form onSubmit={registerForm.handleSubmit((data) => registerMutation.mutate(data))} className="space-y-4" aria-label="Registration form">
                         <div className="grid grid-cols-2 gap-4">
                           <FormField
                             control={registerForm.control}
