@@ -213,6 +213,10 @@ export default function Recipes() {
           {searchQuery && ` matching "${searchQuery}"`}
         </h2>
         
+        {/* Accessibility instructions */}
+        <div className="sr-only" role="region" aria-label="Keyboard navigation instructions">
+          <p>Use Tab to navigate through category filters and recipe cards. Use arrow keys within category buttons if needed. Each recipe card can be selected with Tab, followed by its edit, share, and delete buttons. Press Enter or Space to activate focused elements.</p>
+        </div>        
 
         
         {filteredRecipes.length > 0 ? (
