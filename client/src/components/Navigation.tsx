@@ -78,6 +78,7 @@ export function Navigation() {
                 aria-current={location === '/chatbot' ? 'page' : undefined}
                 role="menuitem"
                 title="Chat with FlavorBot"
+                tabIndex={4}
               >
                 <MessageCircle className="w-5 h-5" aria-hidden="true" />
               </Button>
@@ -91,6 +92,7 @@ export function Navigation() {
                 aria-current={location === '/recipes' ? 'page' : undefined}
                 role="menuitem"
                 title="My Recipes"
+                tabIndex={5}
               >
                 <BookOpen className="w-5 h-5" aria-hidden="true" />
               </Button>
@@ -103,6 +105,7 @@ export function Navigation() {
                 aria-label="Add Recipe - Create new recipe"
                 role="menuitem"
                 title="Add Recipe"
+                tabIndex={6}
               >
                 <UtensilsCrossed className="w-5 h-5" aria-hidden="true" />
               </Button>
@@ -120,6 +123,7 @@ export function Navigation() {
               aria-label={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
               aria-pressed={isDarkMode}
               title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+              tabIndex={7}
             >
               {isDarkMode ? <Sun className="w-4 h-4" aria-hidden="true" /> : <Moon className="w-4 h-4" aria-hidden="true" />}
             </Button>
@@ -132,6 +136,7 @@ export function Navigation() {
                     variant="ghost" 
                     className="flex items-center space-x-2 p-2"
                     aria-label={`User menu for ${(user as any)?.name}` || (user as any)?.email || 'User'}
+                    tabIndex={8}
                   >
                     <Avatar className="w-8 h-8">
                       <AvatarImage 
