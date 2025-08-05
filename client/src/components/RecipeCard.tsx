@@ -54,24 +54,11 @@ export function RecipeCard({ recipe, onEdit, onDelete, onView }: RecipeCardProps
         onClick={handleCardClick}
         tabIndex={0}
         role="button"
-        aria-label={`View ${recipe.title} recipe details. Press E to edit, S to share, D to delete`}
+        aria-label={`View ${recipe.title} recipe details`}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
             handleCardClick();
-          }
-          // Allow access to actions via keyboard
-          if (e.key === 'e' || e.key === 'E') {
-            e.preventDefault();
-            onEdit(recipe);
-          }
-          if (e.key === 's' || e.key === 'S') {
-            e.preventDefault();
-            setShowShareModal(true);
-          }
-          if (e.key === 'd' || e.key === 'D') {
-            e.preventDefault();
-            onDelete(recipe.id);
           }
         }}
       >
@@ -98,7 +85,7 @@ export function RecipeCard({ recipe, onEdit, onDelete, onView }: RecipeCardProps
                 }}
                 className="h-8 w-8 text-gray-400 hover:text-brand-500"
                 aria-label={`Edit ${recipe.title} recipe`}
-                tabIndex={-1}
+                tabIndex={0}
               >
                 <Edit className="w-4 h-4" aria-hidden="true" />
               </Button>
@@ -111,7 +98,7 @@ export function RecipeCard({ recipe, onEdit, onDelete, onView }: RecipeCardProps
                 }}
                 className="h-8 w-8 text-gray-400 hover:text-indigo-500"
                 aria-label={`Share ${recipe.title} recipe`}
-                tabIndex={-1}
+                tabIndex={0}
               >
                 <Share className="w-4 h-4" aria-hidden="true" />
               </Button>
@@ -124,7 +111,7 @@ export function RecipeCard({ recipe, onEdit, onDelete, onView }: RecipeCardProps
                 }}
                 className="h-8 w-8 text-gray-400 hover:text-red-500"
                 aria-label={`Delete ${recipe.title} recipe`}
-                tabIndex={-1}
+                tabIndex={0}
               >
                 <Trash2 className="w-4 h-4" aria-hidden="true" />
               </Button>

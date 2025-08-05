@@ -213,13 +213,7 @@ export default function Recipes() {
           {searchQuery && ` matching "${searchQuery}"`}
         </h2>
         
-        {filteredRecipes.length > 0 && (
-          <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
-            <p className="sr-only">
-              Keyboard shortcuts: When focused on a recipe card, press E to edit, S to share, D to delete, or Enter/Space to view details.
-            </p>
-          </div>
-        )}
+
         
         {filteredRecipes.length > 0 ? (
           <div 
