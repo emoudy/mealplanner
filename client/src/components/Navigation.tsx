@@ -138,20 +138,7 @@ export function Navigation() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            ) : (
-              /* Auth Buttons */
-              <div className="flex items-center space-x-3">
-                <Button 
-                  variant="ghost" 
-                  onClick={() => window.location.href = '/auth'}
-                >
-                  Sign In
-                </Button>
-                <Button onClick={() => window.location.href = '/auth'}>
-                  Get Started
-                </Button>
-              </div>
-            )}
+            ) : null}
           </div>
         </div>
 
