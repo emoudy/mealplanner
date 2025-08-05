@@ -140,7 +140,7 @@ export function RecipeDetailModal({ recipe, open, onOpenChange }: RecipeDetailMo
                       Ingredients
                     </h3>
                     <ul className="space-y-2">
-                      {recipe.ingredients.map((ingredient, index) => (
+                      {recipe.ingredients.map((ingredient: string, index: number) => (
                         <li key={index} className="flex items-start">
                           <span className="inline-block w-2 h-2 bg-brand-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
                           <span className="text-gray-700 dark:text-gray-300">{String(ingredient)}</span>
@@ -157,7 +157,7 @@ export function RecipeDetailModal({ recipe, open, onOpenChange }: RecipeDetailMo
                       Instructions
                     </h3>
                     <ol className="space-y-3">
-                      {recipe.instructions.map((instruction, index) => (
+                      {recipe.instructions.map((instruction: string, index: number) => (
                         <li key={index} className="flex items-start">
                           <span className="inline-flex items-center justify-center w-6 h-6 bg-brand-500 text-white text-sm font-medium rounded-full mr-3 flex-shrink-0 mt-0.5">
                             {index + 1}
