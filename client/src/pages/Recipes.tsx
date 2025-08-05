@@ -179,16 +179,14 @@ export default function Recipes() {
         <h2 id="categories-heading" className="sr-only">Filter recipes by category</h2>
         <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
           <TabsList className="grid grid-cols-5 w-full max-w-2xl" role="tablist" aria-label="Recipe categories">
-            {categories.map((category) => {
+            {categories.map((category, index) => {
               const Icon = category.icon;
               return (
                 <TabsTrigger 
                   key={category.id} 
                   value={category.id} 
                   className="flex items-center space-x-2"
-                  role="tab"
-                  aria-selected={selectedCategory === category.id}
-                  aria-controls={`recipes-panel-${category.id}`}
+                  aria-label={`Filter recipes by ${category.label}`}
                 >
                   <Icon className="w-4 h-4" aria-hidden="true" />
                   <span className="hidden sm:inline">{category.label}</span>

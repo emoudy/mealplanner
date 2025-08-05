@@ -50,8 +50,16 @@ export function RecipeCard({ recipe, onEdit, onDelete, onView }: RecipeCardProps
   return (
     <>
       <Card 
-        className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+        className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer focus-within:ring-2 focus-within:ring-brand-500"
         onClick={handleCardClick}
+        role="button"
+        aria-label={`View ${recipe.title} recipe details`}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleCardClick();
+          }
+        }}
       >
         {recipe.imageUrl && (
           <img 
@@ -75,8 +83,9 @@ export function RecipeCard({ recipe, onEdit, onDelete, onView }: RecipeCardProps
                   onEdit(recipe);
                 }}
                 className="h-8 w-8 text-gray-400 hover:text-brand-500"
+                aria-label={`Edit ${recipe.title} recipe`}
               >
-                <Edit className="w-4 h-4" />
+                <Edit className="w-4 h-4" aria-hidden="true" />
               </Button>
               <Button
                 variant="ghost"
@@ -86,8 +95,9 @@ export function RecipeCard({ recipe, onEdit, onDelete, onView }: RecipeCardProps
                   setShowShareModal(true);
                 }}
                 className="h-8 w-8 text-gray-400 hover:text-indigo-500"
+                aria-label={`Share ${recipe.title} recipe`}
               >
-                <Share className="w-4 h-4" />
+                <Share className="w-4 h-4" aria-hidden="true" />
               </Button>
               <Button
                 variant="ghost"
@@ -97,8 +107,9 @@ export function RecipeCard({ recipe, onEdit, onDelete, onView }: RecipeCardProps
                   onDelete(recipe.id);
                 }}
                 className="h-8 w-8 text-gray-400 hover:text-red-500"
+                aria-label={`Delete ${recipe.title} recipe`}
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="w-4 h-4" aria-hidden="true" />
               </Button>
             </div>
           </div>
