@@ -44,7 +44,7 @@ export function RecipeDetailModal({ recipe, open, onOpenChange }: RecipeDetailMo
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] p-0">
+      <DialogContent className="max-w-2xl max-h-[90vh] p-0" aria-describedby="recipe-modal-description">
         <div className="flex flex-col h-full">
           {/* Header with image */}
           {recipe.imageUrl && (
@@ -82,11 +82,9 @@ export function RecipeDetailModal({ recipe, open, onOpenChange }: RecipeDetailMo
                 {recipe.title}
               </DialogTitle>
               
-              {recipe.description && (
-                <DialogDescription className="text-gray-600 dark:text-gray-300">
-                  {recipe.description}
-                </DialogDescription>
-              )}
+              <DialogDescription id="recipe-modal-description" className="text-gray-600 dark:text-gray-300">
+                {recipe.description || 'Recipe details and instructions. Press Escape key or tab to the X button to close this modal.'}
+              </DialogDescription>
             </DialogHeader>
 
             <ScrollArea className="h-[calc(90vh-300px)] pr-4">
@@ -98,10 +96,10 @@ export function RecipeDetailModal({ recipe, open, onOpenChange }: RecipeDetailMo
                       Ingredients
                     </h3>
                     <ul className="space-y-2">
-                      {recipe.ingredients.map((ingredient: string, index: number) => (
+                      {recipe.ingredients.map((ingredient, index) => (
                         <li key={index} className="flex items-start">
                           <span className="inline-block w-2 h-2 bg-brand-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                          <span className="text-gray-700 dark:text-gray-300">{ingredient}</span>
+                          <span className="text-gray-700 dark:text-gray-300">{String(ingredient)}</span>
                         </li>
                       ))}
                     </ul>
@@ -115,12 +113,12 @@ export function RecipeDetailModal({ recipe, open, onOpenChange }: RecipeDetailMo
                       Instructions
                     </h3>
                     <ol className="space-y-3">
-                      {recipe.instructions.map((instruction: string, index: number) => (
+                      {recipe.instructions.map((instruction, index) => (
                         <li key={index} className="flex items-start">
                           <span className="inline-flex items-center justify-center w-6 h-6 bg-brand-500 text-white text-sm font-medium rounded-full mr-3 flex-shrink-0 mt-0.5">
                             {index + 1}
                           </span>
-                          <span className="text-gray-700 dark:text-gray-300 leading-relaxed">{instruction}</span>
+                          <span className="text-gray-700 dark:text-gray-300 leading-relaxed">{String(instruction)}</span>
                         </li>
                       ))}
                     </ol>
