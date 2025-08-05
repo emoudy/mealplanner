@@ -2,7 +2,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useThemeContext } from '@/components/ThemeProvider';
 import { useAddRecipe } from '@/contexts/AddRecipeContext';
 import { Button } from '@/components/ui/button';
-import { Link, useLocation } from 'wouter';
+import { Link, useLocation, useRouter } from 'wouter';
 import { 
   Moon, 
   Sun, 
@@ -32,7 +32,7 @@ export function Navigation() {
   const { user, isAuthenticated } = useAuth();
   const { isDarkMode, toggleTheme } = useThemeContext();
   const { openAddRecipeModal } = useAddRecipe();
-  const [location] = useLocation();
+  const [location, navigate] = useLocation();
 
   const handleLogout = async () => {
     try {
@@ -73,7 +73,7 @@ export function Navigation() {
                 variant={location === '/chatbot' ? 'default' : 'ghost'}
                 size="icon"
                 className="w-10 h-10"
-                onClick={() => window.location.href = '/chatbot'}
+                onClick={() => navigate('/chatbot')}
                 aria-label="Chat with FlavorBot - Ask for recipe recommendations"
                 aria-current={location === '/chatbot' ? 'page' : undefined}
                 role="menuitem"
@@ -86,7 +86,7 @@ export function Navigation() {
                 variant={location === '/recipes' ? 'default' : 'ghost'}
                 size="icon"
                 className="w-10 h-10"
-                onClick={() => window.location.href = '/recipes'}
+                onClick={() => navigate('/recipes')}
                 aria-label="My Recipes - View saved recipes"
                 aria-current={location === '/recipes' ? 'page' : undefined}
                 role="menuitem"
