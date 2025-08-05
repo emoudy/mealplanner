@@ -72,6 +72,11 @@ export function setupEmailAuth(app: Express) {
             return done(null, false, { message: 'Invalid email or password' });
           }
           
+          // Check if email is verified
+          if (!user.emailVerified) {
+            return done(null, false, { message: 'Please verify your email before logging in' });
+          }
+          
           const isValid = await comparePasswords(password, user.password);
           if (!isValid) {
             return done(null, false, { message: 'Invalid email or password' });
@@ -133,21 +138,44 @@ export function setupEmailAuth(app: Express) {
       const token = await storage.generateEmailVerificationToken(userId, email);
       console.log(`New user ${email} registered. Verification token: ${token}`);
 
-      // Log user in automatically
-      req.login(user, (err) => {
-        if (err) return next(err);
-        res.status(201).json({
-          id: user.id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          emailVerified: user.emailVerified,
-          authProvider: user.authProvider,
-        });
+      // Don't log user in automatically - they need to verify email first  
+      res.status(201).json({
+        message: "Account created successfully. Please check your email for verification instructions.",
+        email: user.email,
+        requiresVerification: true
       });
     } catch (error) {
       console.error("Registration error:", error);
       res.status(500).json({ message: "Registration failed" });
+    }
+  });
+
+  // Email verification route
+  app.post("/api/verify-email", async (req, res) => {
+    try {
+      const { email, token } = req.body;
+      
+      if (!email || !token) {
+        return res.status(400).json({ message: "Email and token are required" });
+      }
+
+      const isValid = await storage.verifyEmailToken(email, token);
+      if (!isValid) {
+        return res.status(400).json({ message: "Invalid or expired verification token" });
+      }
+
+      // Mark email as verified
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      await storage.updateUser(user.id, { emailVerified: true, emailVerificationToken: null });
+      
+      res.json({ message: "Email verified successfully. You can now log in." });
+    } catch (error) {
+      console.error("Email verification error:", error);
+      res.status(500).json({ message: "Email verification failed" });
     }
   });
 

@@ -66,8 +66,10 @@ FlavorBot is structured as a cross-platform application with a high degree of co
 
 ## Recent Architectural Changes (August 2025)
 - **Simplified Authentication System:** Removed complex Replit OAuth and implemented clean email/password authentication for universal access.
-- **Database Schema Updates:** Added `password`, `authProvider` fields to users table for email/password authentication.
-- **Email Verification System:** Complete email verification workflow with professional templates and security tokens.
-- **Authentication UI/UX:** Clean `/auth` page with tabbed login/registration forms, removed Replit-specific elements.
+- **Mandatory Email Verification:** Implemented secure email verification requirement before account activation - users cannot log in until email is verified.
+- **Database Schema Updates:** Added `password`, `authProvider`, `emailVerified` fields to users table for secure authentication.
+- **Complete Email Verification Workflow:** Professional email verification system with tokens, dedicated verification page, and secure token validation.
+- **Authentication UI/UX:** Clean `/auth` page with tabbed login/registration forms, verification feedback, and proper error handling.
 - **Session Management:** PostgreSQL-backed sessions with Passport.js LocalStrategy for secure authentication.
-- **Universal Access:** FlavorBot now serves all users worldwide, not limited to Replit customers.
+- **Enhanced Security:** Email verification prevents unauthorized account access and ensures valid user email addresses.
+- **Universal Access:** FlavorBot now serves all users worldwide with secure, verified accounts.

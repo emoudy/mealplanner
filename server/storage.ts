@@ -36,6 +36,7 @@ export interface IStorage {
   
   // Email verification
   verifyEmail(userId: string, token: string): Promise<boolean>;
+  verifyEmailToken(email: string, token: string): Promise<boolean>;
   generateEmailVerificationToken(userId: string, email: string): Promise<string>;
   
   // User lookup by email
@@ -199,6 +200,15 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, userId));
     
     return true;
+  }
+
+  async verifyEmailToken(email: string, token: string): Promise<boolean> {
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(and(eq(users.email, email), eq(users.emailVerificationToken, token)));
+    
+    return !!user;
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {

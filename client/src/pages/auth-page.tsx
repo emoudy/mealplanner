@@ -69,9 +69,12 @@ export default function AuthPage() {
       });
     },
     onError: (error: any) => {
+      const message = error.message || "Invalid email or password";
       toast({
         title: "Login failed",
-        description: error.message || "Invalid email or password",
+        description: message.includes("verify your email") 
+          ? "Please verify your email before logging in. Check your inbox for verification instructions."
+          : message,
         variant: "destructive",
       });
     },
@@ -83,13 +86,23 @@ export default function AuthPage() {
       const response = await apiRequest("POST", "/api/register", registerData);
       return response.json();
     },
-    onSuccess: (user) => {
-      queryClient.setQueryData(["/api/auth/user"], user);
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      toast({
-        title: "Welcome to FlavorBot!",
-        description: "Your account has been created successfully.",
-      });
+    onSuccess: (result) => {
+      if (result.requiresVerification) {
+        toast({
+          title: "Account Created!",
+          description: "Please check your email for verification instructions before logging in.",
+        });
+        setActiveTab("login"); // Switch to login tab
+        registerForm.reset(); // Clear the form
+      } else {
+        // Legacy path if verification is not required
+        queryClient.setQueryData(["/api/auth/user"], result);
+        queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+        toast({
+          title: "Welcome to FlavorBot!",
+          description: "Your account has been created successfully.",
+        });
+      }
     },
     onError: (error: any) => {
       toast({
