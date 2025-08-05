@@ -93,28 +93,34 @@ export default function Landing() {
       return response.json();
     },
     onSuccess: (result) => {
-      if (result.requiresVerification) {
+      if (result.user) {
+        // User was automatically logged in after registration
+        queryClient.setQueryData(["/api/auth/user"], result.user);
+        queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+        toast({
+          title: "Welcome to FlavorBot!",
+          description: "Your account has been created and you're now logged in!",
+        });
+        
+        // Log verification details for development
+        if (result.developmentMode) {
+          console.log("🔗 Click to verify email:", window.location.origin + result.developmentMode.verificationUrl);
+          console.log("🔑 Verification token:", result.developmentMode.verificationToken);
+        }
+      } else if (result.requiresVerification) {
+        // Fallback if auto-login failed
         toast({
           title: "Account Created!",
           description: "Check browser console for verification link (development mode).",
         });
         
-        // In development mode, log the verification URL to console
         if (result.developmentMode) {
           console.log("🔗 Click to verify email:", window.location.origin + result.developmentMode.verificationUrl);
           console.log("🔑 Verification token:", result.developmentMode.verificationToken);
         }
         
-        setActiveTab("login"); // Switch to login tab
-        registerForm.reset(); // Clear the form
-      } else {
-        // Legacy path if verification is not required
-        queryClient.setQueryData(["/api/auth/user"], result);
-        queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-        toast({
-          title: "Welcome to FlavorBot!",
-          description: "Your account has been created successfully.",
-        });
+        setActiveTab("login");
+        registerForm.reset();
       }
     },
     onError: (error: any) => {
