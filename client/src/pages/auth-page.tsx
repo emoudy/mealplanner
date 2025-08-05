@@ -90,8 +90,15 @@ export default function AuthPage() {
       if (result.requiresVerification) {
         toast({
           title: "Account Created!",
-          description: "Please check your email for verification instructions before logging in.",
+          description: "Check browser console for verification link (development mode).",
         });
+        
+        // In development mode, log the verification URL to console
+        if (result.developmentMode) {
+          console.log("🔗 Click to verify email:", window.location.origin + result.developmentMode.verificationUrl);
+          console.log("🔑 Verification token:", result.developmentMode.verificationToken);
+        }
+        
         setActiveTab("login"); // Switch to login tab
         registerForm.reset(); // Clear the form
       } else {

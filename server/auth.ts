@@ -140,13 +140,23 @@ export function setupEmailAuth(app: Express) {
 
       // Generate email verification token
       const token = await storage.generateEmailVerificationToken(userId, email);
-      console.log(`New user ${email} registered. Verification token: ${token}`);
+      
+      // MOCK EMAIL SERVICE - Log verification details for development
+      console.log(`\n=== EMAIL VERIFICATION (MOCK) ===`);
+      console.log(`User: ${email}`);
+      console.log(`Verification Token: ${token}`);
+      console.log(`Verification URL: http://localhost:5000/verify-email?email=${encodeURIComponent(email)}&token=${token}`);
+      console.log(`=====================================\n`);
 
       // Don't log user in automatically - they need to verify email first  
       res.status(201).json({
-        message: "Account created successfully. Please check your email for verification instructions.",
+        message: "Account created successfully. Check the console for verification details (mock email service).",
         email: user.email,
-        requiresVerification: true
+        requiresVerification: true,
+        developmentMode: {
+          verificationToken: token,
+          verificationUrl: `/verify-email?email=${encodeURIComponent(email)}&token=${token}`
+        }
       });
     } catch (error) {
       console.error("Registration error:", error);
