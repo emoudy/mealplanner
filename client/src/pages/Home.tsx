@@ -3,7 +3,7 @@ import { useAddRecipe } from '@/contexts/AddRecipeContext';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import { 
   ChefHat, 
   BookOpen, 
@@ -17,6 +17,7 @@ import type { Recipe } from '@shared/schema';
 export default function Home() {
   const { user } = useAuth();
   const { openAddRecipeModal } = useAddRecipe();
+  const [, navigate] = useLocation();
 
   // Fetch user's recipes to get the total count
   const { data: recipes = [] } = useQuery<Recipe[]>({
@@ -46,40 +47,60 @@ export default function Home() {
       <section aria-labelledby="quick-actions-heading" className="mb-8">
         <h2 id="quick-actions-heading" className="sr-only">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Link href="/chatbot">
-            <Card className="cursor-pointer hover:shadow-lg transition-shadow" role="button" tabIndex={0}>
-              <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4" aria-hidden="true">
-                  <MessageCircle className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  Ask FlavorBot
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
-                  Get AI-powered recipe recommendations
-                </p>
-              </CardContent>
-            </Card>
-          </Link>
-
-          <Link href="/recipes">
-            <Card className="cursor-pointer hover:shadow-lg transition-shadow" role="button" tabIndex={0}>
-              <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4" aria-hidden="true">
-                  <BookOpen className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  My Recipes
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
-                  View and manage your saved recipes
-                </p>
-              </CardContent>
-            </Card>
-          </Link>
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow focus:ring-2 focus:ring-brand-500 focus:outline-none"
+            onClick={() => navigate('/chatbot')}
+            role="button" 
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                navigate('/chatbot');
+              }
+            }}
+            aria-label="Ask FlavorBot - Get AI-powered recipe recommendations"
+          >
+            <CardContent className="p-6 text-center">
+              <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4" aria-hidden="true">
+                <MessageCircle className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                Ask FlavorBot
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                Get AI-powered recipe recommendations
+              </p>
+            </CardContent>
+          </Card>
 
           <Card 
-            className="cursor-pointer hover:shadow-lg transition-shadow"
+            className="cursor-pointer hover:shadow-lg transition-shadow focus:ring-2 focus:ring-brand-500 focus:outline-none"
+            onClick={() => navigate('/recipes')}
+            role="button" 
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                navigate('/recipes');
+              }
+            }}
+            aria-label="My Recipes - View and manage your saved recipes"
+          >
+            <CardContent className="p-6 text-center">
+              <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4" aria-hidden="true">
+                <BookOpen className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                My Recipes
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                View and manage your saved recipes
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow focus:ring-2 focus:ring-brand-500 focus:outline-none"
             onClick={openAddRecipeModal}
             role="button" 
             tabIndex={0}
@@ -89,7 +110,7 @@ export default function Home() {
                 openAddRecipeModal();
               }
             }}
-            aria-label="Add new recipe"
+            aria-label="Add Recipe - Manually create a new recipe"
           >
             <CardContent className="p-6 text-center">
               <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4" aria-hidden="true">
