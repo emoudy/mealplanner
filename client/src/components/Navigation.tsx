@@ -54,7 +54,12 @@ export function Navigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3" aria-label="FlavorBot home">
+          <Link 
+            href="/" 
+            className="flex items-center space-x-3 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 rounded-lg p-1 -m-1" 
+            aria-label="FlavorBot home - Navigate to main page"
+            tabIndex={0}
+          >
             <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-yellow-500 rounded-lg flex items-center justify-center" aria-hidden="true">
               <ChefHat className="w-4 h-4 text-white" />
             </div>
