@@ -52,9 +52,6 @@ function App() {
         <ThemeProvider>
           <TooltipProvider>
             <div className="min-h-screen bg-background text-foreground">
-              <a href="#main-content" className="skip-link">
-                Skip to main content
-              </a>
               <Navigation />
               <main id="main-content" role="main" aria-label="Main content">
                 <Router />
