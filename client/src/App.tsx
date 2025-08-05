@@ -24,12 +24,11 @@ function Router() {
     <>
       {isAuthenticated && <EmailVerificationBanner />}
       <Switch>
-        {isLoading || !isAuthenticated ? (
-          <>
-            <Route path="/" component={Landing} />
-            <Route path="/auth" component={AuthPage} />
-          </>
-        ) : (
+        <Route path="/auth" component={AuthPage} />
+        {!isLoading && !isAuthenticated && (
+          <Route path="/" component={Landing} />
+        )}
+        {!isLoading && isAuthenticated && (
           <>
             <Route path="/" component={Home} />
             <Route path="/recipes" component={Recipes} />
