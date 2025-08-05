@@ -191,14 +191,7 @@ export default function Home() {
                 <span>Share your favorite recipes with friends via email or text</span>
               </li>
             </ul>
-            <div className="pt-4">
-              <Link href="/chatbot">
-                <Button className="bg-brand-500 hover:bg-brand-600">
-                  <ChefHat className="w-4 h-4 mr-2" />
-                  Start with AI Assistant
-                </Button>
-              </Link>
-            </div>
+
           </div>
         </CardContent>
       </Card>
