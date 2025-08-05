@@ -29,8 +29,19 @@ export function Navigation() {
   const { openAddRecipeModal } = useAddRecipe();
   const [location] = useLocation();
 
-  const handleLogout = () => {
-    window.location.href = '/api/logout';
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/logout', { 
+        method: 'POST',
+        credentials: 'include' 
+      });
+      // Force a page refresh to clear the auth state
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Fallback to GET request
+      window.location.href = '/api/logout';
+    }
   };
 
   return (

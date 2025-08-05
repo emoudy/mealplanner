@@ -235,11 +235,21 @@ export function setupEmailAuth(app: Express) {
     })(req, res, next);
   });
 
-  // Logout route
-  app.post("/api/logout", (req, res, next) => {
-    req.logout((err) => {
+  // Logout routes (both GET and POST for flexibility)
+  const logoutHandler = (req: any, res: any, next: any) => {
+    req.logout((err: any) => {
       if (err) return next(err);
-      res.json({ message: "Logged out successfully" });
+      
+      // For GET requests, redirect to home page
+      if (req.method === 'GET') {
+        res.redirect('/');
+      } else {
+        // For POST requests, return JSON
+        res.json({ message: "Logged out successfully" });
+      }
     });
-  });
+  };
+
+  app.post("/api/logout", logoutHandler);
+  app.get("/api/logout", logoutHandler);
 }
