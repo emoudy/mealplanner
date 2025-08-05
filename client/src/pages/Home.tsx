@@ -51,7 +51,7 @@ export default function Home() {
             className="cursor-pointer hover:shadow-lg transition-shadow focus:ring-2 focus:ring-brand-500 focus:outline-none"
             onClick={() => navigate('/chatbot')}
             role="button" 
-            tabIndex={9}
+            tabIndex={1}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
@@ -77,7 +77,7 @@ export default function Home() {
             className="cursor-pointer hover:shadow-lg transition-shadow focus:ring-2 focus:ring-brand-500 focus:outline-none"
             onClick={() => navigate('/recipes')}
             role="button" 
-            tabIndex={10}
+            tabIndex={2}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
@@ -103,7 +103,7 @@ export default function Home() {
             className="cursor-pointer hover:shadow-lg transition-shadow focus:ring-2 focus:ring-brand-500 focus:outline-none"
             onClick={openAddRecipeModal}
             role="button" 
-            tabIndex={11}
+            tabIndex={3}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
