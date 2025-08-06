@@ -52,10 +52,12 @@ export function setupEmailAuth(app: Express) {
     resave: false,
     saveUninitialized: false,
     store: sessionStore,
+    name: 'flavorbot.sid', // Custom session name
     cookie: {
       httpOnly: true,
-      secure: false, // Set to true in production with HTTPS
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
+      secure: process.env.NODE_ENV === 'production', // HTTPS in production
+      sameSite: 'strict', // CSRF protection
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours instead of 1 week
     },
   }));
 
@@ -114,8 +116,21 @@ export function setupEmailAuth(app: Express) {
         return res.status(400).json({ message: "All fields are required" });
       }
 
-      if (password.length < 8) {
-        return res.status(400).json({ message: "Password must be at least 8 characters long" });
+      // Enhanced password validation
+      if (password.length < 12) {
+        return res.status(400).json({ message: "Password must be at least 12 characters long" });
+      }
+      
+      // Check password complexity
+      const hasUppercase = /[A-Z]/.test(password);
+      const hasLowercase = /[a-z]/.test(password);
+      const hasNumbers = /\d/.test(password);
+      const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+      
+      if (!(hasUppercase && hasLowercase && hasNumbers && hasSpecialChar)) {
+        return res.status(400).json({ 
+          message: "Password must contain uppercase, lowercase, numbers, and special characters" 
+        });
       }
 
       // Check if user already exists

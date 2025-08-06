@@ -31,7 +31,14 @@ export async function generateRecipe(
   conversationContext?: Array<{ role: string; content: string }>,
 ): Promise<RecipeResponse> {
   try {
-    // Build context-aware prompt
+    // Validate prompt for security
+    const { validatePrompt } = await import('./security');
+    const validation = validatePrompt(prompt);
+    if (!validation.isValid) {
+      throw new Error(`Invalid prompt: ${validation.reason}`);
+    }
+
+    // Build context-aware prompt with sanitization
     let contextPrompt = prompt;
     if (conversationContext && conversationContext.length > 0) {
       const recentMessages = conversationContext.slice(-4); // Get last 4 messages for context
