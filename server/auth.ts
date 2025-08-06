@@ -5,6 +5,7 @@ import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { storage } from "./storage";
+import { DynamoDBSessionStore } from "./session-dynamodb";
 import { User as SelectUser } from "@shared/schema";
 import { createId } from "@paralleldrive/cuid2";
 import connectPg from "connect-pg-simple";
@@ -39,13 +40,8 @@ export const isAuthenticated = (req: any, res: any, next: any) => {
 };
 
 export function setupEmailAuth(app: Express) {
-  // Setup session management
-  const PostgresSessionStore = connectPg(session);
-  const sessionStore = new PostgresSessionStore({
-    conString: process.env.DATABASE_URL,
-    createTableIfMissing: true,
-    tableName: 'user_sessions', // Use unique table name
-  });
+  // Setup session management with DynamoDB
+  const sessionStore = new DynamoDBSessionStore();
 
   app.use(session({
     secret: process.env.SESSION_SECRET || 'fallback-secret-key',

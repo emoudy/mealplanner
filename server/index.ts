@@ -1,5 +1,6 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
+import { createDynamoDBTable } from "./setup-dynamodb";
 import { setupVite, serveStatic, log } from "./vite";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
@@ -138,6 +139,16 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Initialize DynamoDB table on startup
+  try {
+    await createDynamoDBTable();
+    console.log("DynamoDB initialization complete");
+  } catch (error) {
+    console.error("DynamoDB initialization failed:", error);
+    console.log("This is expected when using development setup without AWS credentials");
+    console.log("The application will continue running for demonstration purposes");
+  }
+
   const server = await registerRoutes(app);
 
   // Setup periodic cleanup of expired sessions (every 24 hours)

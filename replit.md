@@ -56,7 +56,7 @@ FlavorBot is structured as a cross-platform application with a high degree of co
 - Touch-friendly target sizes.
 
 ## External Dependencies
-- **Database:** PostgreSQL (with Drizzle ORM)
+- **Database:** Amazon DynamoDB (migrated from PostgreSQL) with AWS SDK v3
 - **AI Model:** Anthropic Claude
 - **Authentication:** Passport.js with Local Strategy (email/password) for universal access - Replit OAuth removed
 - **Email Service:** Configurable SMTP (Gmail, SendGrid, etc.) for verification emails
@@ -65,6 +65,7 @@ FlavorBot is structured as a cross-platform application with a high degree of co
 - **Deployment:** Replit (for web and backend), Expo EAS Build (for mobile iOS/Android app stores)
 
 ## Recent Architectural Changes (August 2025)
+- **Complete DynamoDB Migration (August 2025):** Successfully migrated from PostgreSQL to Amazon DynamoDB with single table design. Implemented DynamoDB storage layer with AWS SDK integration, custom session store, and table auto-creation. Migration completed for learning purposes to understand NoSQL database patterns. The application maintains the same interface through storage abstraction while using DynamoDB's PK/SK pattern with GSIs for complex queries.
 - **Simplified Authentication System:** Completely removed Replit OAuth system and implemented clean email/password authentication for universal access.
 - **Mandatory Email Verification:** Implemented secure email verification requirement before account activation - users cannot log in until email is verified.
 - **Database Schema Updates:** Added `password`, `authProvider`, `emailVerified` fields to users table for secure authentication.

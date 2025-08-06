@@ -1,7 +1,4 @@
 import {
-  users,
-  recipes,
-  usageTracking,
   type User,
   type UpsertUser,
   type Recipe,
@@ -9,8 +6,8 @@ import {
   type UpdateUser,
   type UsageTracking,
 } from "@flavorbot/shared/schemas";
-import { db } from "./db";
-import { eq, and, desc, ilike, gte, lt } from "drizzle-orm";
+// Import DynamoDB storage implementation
+import { DynamoDBStorage } from "./dynamodb-storage";
 
 // Interface for storage operations
 export interface IStorage {
@@ -42,6 +39,8 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
 }
 
+// Legacy PostgreSQL storage - now commented out
+/*
 export class DatabaseStorage implements IStorage {
   // User operations
   async getUser(id: string): Promise<User | undefined> {
@@ -216,5 +215,7 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 }
+*/
 
-export const storage = new DatabaseStorage();
+// Use DynamoDB storage implementation
+export const storage = new DynamoDBStorage();
