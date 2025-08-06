@@ -72,6 +72,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Add /api/user endpoint to match frontend expectations
+  app.get('/api/user', (req: any, res) => {
+    console.log("User endpoint called, session:", req.session?.id, "authenticated:", req.isAuthenticated(), "user:", req.user?.id);
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+    res.json({
+      id: req.user.id,
+      email: req.user.email,
+      firstName: req.user.firstName,
+      lastName: req.user.lastName,
+      emailVerified: req.user.emailVerified,
+      authProvider: req.user.authProvider,
+    });
+  });
+
   // User profile routes
   app.patch('/api/user/profile', isAuthenticated, async (req: any, res) => {
     try {

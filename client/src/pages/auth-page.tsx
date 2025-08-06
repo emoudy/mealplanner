@@ -61,8 +61,15 @@ export default function AuthPage() {
       return response.json();
     },
     onSuccess: (user) => {
+      console.log("Login success, user data:", user); // Debug log
       queryClient.setQueryData(["/api/user"], user);
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      
+      // Force refetch to ensure fresh data
+      setTimeout(() => {
+        queryClient.refetchQueries({ queryKey: ["/api/user"] });
+      }, 100);
+      
       toast({
         title: "Welcome back!",
         description: "You've successfully logged in.",
