@@ -18,15 +18,15 @@ app.use(httpsRedirect);
 // Security monitoring
 app.use(securityMonitoring);
 
-// Security middleware
+// Security middleware (relaxed CSP for development)
 app.use(helmet({
-  contentSecurityPolicy: {
+  contentSecurityPolicy: process.env.NODE_ENV === 'development' ? false : {
     directives: {
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
-      scriptSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // Allow inline scripts for production
       imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'"],
+      connectSrc: ["'self'", "ws:", "wss:"], // Allow WebSocket for Vite HMR
       fontSrc: ["'self'"],
       objectSrc: ["'none'"],
       mediaSrc: ["'self'"],
@@ -46,15 +46,20 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token'],
 }));
 
-// Global rate limiting
+// Global rate limiting (more permissive for development)
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  max: process.env.NODE_ENV === 'development' ? 1000 : 100, // Higher limit in development
   message: {
     error: "Too many requests from this IP, please try again later."
   },
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => {
+    // Skip rate limiting for static assets in development
+    return process.env.NODE_ENV === 'development' && 
+           (req.url.includes('/@vite/') || req.url.includes('/src/') || req.url.includes('.js') || req.url.includes('.css'));
+  }
 });
 
 // Auth specific rate limiting
@@ -76,15 +81,21 @@ const aiLimiter = rateLimit({
   },
 });
 
-// Slow down repeated requests
+// Slow down repeated requests (disabled in development)
 const speedLimiter = slowDown({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  delayAfter: 2, // allow 2 requests per windowMs without delay
-  delayMs: () => 500 // add 500ms delay per request after delayAfter
+  delayAfter: process.env.NODE_ENV === 'development' ? 1000 : 2, // Higher threshold in development
+  delayMs: () => process.env.NODE_ENV === 'development' ? 0 : 500, // No delay in development
+  skip: (req) => {
+    // Skip for static assets in development
+    return process.env.NODE_ENV === 'development' && 
+           (req.url.includes('/@vite/') || req.url.includes('/src/') || req.url.includes('.js') || req.url.includes('.css'));
+  }
 });
 
-app.use(globalLimiter);
-app.use(speedLimiter);
+// Only apply rate limiting to API routes to avoid blocking static assets
+app.use('/api', globalLimiter);
+app.use('/api', speedLimiter);
 
 // Apply auth rate limiting to auth routes
 app.use('/api/register', authLimiter);
