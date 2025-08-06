@@ -20,7 +20,16 @@ import AuthPage from "@/pages/auth-page";
 import VerifyEmailPage from "@/pages/verify-email";
 
 function Router() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
+
+  // Don't render anything while loading
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -28,16 +37,15 @@ function Router() {
       <Switch>
         <Route path="/auth" component={AuthPage} />
         <Route path="/verify-email" component={VerifyEmailPage} />
-        {!isLoading && !isAuthenticated && (
-          <Route path="/" component={Landing} />
-        )}
-        {!isLoading && isAuthenticated && (
+        {isAuthenticated ? (
           <>
             <Route path="/" component={Home} />
             <Route path="/recipes" component={Recipes} />
             <Route path="/chatbot" component={Chatbot} />
             <Route path="/settings" component={Settings} />
           </>
+        ) : (
+          <Route path="/" component={Landing} />
         )}
         {/* Fallback to 404 */}
         <Route component={NotFound} />

@@ -61,19 +61,18 @@ export default function AuthPage() {
       return response.json();
     },
     onSuccess: (user) => {
-      console.log("Login success, user data:", user); // Debug log
+      // Update the cache immediately
       queryClient.setQueryData(["/api/user"], user);
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-      
-      // Force refetch to ensure fresh data
-      setTimeout(() => {
-        queryClient.refetchQueries({ queryKey: ["/api/user"] });
-      }, 100);
       
       toast({
         title: "Welcome back!",
         description: "You've successfully logged in.",
       });
+      
+      // Small delay to ensure state update before redirect
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 500);
     },
     onError: (error: any) => {
       const message = error.message || "Invalid email or password";

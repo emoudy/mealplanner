@@ -55,8 +55,8 @@ export function setupEmailAuth(app: Express) {
     name: 'flavorbot.sid', // Custom session name
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // HTTPS in production
-      sameSite: 'strict', // CSRF protection
+      secure: false, // Disable secure in development
+      sameSite: 'lax', // Less restrictive for development
       maxAge: 24 * 60 * 60 * 1000, // 24 hours instead of 1 week
     },
   }));

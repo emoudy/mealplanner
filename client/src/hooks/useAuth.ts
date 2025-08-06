@@ -8,9 +8,8 @@ export function useAuth() {
     retry: false,
     staleTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
-
-  console.log("Auth state:", { user, isLoading, isAuthenticated: !!user }); // Debug log
 
   return {
     user: user || null,
