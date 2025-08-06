@@ -8,7 +8,7 @@ import {
   type InsertRecipe,
   type UpdateUser,
   type UsageTracking,
-} from "@shared/schema";
+} from "@flavorbot/shared/schemas";
 import { db } from "./db";
 import { eq, and, desc, ilike, gte, lt } from "drizzle-orm";
 

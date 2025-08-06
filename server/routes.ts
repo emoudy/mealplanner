@@ -4,7 +4,7 @@ import { createServer, type Server } from "http";
 import { storage as dbStorage } from "./storage";
 import { setupEmailAuth, isAuthenticated } from "./auth";
 import { generateRecipe, getChatResponse } from "./anthropic";
-import { insertRecipeSchema, updateUserSchema } from "@shared/schema";
+import { insertRecipeSchema, updateUserSchema } from "@flavorbot/shared/schemas";
 import { z } from "zod";
 import nodemailer from "nodemailer";
 import multer from "multer";
