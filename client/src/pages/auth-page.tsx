@@ -11,7 +11,7 @@ import { AlertCircle, ChefHat, Loader2 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
-import { Redirect } from "wouter";
+import { Redirect, useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 
 const loginSchema = z.object({
@@ -34,6 +34,7 @@ export default function AuthPage() {
   const { user, isLoading } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState("login");
 
   const loginForm = useForm({
@@ -61,18 +62,19 @@ export default function AuthPage() {
       return response.json();
     },
     onSuccess: (user) => {
-      // Update the cache immediately
+      // Update the cache immediately and invalidate to trigger refetch
       queryClient.setQueryData(["/api/user"], user);
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       
       toast({
         title: "Welcome back!",
         description: "You've successfully logged in.",
       });
       
-      // Small delay to ensure state update before redirect
+      // Navigate to home page using wouter with small delay to ensure state update
       setTimeout(() => {
-        window.location.href = '/';
-      }, 500);
+        setLocation('/');
+      }, 200);
     },
     onError: (error: any) => {
       const message = error.message || "Invalid email or password";
