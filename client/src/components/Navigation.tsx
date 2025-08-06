@@ -68,7 +68,7 @@ export function Navigation() {
 
           {/* Navigation Links (Authenticated State) */}
           {isAuthenticated && (
-            <div className="hidden md:flex items-center space-x-2" role="menubar" aria-label="Main menu">
+            <div className="flex items-center space-x-2" role="menubar" aria-label="Main menu">
               <Button 
                 variant={location === '/chatbot' ? 'default' : 'ghost'}
                 size="icon"
