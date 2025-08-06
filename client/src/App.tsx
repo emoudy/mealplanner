@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Navigation } from "@/components/Navigation";
+import { SkipNavigation } from "@/components/ui/skip-navigation";
 import { EmailVerificationBanner } from "@/components/EmailVerificationBanner";
 import { useAuth } from "@/hooks/useAuth";
 import { AddRecipeProvider } from "@/contexts/AddRecipeContext";
@@ -52,6 +53,7 @@ function App() {
         <ThemeProvider>
           <TooltipProvider>
             <div className="min-h-screen bg-background text-foreground">
+              <SkipNavigation />
               <Navigation />
               <main id="main-content" role="main" aria-label="Main content">
                 <Router />

@@ -138,6 +138,28 @@
       scroll-behavior: auto !important;
     }
   }
+
+  /* Touch target minimum size for mobile accessibility (44px minimum) */
+  @media (pointer: coarse) {
+    button, 
+    [role="button"], 
+    a,
+    input[type="button"],
+    input[type="submit"],
+    input[type="reset"] {
+      min-height: 44px;
+      min-width: 44px;
+    }
+    
+    /* Ensure interactive elements are properly spaced */
+    .touch-target {
+      min-height: 44px;
+      min-width: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
 }
 
 @layer utilities {

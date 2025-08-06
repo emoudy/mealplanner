@@ -13,6 +13,7 @@ import {
   Clock
 } from 'lucide-react';
 import type { Recipe } from '@shared/schema';
+import { LoadingAnnouncer } from '@/components/ui/loading-announcer';
 
 export default function Home() {
   const { user } = useAuth();
@@ -20,19 +21,32 @@ export default function Home() {
   const [, navigate] = useLocation();
 
   // Fetch user's recipes to get the total count
-  const { data: recipes = [] } = useQuery<Recipe[]>({
+  const { data: recipes = [], isLoading: recipesLoading, error: recipesError } = useQuery<Recipe[]>({
     queryKey: ['/api/recipes'],
     enabled: !!user
   });
 
   // Fetch usage stats for AI queries
-  const { data: usageStats } = useQuery({
+  const { data: usageStats, isLoading: statsLoading, error: statsError } = useQuery({
     queryKey: ['/api/usage/stats'],
     enabled: !!user
   });
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Loading Announcements for Screen Readers */}
+      <LoadingAnnouncer 
+        isLoading={recipesLoading} 
+        loadingMessage="Loading your recipes..."
+        successMessage="Recipes loaded successfully"
+        error={recipesError}
+      />
+      <LoadingAnnouncer 
+        isLoading={statsLoading} 
+        loadingMessage="Loading usage statistics..."
+        successMessage="Statistics loaded"
+        error={statsError}
+      />
       {/* Welcome Section */}
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
@@ -51,7 +65,7 @@ export default function Home() {
             className="cursor-pointer hover:shadow-lg transition-shadow focus:ring-2 focus:ring-brand-500 focus:outline-none"
             onClick={() => navigate('/chatbot')}
             role="button" 
-            tabIndex={9}
+            tabIndex={0}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
@@ -77,7 +91,7 @@ export default function Home() {
             className="cursor-pointer hover:shadow-lg transition-shadow focus:ring-2 focus:ring-brand-500 focus:outline-none"
             onClick={() => navigate('/recipes')}
             role="button" 
-            tabIndex={10}
+            tabIndex={0}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
@@ -103,7 +117,7 @@ export default function Home() {
             className="cursor-pointer hover:shadow-lg transition-shadow focus:ring-2 focus:ring-brand-500 focus:outline-none"
             onClick={openAddRecipeModal}
             role="button" 
-            tabIndex={11}
+            tabIndex={0}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();

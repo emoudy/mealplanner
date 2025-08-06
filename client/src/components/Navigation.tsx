@@ -78,7 +78,6 @@ export function Navigation() {
                 aria-current={location === '/chatbot' ? 'page' : undefined}
                 role="menuitem"
                 title="Chat with FlavorBot"
-                tabIndex={1}
               >
                 <MessageCircle className="w-5 h-5" aria-hidden="true" />
               </Button>
@@ -92,7 +91,6 @@ export function Navigation() {
                 aria-current={location === '/recipes' ? 'page' : undefined}
                 role="menuitem"
                 title="My Recipes"
-                tabIndex={2}
               >
                 <BookOpen className="w-5 h-5" aria-hidden="true" />
               </Button>
@@ -100,12 +98,11 @@ export function Navigation() {
               <Button 
                 variant="ghost"
                 size="icon"
-                className="w-10 h-1h-10"
+                className="w-10 h-10"
                 onClick={openAddRecipeModal}
                 aria-label="Add Recipe - Create new recipe"
                 role="menuitem"
                 title="Add Recipe"
-                tabIndex={3}
               >
                 <UtensilsCrossed className="w-5 h-5" aria-hidden="true" />
               </Button>
@@ -123,7 +120,6 @@ export function Navigation() {
               aria-label={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
               aria-pressed={isDarkMode}
               title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-              tabIndex={4}
             >
               {isDarkMode ? <Sun className="w-4 h-4" aria-hidden="true" /> : <Moon className="w-4 h-4" aria-hidden="true" />}
             </Button>
@@ -136,7 +132,6 @@ export function Navigation() {
                     variant="ghost" 
                     className="flex items-center space-x-2 p-2"
                     aria-label={`User menu for ${(user as any)?.name}` || (user as any)?.email || 'User'}
-                    tabIndex={5}
                   >
                     <Avatar className="w-8 h-8">
                       <AvatarImage 
