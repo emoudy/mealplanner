@@ -61,8 +61,8 @@ export default function AuthPage() {
       return response.json();
     },
     onSuccess: (user) => {
-      queryClient.setQueryData(["/api/auth/user"], user);
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      queryClient.setQueryData(["/api/user"], user);
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       toast({
         title: "Welcome back!",
         description: "You've successfully logged in.",
@@ -103,8 +103,8 @@ export default function AuthPage() {
         registerForm.reset(); // Clear the form
       } else {
         // Legacy path if verification is not required
-        queryClient.setQueryData(["/api/auth/user"], result);
-        queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+        queryClient.setQueryData(["/api/user"], result);
+        queryClient.invalidateQueries({ queryKey: ["/api/user"] });
         toast({
           title: "Welcome to FlavorBot!",
           description: "Your account has been created successfully.",
