@@ -318,10 +318,15 @@ export default function GroceryListPage() {
     queryKey: ['/api/recipes'],
   });
 
+  // Fetch custom grocery items
+  const { data: customItems = [] } = useQuery<CustomGroceryItem[]>({
+    queryKey: ['/api/grocery-items'],
+  });
+
   const generateGroceryList = async () => {
     if (!startDate || !endDate) {
       // Even if no date range, show custom items
-      const customItems: IngredientItem[] = customGroceryItems.map((item: CustomGroceryItem) => ({
+      const customItemsList: IngredientItem[] = customItems.map((item: CustomGroceryItem) => ({
         name: item.name,
         recipes: [{ name: 'Custom Item', count: 1 }],
         totalQuantity: 1,
@@ -331,7 +336,7 @@ export default function GroceryListPage() {
         isCustom: true,
         id: item.id
       }));
-      setGroceryList(customItems.sort((a, b) => a.name.localeCompare(b.name)));
+      setGroceryList(customItemsList.sort((a, b) => a.name.localeCompare(b.name)));
       return;
     }
 
@@ -375,15 +380,16 @@ export default function GroceryListPage() {
       });
 
       // Initialize selected recipes if empty (all recipes selected by default)
-      // Only do this on first generation, not when filters change
-      if (selectedRecipeIds.length === 0 && recipeInstances.length > 0 && groceryList.length === 0) {
-        setSelectedRecipeIds(recipeInstances.map(ri => ri.recipe.id));
+      let currentSelectedRecipeIds = selectedRecipeIds;
+      if (selectedRecipeIds.length === 0 && recipeInstances.length > 0) {
+        currentSelectedRecipeIds = recipeInstances.map(ri => ri.recipe.id);
+        setSelectedRecipeIds(currentSelectedRecipeIds);
       }
 
       // Filter recipe instances based on selected recipes
-      const filteredRecipeInstances = selectedRecipeIds.length > 0 
-        ? recipeInstances.filter(ri => selectedRecipeIds.includes(ri.recipe.id))
-        : [];
+      const filteredRecipeInstances = currentSelectedRecipeIds.length > 0 
+        ? recipeInstances.filter(ri => currentSelectedRecipeIds.includes(ri.recipe.id))
+        : recipeInstances;
 
       // Process ingredients from filtered recipe instances with counts
       const ingredientQuantityMap = new Map<string, { totalQuantity: number; originalUnit: string; recipes: Map<string, number> }>();
@@ -430,8 +436,8 @@ export default function GroceryListPage() {
       });
 
       // Add custom grocery items to the list (if enabled)
-      const customItems: IngredientItem[] = showCustomItems 
-        ? customGroceryItems.map((item: CustomGroceryItem) => ({
+      const customGroceryList: IngredientItem[] = showCustomItems 
+        ? customItems.map((item: CustomGroceryItem) => ({
             name: item.name,
             recipes: [{ name: 'Custom Item', count: 1 }],
             totalQuantity: 1,
@@ -444,7 +450,7 @@ export default function GroceryListPage() {
         : [];
 
       // Combine recipe ingredients with custom items
-      const combinedList = [...newGroceryList, ...customItems];
+      const combinedList = [...newGroceryList, ...customGroceryList];
 
       // Sort alphabetically
       combinedList.sort((a, b) => a.name.localeCompare(b.name));
@@ -478,17 +484,13 @@ export default function GroceryListPage() {
     setGroceryList(prev => prev.filter((_, i) => i !== index));
   };
 
-  // Query to load custom grocery items
-  const { data: customGroceryItems = [] } = useQuery<CustomGroceryItem[]>({
-    queryKey: ['/api/grocery-items'],
-    enabled: true,
-  });
+  // Remove duplicate query - using customItems from above
 
   // Initial load of custom items only (no auto-regeneration)
   useEffect(() => {
-    if (customGroceryItems.length > 0 && groceryList.length === 0) {
+    if (customItems.length > 0 && groceryList.length === 0) {
       // Only show custom items on initial load if no grocery list exists
-      const customItems: IngredientItem[] = customGroceryItems.map((item: CustomGroceryItem) => ({
+      const customItemsList: IngredientItem[] = customItems.map((item: CustomGroceryItem) => ({
         name: item.name,
         recipes: [{ name: 'Custom Item', count: 1 }],
         totalQuantity: 1,
@@ -498,9 +500,9 @@ export default function GroceryListPage() {
         isCustom: true,
         id: item.id
       }));
-      setGroceryList(customItems.sort((a, b) => a.name.localeCompare(b.name)));
+      setGroceryList(customItemsList.sort((a, b) => a.name.localeCompare(b.name)));
     }
-  }, [customGroceryItems]);
+  }, [customItems]);
 
   // Mutation to create custom grocery item
   const createCustomItemMutation = useMutation({
