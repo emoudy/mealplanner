@@ -17,7 +17,174 @@ interface IngredientItem {
   recipes: { name: string; count: number }[];
   totalQuantity: number;
   originalUnit: string;
+  category: string;
   checked: boolean;
+}
+
+// Component for displaying categorized grocery list
+function GroceryListByCategory({ 
+  groceryList, 
+  toggleIngredient, 
+  removeIngredient 
+}: {
+  groceryList: IngredientItem[];
+  toggleIngredient: (index: number) => void;
+  removeIngredient: (index: number) => void;
+}) {
+  const categories = ['Produce', 'Dairy & Eggs', 'Meat & Seafood', 'Bakery / Bread', 'Baking & Pantry', 'Other'];
+  const categorizedItems = categories.reduce((acc, category) => {
+    acc[category] = groceryList.filter(item => item.category === category);
+    return acc;
+  }, {} as Record<string, IngredientItem[]>);
+
+  return (
+    <div className="space-y-6">
+      {categories.map(category => {
+        const items = categorizedItems[category];
+        if (items.length === 0) return null;
+
+        return (
+          <div key={category} className="space-y-3">
+            <h3 
+              className={cn(
+                "text-lg font-semibold border-b pb-2",
+                getCategoryStyles(category)
+              )}
+              role="heading" 
+              aria-level={3}
+            >
+              {category} ({items.length})
+            </h3>
+            <div className="space-y-3" role="group" aria-labelledby={`${category}-heading`}>
+              {items.map((item, itemIndex) => {
+                const globalIndex = groceryList.findIndex(globalItem => 
+                  globalItem.name === item.name && globalItem.category === item.category
+                );
+                
+                return (
+                  <div key={`${category}-${itemIndex}`} className="flex items-start gap-3 p-3 rounded-lg border bg-white dark:bg-gray-800">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="p-0 h-6 w-6 rounded-full border-2 border-gray-300 dark:border-gray-600 flex-shrink-0"
+                      onClick={() => toggleIngredient(globalIndex)}
+                      aria-label={item.checked ? `Uncheck ${item.name}` : `Check ${item.name}`}
+                    >
+                      {item.checked && <Check className="w-4 h-4 text-green-600" />}
+                    </Button>
+                    
+                    <div className="flex-1 min-w-0">
+                      <p className={cn(
+                        "font-medium capitalize",
+                        item.checked && "line-through text-gray-500 dark:text-gray-400"
+                      )}>
+                        {item.totalQuantity !== 1 ? `${item.originalUnit} ` : ''}{item.name}
+                      </p>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {item.recipes.map((recipe, recipeIndex) => (
+                          <Badge key={recipeIndex} variant="secondary" className="text-xs">
+                            {recipe.name}{recipe.count > 1 ? ` (${recipe.count}×)` : ''}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="p-0 h-6 w-6 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 flex-shrink-0"
+                      onClick={() => removeIngredient(globalIndex)}
+                      aria-label={`Remove ${item.name} from grocery list`}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// Helper function to get category-specific styles
+function getCategoryStyles(category: string): string {
+  switch (category) {
+    case 'Produce':
+      return 'text-green-700 dark:text-green-300 border-green-200 dark:border-green-800';
+    case 'Dairy & Eggs':
+      return 'text-yellow-700 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800';
+    case 'Meat & Seafood':
+      return 'text-red-700 dark:text-red-300 border-red-200 dark:border-red-800';
+    case 'Bakery / Bread':
+      return 'text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800';
+    case 'Baking & Pantry':
+      return 'text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800';
+    case 'Other':
+      return 'text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600';
+    default:
+      return 'text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600';
+  }
+}
+
+// Helper function to categorize ingredients
+function categorizeIngredient(ingredientName: string): string {
+  const name = ingredientName.toLowerCase();
+  
+  // Produce
+  if (name.includes('lettuce') || name.includes('tomato') || name.includes('onion') || 
+      name.includes('garlic') || name.includes('bell pepper') || name.includes('cucumber') ||
+      name.includes('carrot') || name.includes('celery') || name.includes('potato') ||
+      name.includes('mushroom') || name.includes('spinach') || name.includes('apple') ||
+      name.includes('banana') || name.includes('lemon') || name.includes('lime') ||
+      name.includes('avocado') || name.includes('broccoli') || name.includes('zucchini') ||
+      name.includes('corn') || name.includes('peas') || name.includes('beans') ||
+      name.includes('cilantro') || name.includes('parsley') || name.includes('basil') ||
+      name.includes('ginger') || name.includes('jalapeño') || name.includes('pepper')) {
+    return 'Produce';
+  }
+  
+  // Dairy & Eggs
+  if (name.includes('milk') || name.includes('cheese') || name.includes('butter') ||
+      name.includes('cream') || name.includes('yogurt') || name.includes('egg') ||
+      name.includes('sour cream') || name.includes('cottage cheese') || name.includes('ricotta') ||
+      name.includes('mozzarella') || name.includes('cheddar') || name.includes('parmesan')) {
+    return 'Dairy & Eggs';
+  }
+  
+  // Meat & Seafood
+  if (name.includes('chicken') || name.includes('beef') || name.includes('pork') ||
+      name.includes('turkey') || name.includes('fish') || name.includes('salmon') ||
+      name.includes('tuna') || name.includes('shrimp') || name.includes('bacon') ||
+      name.includes('ham') || name.includes('ground') || name.includes('steak') ||
+      name.includes('anchovy') || name.includes('fillet')) {
+    return 'Meat & Seafood';
+  }
+  
+  // Bakery / Bread
+  if (name.includes('bread') || name.includes('roll') || name.includes('bagel') ||
+      name.includes('bun') || name.includes('tortilla') || name.includes('pita') ||
+      name.includes('croissant') || name.includes('muffin') || name.includes('donut')) {
+    return 'Bakery / Bread';
+  }
+  
+  // Baking & Pantry
+  if (name.includes('flour') || name.includes('sugar') || name.includes('salt') ||
+      name.includes('pepper') || name.includes('oil') || name.includes('vinegar') ||
+      name.includes('sauce') || name.includes('pasta') || name.includes('rice') ||
+      name.includes('spice') || name.includes('herb') || name.includes('vanilla') ||
+      name.includes('baking powder') || name.includes('baking soda') || name.includes('honey') ||
+      name.includes('syrup') || name.includes('stock') || name.includes('broth') ||
+      name.includes('coconut milk') || name.includes('can') || name.includes('jar') ||
+      name.includes('bottle') || name.includes('paprika') || name.includes('cumin') ||
+      name.includes('oregano') || name.includes('thyme') || name.includes('rosemary')) {
+    return 'Baking & Pantry';
+  }
+  
+  // Default to Other
+  return 'Other';
 }
 
 // Helper function to parse ingredient quantities
@@ -204,6 +371,7 @@ export default function GroceryListPage() {
           recipes,
           totalQuantity: data.totalQuantity,
           originalUnit: displayQuantity,
+          category: categorizeIngredient(ingredientName),
           checked: false,
         };
       });
@@ -237,6 +405,7 @@ export default function GroceryListPage() {
       recipes: [{ name: 'Custom Item', count: 1 }],
       totalQuantity: 1,
       originalUnit: '1',
+      category: categorizeIngredient(newItemName.toLowerCase().trim()),
       checked: false,
     };
     
@@ -421,47 +590,11 @@ export default function GroceryListPage() {
                 )}
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  {groceryList.map((item, index) => (
-                    <div key={index} className="flex items-start gap-3 p-3 rounded-lg border bg-white dark:bg-gray-800">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="p-0 h-6 w-6 rounded-full border-2 border-gray-300 dark:border-gray-600 flex-shrink-0"
-                        onClick={() => toggleIngredient(index)}
-                        aria-label={item.checked ? `Uncheck ${item.name}` : `Check ${item.name}`}
-                      >
-                        {item.checked && <Check className="w-4 h-4 text-green-600" />}
-                      </Button>
-                      
-                      <div className="flex-1 min-w-0">
-                        <p className={cn(
-                          "font-medium capitalize",
-                          item.checked && "line-through text-gray-500 dark:text-gray-400"
-                        )}>
-                          {item.totalQuantity !== 1 ? `${item.originalUnit} ` : ''}{item.name}
-                        </p>
-                        <div className="flex flex-wrap gap-1 mt-1">
-                          {item.recipes.map((recipe, recipeIndex) => (
-                            <Badge key={recipeIndex} variant="secondary" className="text-xs">
-                              {recipe.name}{recipe.count > 1 ? ` (${recipe.count}×)` : ''}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="p-0 h-6 w-6 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 flex-shrink-0"
-                        onClick={() => removeIngredient(index)}
-                        aria-label={`Remove ${item.name} from grocery list`}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
+                <GroceryListByCategory 
+                  groceryList={groceryList} 
+                  toggleIngredient={toggleIngredient}
+                  removeIngredient={removeIngredient}
+                />
 
                 <Separator className="my-4" />
                 
