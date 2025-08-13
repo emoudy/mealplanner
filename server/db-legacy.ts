@@ -1,3 +1,8 @@
+// LEGACY FILE - PostgreSQL database configuration 
+// This file has been replaced by DynamoDB implementation
+// Keeping for reference during migration period
+
+/*
 import { Pool, neonConfig } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-serverless';
 import ws from "ws";
@@ -18,3 +23,7 @@ export const pool = new Pool({
 });
 
 export const db = drizzle({ client: pool, schema });
+*/
+
+// NOW USING: DynamoDB with AWS SDK v3
+// See: server/dynamodb.ts and server/dynamodb-storage.ts

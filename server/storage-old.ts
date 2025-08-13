@@ -6,7 +6,8 @@ import {
   type UpdateUser,
   type UsageTracking,
 } from "@flavorbot/shared/schemas";
-import { MockDynamoDBStorage } from "./dynamodb-adapter.js";
+// Import DynamoDB storage implementation
+import { DynamoDBStorage } from "./dynamodb-storage";
 
 // Interface for storage operations
 export interface IStorage {
@@ -38,8 +39,19 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
 }
 
-// Legacy PostgreSQL storage - REMOVED
+// Legacy PostgreSQL storage - REMOVED (using DynamoDB now)
 /*
+REMOVED: PostgreSQL/Drizzle ORM implementation
+This section contained the old DatabaseStorage class that used:
+- PostgreSQL with Drizzle ORM
+- connect-pg-simple for sessions
+- SQL-based queries with eq, and, desc operators
+
+Now replaced with DynamoDBStorage class that uses:
+- Amazon DynamoDB with AWS SDK v3
+- Custom DynamoDB session store
+- NoSQL single-table design with PK/SK patterns
+
 export class DatabaseStorage implements IStorage {
   // User operations
   async getUser(id: string): Promise<User | undefined> {
@@ -214,10 +226,7 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 }
-
-  }
-}
 */
 
-// Use MockDynamoDBStorage for backend development
-export const storage = new MockDynamoDBStorage();
+// Use DynamoDB storage implementation
+export const storage = new DynamoDBStorage();

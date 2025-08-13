@@ -8,7 +8,7 @@ import { storage } from "./storage";
 import { DynamoDBSessionStore } from "./session-dynamodb";
 import { User as SelectUser } from "@shared/schema";
 import { createId } from "@paralleldrive/cuid2";
-import connectPg from "connect-pg-simple";
+// Removed connect-pg-simple import - now using DynamoDB sessions
 
 declare global {
   namespace Express {

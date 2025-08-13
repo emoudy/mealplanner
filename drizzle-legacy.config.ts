@@ -1,3 +1,8 @@
+// LEGACY FILE - Drizzle configuration for PostgreSQL
+// This file has been replaced by DynamoDB implementation
+// Keeping for reference during migration period
+
+/*
 import { defineConfig } from "drizzle-kit";
 
 if (!process.env.DATABASE_URL) {
@@ -12,3 +17,7 @@ export default defineConfig({
     url: process.env.DATABASE_URL,
   },
 });
+*/
+
+// NOW USING: DynamoDB - no migrations needed
+// Tables auto-created via: server/setup-dynamodb.ts

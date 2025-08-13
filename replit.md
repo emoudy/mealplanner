@@ -60,12 +60,13 @@ FlavorBot is structured as a cross-platform application with a high degree of co
 - **AI Model:** Anthropic Claude
 - **Authentication:** Passport.js with Local Strategy (email/password) for universal access - Replit OAuth removed
 - **Email Service:** Configurable SMTP (Gmail, SendGrid, etc.) for verification emails
-- **Session Management:** PostgreSQL-backed sessions with connect-pg-simple
+- **Session Management:** DynamoDB-backed sessions with custom session store
 - **Password Security:** Node.js crypto with scrypt hashing and salt
 - **Deployment:** Replit (for web and backend), Expo EAS Build (for mobile iOS/Android app stores)
 
 ## Recent Architectural Changes (August 2025)
 - **Complete DynamoDB Migration (August 2025):** Successfully migrated from PostgreSQL to Amazon DynamoDB with single table design. Implemented DynamoDB storage layer with AWS SDK integration, custom session store, and table auto-creation. Migration completed for learning purposes to understand NoSQL database patterns. The application maintains the same interface through storage abstraction while using DynamoDB's PK/SK pattern with GSIs for complex queries.
+- **Complete PostgreSQL Removal (August 2025):** Removed all PostgreSQL references from codebase while maintaining clean multi-repo architecture. Each repository (backend, web, mobile, shared) now has proper separation of concerns with DynamoDB as the exclusive data layer. Backend repo uses mock storage for independent development.
 - **Simplified Authentication System:** Completely removed Replit OAuth system and implemented clean email/password authentication for universal access.
 - **Mandatory Email Verification:** Implemented secure email verification requirement before account activation - users cannot log in until email is verified.
 - **Database Schema Updates:** Added `password`, `authProvider`, `emailVerified` fields to users table for secure authentication.
