@@ -11,3 +11,6 @@ export * from './types/chat';
 export * from './hooks/useRecipes';
 export * from './hooks/useAuth';
 export * from './hooks/useChat';
+
+// Utilities
+export * from './utils/category-helpers';

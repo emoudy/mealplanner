@@ -298,4 +298,40 @@
   .print-bg {
     background-color: #fff !important;
   }
+  
+  /* Category badge print styles */
+  .print\\:bg-gray-200 {
+    background-color: #e5e7eb !important;
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+  }
+  
+  .print\\:text-gray-800 {
+    color: #1f2937 !important;
+  }
+  
+  /* Ensure category badges print with distinctive backgrounds */
+  [class*="bg-yellow-100"] {
+    background-color: #fef3c7 !important;
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+  }
+  
+  [class*="bg-green-100"] {
+    background-color: #dcfce7 !important;
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+  }
+  
+  [class*="bg-blue-100"] {
+    background-color: #dbeafe !important;
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+  }
+  
+  [class*="bg-purple-100"] {
+    background-color: #f3e8ff !important;
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+  }
 }

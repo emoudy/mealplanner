@@ -30,6 +30,25 @@ export default function CalendarPage() {
     window.print();
   };
 
+  // Helper function to get category badge styling
+  const getCategoryBadgeStyle = (category: string) => {
+    const lowerCategory = category.toLowerCase();
+    switch (lowerCategory) {
+      case 'breakfast':
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+      case 'lunch':
+        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+      case 'dinner':
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+      case 'snacks':
+        return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200';
+      default:
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
+    }
+  };
+
+
+
   // Filter recipes by meal type
   const getFilteredRecipes = () => {
     if (selectedMealType === 'all') {
@@ -395,24 +414,37 @@ export default function CalendarPage() {
                           key={entry.id}
                           className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
                         >
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-3 flex-1">
                             <span className="w-6 h-6 bg-brand-500 text-white rounded-full flex items-center justify-center text-xs font-medium">
                               {index + 1}
                             </span>
-                            <button
-                              onClick={() => handleRecipeClick(recipes.find(r => r.id === entry.recipeId)!)}
-                              className="text-left hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
-                            >
-                              <span className="font-medium whitespace-normal break-words">
-                                {entry.recipeTitle}
-                              </span>
-                            </button>
+                            <div className="flex flex-col gap-1 min-w-0 flex-1">
+                              <button
+                                onClick={() => handleRecipeClick(recipes.find(r => r.id === entry.recipeId)!)}
+                                className="text-left hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
+                              >
+                                <span className="font-medium whitespace-normal break-words">
+                                  {entry.recipeTitle}
+                                </span>
+                              </button>
+                              {(() => {
+                                const recipe = recipes.find(r => r.id === entry.recipeId);
+                                return recipe ? (
+                                  <Badge 
+                                    variant="secondary" 
+                                    className={`text-xs w-fit ${getCategoryBadgeStyle(recipe.category)} print:bg-gray-200 print:text-gray-800`}
+                                  >
+                                    {recipe.category}
+                                  </Badge>
+                                ) : null;
+                              })()}
+                            </div>
                           </div>
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => handleRemoveRecipe(entry.id)}
-                            className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
+                            className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950 print:hidden"
                           >
                             <X className="w-4 h-4" />
                           </Button>
@@ -560,33 +592,45 @@ export default function CalendarPage() {
               </CardHeader>
               <CardContent className="pt-0">
                 <div className="space-y-1">
-                  {dayEntries.slice(0, 3).map((entry) => (
-                    <div 
-                      key={entry.id}
-                      className="group flex items-center justify-between bg-white dark:bg-gray-800 rounded px-2 py-1 text-xs hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer recipe-entry-print print-bg"
-                    >
-                      <span 
-                        className="truncate flex-1 mr-1 print-text print:cursor-default"
-                        onClick={() => {
-                          const recipe = recipes.find(r => r.id === entry.recipeId);
-                          if (recipe) handleRecipeClick(recipe);
-                        }}
+                  {dayEntries.slice(0, 3).map((entry) => {
+                    const recipe = recipes.find(r => r.id === entry.recipeId);
+                    return (
+                      <div 
+                        key={entry.id}
+                        className="group bg-white dark:bg-gray-800 rounded px-2 py-1 text-xs hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer recipe-entry-print print-bg"
                       >
-                        {entry.recipeTitle}
-                      </span>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="w-4 h-4 p-0 opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 print:hidden"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleRemoveRecipe(entry.id);
-                        }}
-                      >
-                        <X className="w-3 h-3" />
-                      </Button>
-                    </div>
-                  ))}
+                        <div className="flex items-center justify-between mb-1">
+                          <span 
+                            className="truncate flex-1 mr-1 print-text print:cursor-default font-medium"
+                            onClick={() => {
+                              if (recipe) handleRecipeClick(recipe);
+                            }}
+                          >
+                            {entry.recipeTitle}
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="w-4 h-4 p-0 opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 print:hidden"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveRecipe(entry.id);
+                            }}
+                          >
+                            <X className="w-3 h-3" />
+                          </Button>
+                        </div>
+                        {recipe && (
+                          <Badge 
+                            variant="secondary" 
+                            className={`text-xs w-fit ${getCategoryBadgeStyle(recipe.category)} print:bg-gray-200 print:text-gray-800`}
+                          >
+                            {recipe.category}
+                          </Badge>
+                        )}
+                      </div>
+                    );
+                  })}
                   {dayEntries.length > 3 && (
                     <div className="text-xs text-gray-500 text-center">
                       +{dayEntries.length - 3} more
