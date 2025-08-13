@@ -13,7 +13,8 @@ import type { Recipe } from '@flavorbot/shared';
 
 interface IngredientItem {
   name: string;
-  recipes: string[];
+  recipes: { name: string; count: number }[];
+  totalCount: number;
   checked: boolean;
 }
 
@@ -49,41 +50,56 @@ export default function GroceryListPage() {
       const mealPlan: Record<string, any[]> = await response.json();
       
       const dateRange = eachDayOfInterval({ start: startDate, end: endDate });
-      const selectedRecipes: Recipe[] = [];
-      const ingredientMap = new Map<string, string[]>();
+      const recipeInstances: { recipe: Recipe; count: number }[] = [];
+      const ingredientMap = new Map<string, Map<string, number>>();
 
-      // Collect all recipes from the date range
+      // Collect all recipe instances from the date range (including duplicates)
       dateRange.forEach(date => {
         const dateStr = format(date, 'yyyy-MM-dd');
         const dayEntries = mealPlan[dateStr] || [];
         
         dayEntries.forEach((entry: any) => {
           const recipe = recipes.find(r => r.id === entry.recipeId);
-          if (recipe && !selectedRecipes.find(r => r.id === recipe.id)) {
-            selectedRecipes.push(recipe);
+          if (recipe) {
+            const existing = recipeInstances.find(r => r.recipe.id === recipe.id);
+            if (existing) {
+              existing.count++;
+            } else {
+              recipeInstances.push({ recipe, count: 1 });
+            }
           }
         });
       });
 
-      // Process ingredients from selected recipes
-      selectedRecipes.forEach(recipe => {
+      // Process ingredients from recipe instances with counts
+      recipeInstances.forEach(({ recipe, count }) => {
         if (recipe.ingredients && Array.isArray(recipe.ingredients)) {
           recipe.ingredients.forEach((ingredient: string) => {
             const cleanIngredient = ingredient.toLowerCase().trim();
             if (!ingredientMap.has(cleanIngredient)) {
-              ingredientMap.set(cleanIngredient, []);
+              ingredientMap.set(cleanIngredient, new Map());
             }
-            ingredientMap.get(cleanIngredient)!.push(recipe.title);
+            const recipeMap = ingredientMap.get(cleanIngredient)!;
+            recipeMap.set(recipe.title, (recipeMap.get(recipe.title) || 0) + count);
           });
         }
       });
 
-      // Convert to grocery list format
-      const newGroceryList: IngredientItem[] = Array.from(ingredientMap.entries()).map(([ingredient, recipeNames]) => ({
-        name: ingredient,
-        recipes: Array.from(new Set(recipeNames)), // Remove duplicates
-        checked: false,
-      }));
+      // Convert to grocery list format with proper counts
+      const newGroceryList: IngredientItem[] = Array.from(ingredientMap.entries()).map(([ingredient, recipeMap]) => {
+        const recipes = Array.from(recipeMap.entries()).map(([recipeName, count]) => ({
+          name: recipeName,
+          count
+        }));
+        const totalCount = recipes.reduce((sum, r) => sum + r.count, 0);
+        
+        return {
+          name: ingredient,
+          recipes,
+          totalCount,
+          checked: false,
+        };
+      });
 
       // Sort alphabetically
       newGroceryList.sort((a, b) => a.name.localeCompare(b.name));
@@ -261,12 +277,12 @@ export default function GroceryListPage() {
                           "font-medium capitalize",
                           item.checked && "line-through text-gray-500 dark:text-gray-400"
                         )}>
-                          {item.name}
+                          {item.totalCount > 1 ? `${item.totalCount} ` : ''}{item.name}
                         </p>
                         <div className="flex flex-wrap gap-1 mt-1">
                           {item.recipes.map((recipe, recipeIndex) => (
                             <Badge key={recipeIndex} variant="secondary" className="text-xs">
-                              {recipe}
+                              {recipe.name}{recipe.count > 1 ? ` (${recipe.count}×)` : ''}
                             </Badge>
                           ))}
                         </div>
