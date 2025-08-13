@@ -14,8 +14,44 @@ import type { Recipe } from '@flavorbot/shared';
 interface IngredientItem {
   name: string;
   recipes: { name: string; count: number }[];
-  totalCount: number;
+  totalQuantity: number;
+  originalUnit: string;
   checked: boolean;
+}
+
+// Helper function to parse ingredient quantities
+function parseIngredient(ingredient: string): { quantity: number; name: string; unit: string } {
+  const trimmed = ingredient.trim();
+  
+  // Try to match patterns like "2 Large Eggs", "1 cup flour", "1/2 teaspoon salt"
+  const match = trimmed.match(/^(\d+(?:\/\d+)?(?:\.\d+)?)\s+(.+)$/);
+  
+  if (match) {
+    const quantityStr = match[1];
+    const nameWithUnit = match[2];
+    
+    // Convert fractions to decimals
+    let quantity: number;
+    if (quantityStr.includes('/')) {
+      const [numerator, denominator] = quantityStr.split('/').map(Number);
+      quantity = numerator / denominator;
+    } else {
+      quantity = parseFloat(quantityStr);
+    }
+    
+    return {
+      quantity,
+      name: nameWithUnit,
+      unit: quantityStr
+    };
+  }
+  
+  // If no quantity found, assume 1
+  return {
+    quantity: 1,
+    name: trimmed,
+    unit: '1'
+  };
 }
 
 export default function GroceryListPage() {
@@ -72,31 +108,56 @@ export default function GroceryListPage() {
       });
 
       // Process ingredients from recipe instances with counts
+      const ingredientQuantityMap = new Map<string, { totalQuantity: number; originalUnit: string; recipes: Map<string, number> }>();
+      
       recipeInstances.forEach(({ recipe, count }) => {
         if (recipe.ingredients && Array.isArray(recipe.ingredients)) {
           recipe.ingredients.forEach((ingredient: string) => {
-            const cleanIngredient = ingredient.toLowerCase().trim();
-            if (!ingredientMap.has(cleanIngredient)) {
-              ingredientMap.set(cleanIngredient, new Map());
+            const parsed = parseIngredient(ingredient);
+            const cleanIngredientName = parsed.name.toLowerCase().trim();
+            
+            if (!ingredientQuantityMap.has(cleanIngredientName)) {
+              ingredientQuantityMap.set(cleanIngredientName, {
+                totalQuantity: 0,
+                originalUnit: parsed.unit,
+                recipes: new Map()
+              });
             }
-            const recipeMap = ingredientMap.get(cleanIngredient)!;
-            recipeMap.set(recipe.title, (recipeMap.get(recipe.title) || 0) + count);
+            
+            const ingredientData = ingredientQuantityMap.get(cleanIngredientName)!;
+            ingredientData.totalQuantity += parsed.quantity * count;
+            ingredientData.recipes.set(recipe.title, (ingredientData.recipes.get(recipe.title) || 0) + count);
           });
         }
       });
 
-      // Convert to grocery list format with proper counts
-      const newGroceryList: IngredientItem[] = Array.from(ingredientMap.entries()).map(([ingredient, recipeMap]) => {
-        const recipes = Array.from(recipeMap.entries()).map(([recipeName, count]) => ({
+      // Convert to grocery list format with proper quantity totals
+      const newGroceryList: IngredientItem[] = Array.from(ingredientQuantityMap.entries()).map(([ingredientName, data]) => {
+        const recipes = Array.from(data.recipes.entries()).map(([recipeName, count]) => ({
           name: recipeName,
           count
         }));
-        const totalCount = recipes.reduce((sum, r) => sum + r.count, 0);
+        
+        // Format the total quantity properly
+        let displayQuantity: string;
+        if (data.totalQuantity === Math.floor(data.totalQuantity)) {
+          // Whole number
+          displayQuantity = data.totalQuantity.toString();
+        } else {
+          // Decimal - try to convert back to fraction if reasonable
+          const decimal = data.totalQuantity;
+          if (decimal === 0.5) displayQuantity = '1/2';
+          else if (decimal === 0.25) displayQuantity = '1/4';
+          else if (decimal === 0.75) displayQuantity = '3/4';
+          else if (decimal === 1.5) displayQuantity = '1 1/2';
+          else displayQuantity = decimal.toFixed(2).replace(/\.?0+$/, '');
+        }
         
         return {
-          name: ingredient,
+          name: ingredientName,
           recipes,
-          totalCount,
+          totalQuantity: data.totalQuantity,
+          originalUnit: displayQuantity,
           checked: false,
         };
       });
@@ -277,7 +338,7 @@ export default function GroceryListPage() {
                           "font-medium capitalize",
                           item.checked && "line-through text-gray-500 dark:text-gray-400"
                         )}>
-                          {item.totalCount > 1 ? `${item.totalCount} ` : ''}{item.name}
+                          {item.totalQuantity !== 1 ? `${item.originalUnit} ` : ''}{item.name}
                         </p>
                         <div className="flex flex-wrap gap-1 mt-1">
                           {item.recipes.map((recipe, recipeIndex) => (
