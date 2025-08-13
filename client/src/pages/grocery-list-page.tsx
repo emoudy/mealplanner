@@ -28,54 +28,70 @@ export default function GroceryListPage() {
     queryKey: ['/api/recipes'],
   });
 
-  // Fetch meal plan data
-  const { data: mealPlan = {} } = useQuery<Record<string, any[]>>({
-    queryKey: ['/api/meal-plan'],
-  });
-
-  const generateGroceryList = () => {
+  const generateGroceryList = async () => {
     if (!startDate || !endDate) return;
 
-    const dateRange = eachDayOfInterval({ start: startDate, end: endDate });
-    const selectedRecipes: Recipe[] = [];
-    const ingredientMap = new Map<string, string[]>();
-
-    // Collect all recipes from the date range
-    dateRange.forEach(date => {
-      const dateStr = format(date, 'yyyy-MM-dd');
-      const dayEntries = mealPlan[dateStr] || [];
+    try {
+      // Fetch meal plan data for the selected date range
+      const startDateStr = format(startDate, 'yyyy-MM-dd');
+      const endDateStr = format(endDate, 'yyyy-MM-dd');
       
-      dayEntries.forEach((entry: any) => {
-        const recipe = recipes.find(r => r.id === entry.recipeId);
-        if (recipe && !selectedRecipes.find(r => r.id === recipe.id)) {
-          selectedRecipes.push(recipe);
+      const response = await fetch(`/api/meal-plan?startDate=${startDateStr}&endDate=${endDateStr}`, {
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        console.error('Failed to fetch meal plan:', response.statusText);
+        setGroceryList([]);
+        return;
+      }
+      
+      const mealPlan: Record<string, any[]> = await response.json();
+      
+      const dateRange = eachDayOfInterval({ start: startDate, end: endDate });
+      const selectedRecipes: Recipe[] = [];
+      const ingredientMap = new Map<string, string[]>();
+
+      // Collect all recipes from the date range
+      dateRange.forEach(date => {
+        const dateStr = format(date, 'yyyy-MM-dd');
+        const dayEntries = mealPlan[dateStr] || [];
+        
+        dayEntries.forEach((entry: any) => {
+          const recipe = recipes.find(r => r.id === entry.recipeId);
+          if (recipe && !selectedRecipes.find(r => r.id === recipe.id)) {
+            selectedRecipes.push(recipe);
+          }
+        });
+      });
+
+      // Process ingredients from selected recipes
+      selectedRecipes.forEach(recipe => {
+        if (recipe.ingredients && Array.isArray(recipe.ingredients)) {
+          recipe.ingredients.forEach((ingredient: string) => {
+            const cleanIngredient = ingredient.toLowerCase().trim();
+            if (!ingredientMap.has(cleanIngredient)) {
+              ingredientMap.set(cleanIngredient, []);
+            }
+            ingredientMap.get(cleanIngredient)!.push(recipe.title);
+          });
         }
       });
-    });
 
-    // Process ingredients from selected recipes
-    selectedRecipes.forEach(recipe => {
-      if (recipe.ingredients && Array.isArray(recipe.ingredients)) {
-        recipe.ingredients.forEach((ingredient: string) => {
-          const cleanIngredient = ingredient.toLowerCase().trim();
-          if (!ingredientMap.has(cleanIngredient)) {
-            ingredientMap.set(cleanIngredient, []);
-          }
-          ingredientMap.get(cleanIngredient)!.push(recipe.title);
-        });
-      }
-    });
+      // Convert to grocery list format
+      const newGroceryList: IngredientItem[] = Array.from(ingredientMap.entries()).map(([ingredient, recipeNames]) => ({
+        name: ingredient,
+        recipes: Array.from(new Set(recipeNames)), // Remove duplicates
+        checked: false,
+      }));
 
-    // Convert to grocery list format
-    const newGroceryList: IngredientItem[] = Array.from(ingredientMap.entries()).map(([ingredient, recipeNames]) => ({
-      name: ingredient,
-      recipes: Array.from(new Set(recipeNames)), // Remove duplicates
-      checked: false,
-    }));
-
-    // Sort alphabetically
-    newGroceryList.sort((a, b) => a.name.localeCompare(b.name));
-    setGroceryList(newGroceryList);
+      // Sort alphabetically
+      newGroceryList.sort((a, b) => a.name.localeCompare(b.name));
+      setGroceryList(newGroceryList);
+    } catch (error) {
+      console.error('Error generating grocery list:', error);
+      setGroceryList([]);
+    }
   };
 
   const toggleIngredient = (index: number) => {
