@@ -15,6 +15,7 @@ import Home from "@/pages/Home";
 import Recipes from "@/pages/Recipes";
 import Chatbot from "@/pages/Chatbot";
 import CalendarPage from "@/pages/calendar-page";
+import GroceryListPage from "@/pages/grocery-list-page";
 import Settings from "@/pages/Settings";
 import NotFound from "@/pages/not-found";
 import AuthPage from "@/pages/auth-page";
@@ -44,6 +45,7 @@ function Router() {
             <Route path="/recipes" component={Recipes} />
             <Route path="/chatbot" component={Chatbot} />
             <Route path="/calendar" component={CalendarPage} />
+            <Route path="/grocery-list" component={GroceryListPage} />
             <Route path="/settings" component={Settings} />
           </>
         ) : (

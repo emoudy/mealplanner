@@ -11,6 +11,7 @@ import {
   MessageCircle, 
   UtensilsCrossed,
   Calendar,
+  ShoppingCart,
   Settings, 
   LogOut,
   User
@@ -107,6 +108,19 @@ export function Navigation() {
                 title="Meal Calendar"
               >
                 <Calendar className="w-5 h-5" aria-hidden="true" />
+              </Button>
+
+              <Button 
+                variant={location === '/grocery-list' ? 'default' : 'ghost'}
+                size="icon"
+                className="w-10 h-10"
+                onClick={() => navigate('/grocery-list')}
+                aria-label="Grocery List - Generate shopping list from meal plan"
+                aria-current={location === '/grocery-list' ? 'page' : undefined}
+                role="menuitem"
+                title="Grocery List"
+              >
+                <ShoppingCart className="w-5 h-5" aria-hidden="true" />
               </Button>
               
               <Button 
