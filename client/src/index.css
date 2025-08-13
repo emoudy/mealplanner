@@ -231,3 +231,71 @@
     border-color: var(--brand-700);
   }
 }
+
+/* Print Styles for Calendar */
+@media print {
+  @page {
+    margin: 0.5in;
+    size: landscape;
+  }
+  
+  /* Hide non-essential elements when printing */
+  .print\\:hidden {
+    display: none !important;
+  }
+  
+  /* Ensure proper layout for printing */
+  body {
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+  }
+  
+  /* Calendar-specific print styles */
+  .calendar-print {
+    font-size: 12px;
+    line-height: 1.2;
+  }
+  
+  /* Ensure cards print with borders */
+  .calendar-card {
+    border: 1px solid #e5e7eb !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  
+  /* Compact spacing for print */
+  .calendar-grid {
+    gap: 8px !important;
+  }
+  
+  /* Daily view print optimization */
+  .daily-print {
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+  
+  /* Recipe entries print styling */
+  .recipe-entry-print {
+    font-size: 11px !important;
+    padding: 4px !important;
+    margin: 2px 0 !important;
+  }
+  
+  /* Hide interactive elements */
+  button:not(.print-keep),
+  .hover\\:bg-gray-50,
+  .hover\\:bg-gray-800,
+  .group-hover\\:opacity-100 {
+    display: none !important;
+  }
+  
+  /* Force black text for better print readability */
+  .print-text {
+    color: #000 !important;
+  }
+  
+  /* Ensure proper background colors for print */
+  .print-bg {
+    background-color: #fff !important;
+  }
+}

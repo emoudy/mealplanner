@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, ChevronLeft, ChevronRight, Plus, X, Clock, Users, BookOpen, MessageCircle, UtensilsCrossed } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, Plus, X, Clock, Users, BookOpen, MessageCircle, UtensilsCrossed, Printer } from 'lucide-react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isToday, addDays, startOfWeek, endOfWeek } from 'date-fns';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
@@ -23,6 +23,11 @@ export default function CalendarPage() {
   const [viewMode, setViewMode] = useState<'month' | 'week' | 'daily'>('month');
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
+
+  // Print function
+  const handlePrint = () => {
+    window.print();
+  };
 
   // Calculate date ranges based on view mode
   const getDateRange = () => {
@@ -186,7 +191,7 @@ export default function CalendarPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-7xl">
+    <div className="container mx-auto px-4 py-6 max-w-7xl calendar-print">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
         <div className="flex items-center gap-3 mb-4 md:mb-0">
@@ -207,20 +212,29 @@ export default function CalendarPage() {
               <TabsTrigger value="daily">Daily</TabsTrigger>
             </TabsList>
           </Tabs>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handlePrint}
+            className="flex items-center gap-2 print:hidden"
+          >
+            <Printer className="w-4 h-4" />
+            Print
+          </Button>
         </div>
       </div>
 
       {/* Calendar Navigation */}
-      <div className="flex items-center justify-between mb-6">
-        <Button variant="outline" size="sm" onClick={navigatePrevious}>
+      <div className="flex items-center justify-between mb-6 print:justify-center">
+        <Button variant="outline" size="sm" onClick={navigatePrevious} className="print:hidden">
           <ChevronLeft className="w-4 h-4" />
         </Button>
         
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white print-text">
           {formatDateHeader()}
         </h2>
         
-        <Button variant="outline" size="sm" onClick={navigateNext}>
+        <Button variant="outline" size="sm" onClick={navigateNext} className="print:hidden">
           <ChevronRight className="w-4 h-4" />
         </Button>
       </div>
@@ -228,14 +242,14 @@ export default function CalendarPage() {
       {/* Calendar Grid */}
       {viewMode === 'daily' ? (
         // Daily View - Single day with full recipe titles
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-2xl mx-auto daily-print">
           {daysToDisplay.map((day) => {
             const dateStr = format(day, 'yyyy-MM-dd');
             const dayEntries = mealPlan[dateStr] || [];
             const isCurrentDay = isToday(day);
 
             return (
-              <Card key={dateStr} className={`${isCurrentDay ? 'ring-2 ring-brand-500' : ''}`}>
+              <Card key={dateStr} className={`calendar-card print-bg ${isCurrentDay ? 'ring-2 ring-brand-500' : ''}`}>
                 <CardHeader>
                   <div className="space-y-4">
                     <CardTitle className="text-lg text-center">
@@ -243,7 +257,7 @@ export default function CalendarPage() {
                     </CardTitle>
                     
                     {/* Action buttons directly accessible */}
-                    <div className="flex gap-3 justify-center">
+                    <div className="flex gap-3 justify-center print:hidden">
                       <Link href="/chatbot">
                         <Button 
                           onClick={() => setSelectedDate(null)}
@@ -372,7 +386,7 @@ export default function CalendarPage() {
         </div>
       ) : (
         // Month/Week View - Grid layout
-        <div className={`grid gap-4 ${viewMode === 'month' ? 'grid-cols-7' : 'grid-cols-7'} mb-8`}>
+        <div className={`grid gap-4 calendar-grid ${viewMode === 'month' ? 'grid-cols-7' : 'grid-cols-7'} mb-8`}>
           {/* Day headers */}
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
             <div key={day} className="text-center font-medium text-gray-500 dark:text-gray-400 py-2">
@@ -389,11 +403,11 @@ export default function CalendarPage() {
           return (
             <Card 
               key={dateStr} 
-              className={`min-h-32 ${isCurrentDay ? 'ring-2 ring-brand-500' : ''} ${dayEntries.length > 0 ? 'bg-green-50 dark:bg-green-950' : ''}`}
+              className={`calendar-card print-bg min-h-32 ${isCurrentDay ? 'ring-2 ring-brand-500' : ''} ${dayEntries.length > 0 ? 'bg-green-50 dark:bg-green-950' : ''}`}
             >
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
-                  <span className={`text-sm font-medium ${isCurrentDay ? 'text-brand-600 dark:text-brand-400' : 'text-gray-900 dark:text-white'}`}>
+                  <span className={`text-sm font-medium print-text ${isCurrentDay ? 'text-brand-600 dark:text-brand-400' : 'text-gray-900 dark:text-white'}`}>
                     {format(day, 'd')}
                   </span>
                   <Dialog>
@@ -401,7 +415,7 @@ export default function CalendarPage() {
                       <Button 
                         variant="ghost" 
                         size="sm" 
-                        className="w-6 h-6 p-0"
+                        className="w-6 h-6 p-0 print:hidden"
                         onClick={() => setSelectedDate(dateStr)}
                         disabled={dayEntries.length >= 10}
                       >
@@ -490,10 +504,10 @@ export default function CalendarPage() {
                   {dayEntries.slice(0, 3).map((entry) => (
                     <div 
                       key={entry.id}
-                      className="group flex items-center justify-between bg-white dark:bg-gray-800 rounded px-2 py-1 text-xs hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
+                      className="group flex items-center justify-between bg-white dark:bg-gray-800 rounded px-2 py-1 text-xs hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer recipe-entry-print print-bg"
                     >
                       <span 
-                        className="truncate flex-1 mr-1"
+                        className="truncate flex-1 mr-1 print-text print:cursor-default"
                         onClick={() => {
                           const recipe = recipes.find(r => r.id === entry.recipeId);
                           if (recipe) handleRecipeClick(recipe);
@@ -504,7 +518,7 @@ export default function CalendarPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="w-4 h-4 p-0 opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700"
+                        className="w-4 h-4 p-0 opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 print:hidden"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleRemoveRecipe(entry.id);
