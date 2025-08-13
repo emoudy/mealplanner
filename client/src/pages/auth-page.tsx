@@ -256,14 +256,25 @@ export default function AuthPage() {
                     </Button>
                   </form>
 
+                  {/* Replit OAuth Button */}
                   <div className="mt-4">
-                    <Separator className="my-4" />
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <Separator className="w-full" />
+                      </div>
+                      <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-white dark:bg-gray-800 px-2 text-gray-500">Or</span>
+                      </div>
+                    </div>
                     <Button 
                       type="button"
                       variant="outline"
-                      className="w-full"
+                      className="w-full mt-4 border-2 border-blue-500 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950"
                       onClick={() => window.location.href = '/api/auth/replit'}
                     >
+                      <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7.041 9H12a3 3 0 013 3v3h-3a3 3 0 01-3-3V9zM14.959 15H10a3 3 0 01-3-3V9h3a3 3 0 013 3v3z"/>
+                      </svg>
                       Continue with Replit
                     </Button>
                   </div>
@@ -367,14 +378,25 @@ export default function AuthPage() {
                     </Button>
                   </form>
 
+                  {/* Replit OAuth Button */}
                   <div className="mt-4">
-                    <Separator className="my-4" />
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <Separator className="w-full" />
+                      </div>
+                      <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-white dark:bg-gray-800 px-2 text-gray-500">Or</span>
+                      </div>
+                    </div>
                     <Button 
                       type="button"
                       variant="outline"
-                      className="w-full"
+                      className="w-full mt-4 border-2 border-blue-500 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950"
                       onClick={() => window.location.href = '/api/auth/replit'}
                     >
+                      <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7.041 9H12a3 3 0 013 3v3h-3a3 3 0 01-3-3V9zM14.959 15H10a3 3 0 01-3-3V9h3a3 3 0 013 3v3z"/>
+                      </svg>
                       Continue with Replit
                     </Button>
                   </div>
