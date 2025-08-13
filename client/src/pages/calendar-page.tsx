@@ -237,58 +237,55 @@ export default function CalendarPage() {
             return (
               <Card key={dateStr} className={`${isCurrentDay ? 'ring-2 ring-brand-500' : ''}`}>
                 <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">
+                  <div className="space-y-4">
+                    <CardTitle className="text-lg text-center">
                       {format(day, 'EEEE, MMMM d, yyyy')}
                     </CardTitle>
-                    <Dialog>
-                      <DialogTrigger asChild>
+                    
+                    {/* Action buttons directly accessible */}
+                    <div className="flex gap-3 justify-center">
+                      <Link href="/chatbot">
                         <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => setSelectedDate(dateStr)}
-                          disabled={dayEntries.length >= 10}
+                          onClick={() => setSelectedDate(null)}
                           className="flex items-center gap-2"
                         >
-                          <Plus className="w-4 h-4" />
-                          Add Recipe
+                          <MessageCircle className="w-4 h-4" />
+                          Ask FlavorBot
                         </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-2xl">
-                        <DialogHeader>
-                          <DialogTitle>Add Recipe for {format(day, 'MMMM d, yyyy')}</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4">
-                          {/* Action buttons - always visible */}
-                          <div className="flex gap-3 justify-center pb-4 border-b">
-                            <Link href="/chatbot">
-                              <Button 
-                                onClick={() => setSelectedDate(null)}
-                                className="flex items-center gap-2"
-                              >
-                                <MessageCircle className="w-4 h-4" />
-                                Ask FlavorBot
-                              </Button>
-                            </Link>
-                            <Button 
-                              variant="outline"
-                              onClick={() => {
-                                openAddRecipeModal();
-                                setSelectedDate(null);
-                              }}
-                              className="flex items-center gap-2"
-                            >
-                              <UtensilsCrossed className="w-4 h-4" />
-                              Add a Recipe
-                            </Button>
-                          </div>
-
-                          {/* Recipe list */}
+                      </Link>
+                      <Button 
+                        variant="outline"
+                        onClick={() => {
+                          openAddRecipeModal();
+                          setSelectedDate(null);
+                        }}
+                        className="flex items-center gap-2"
+                      >
+                        <UtensilsCrossed className="w-4 h-4" />
+                        Add a Recipe
+                      </Button>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button 
+                            variant="secondary" 
+                            size="sm"
+                            onClick={() => setSelectedDate(dateStr)}
+                            disabled={dayEntries.length >= 10}
+                            className="flex items-center gap-2"
+                          >
+                            <Plus className="w-4 h-4" />
+                            From My Recipes
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-2xl">
+                          <DialogHeader>
+                            <DialogTitle>Select from Your Recipes</DialogTitle>
+                          </DialogHeader>
                           <div className="grid gap-4 max-h-96 overflow-y-auto">
                             {recipes.length === 0 ? (
                               <div className="text-center py-8">
                                 <p className="text-gray-500">
-                                  No recipes found. Use the buttons above to create or find recipes!
+                                  No recipes found. Create some recipes first!
                                 </p>
                               </div>
                             ) : (
@@ -326,9 +323,9 @@ export default function CalendarPage() {
                               ))
                             )}
                           </div>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent>
