@@ -641,12 +641,24 @@ export default function GroceryListPage() {
     setSelectedRecipeIds([]);
   };
 
-  // Re-filter grocery list when recipe selection or custom items toggle changes
-  useEffect(() => {
-    if (groceryList.length > 0) {
-      generateGroceryList();
-    }
-  }, [selectedRecipeIds, showCustomItems]);
+  // Filter grocery list based on selected recipes and custom items toggle
+  const getFilteredGroceryList = () => {
+    return groceryList.filter(item => {
+      // Always include custom items if toggle is on
+      if (item.isCustom) {
+        return showCustomItems;
+      }
+      
+      // For recipe items, check if the recipe is selected
+      const itemRecipeIds = item.recipes.map(r => {
+        const recipe = recipes.find(rec => rec.title === r.name);
+        return recipe?.id;
+      }).filter((id): id is number => id !== undefined);
+      
+      // Include item if at least one of its recipes is selected
+      return itemRecipeIds.some(recipeId => selectedRecipeIds.includes(recipeId));
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 print:bg-white print:min-h-0">
@@ -845,7 +857,7 @@ export default function GroceryListPage() {
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
                     <ShoppingCart className="w-5 h-5" />
-                    Grocery List ({groceryList.length} items)
+                    Grocery List ({getFilteredGroceryList().length} items)
                   </CardTitle>
                   <div className="flex gap-2">
                     <Button 
@@ -929,7 +941,7 @@ export default function GroceryListPage() {
               <CardContent className="print:p-0">
                 <div className="space-y-6 print:grocery-categories-grid">
                   <GroceryListByCategory 
-                    groceryList={groceryList} 
+                    groceryList={getFilteredGroceryList()} 
                     toggleIngredient={toggleIngredient}
                     removeIngredient={removeIngredient}
                   />
@@ -938,13 +950,13 @@ export default function GroceryListPage() {
                 <Separator className="my-4 print:hidden" />
                 
                 <div className="text-sm text-gray-600 dark:text-gray-400 print:hidden">
-                  <p>✓ Checked items: {groceryList.filter(item => item.checked).length}</p>
-                  <p>○ Remaining items: {groceryList.filter(item => !item.checked).length}</p>
+                  <p>✓ Checked items: {getFilteredGroceryList().filter(item => item.checked).length}</p>
+                  <p>○ Remaining items: {getFilteredGroceryList().filter(item => !item.checked).length}</p>
                 </div>
 
                 {/* Print-only summary */}
                 <div className="hidden print:block summary">
-                  <p>Total items: {groceryList.length}</p>
+                  <p>Total items: {getFilteredGroceryList().length}</p>
                   <p>Date generated: {new Date().toLocaleDateString()}</p>
                 </div>
               </CardContent>
