@@ -414,31 +414,26 @@ export default function CalendarPage() {
                           key={entry.id}
                           className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
                         >
-                          <div className="flex items-center gap-3 flex-1">
-                            <span className="w-6 h-6 bg-brand-500 text-white rounded-full flex items-center justify-center text-xs font-medium">
-                              {index + 1}
-                            </span>
-                            <div className="flex flex-col gap-1 min-w-0 flex-1">
-                              <button
-                                onClick={() => handleRecipeClick(recipes.find(r => r.id === entry.recipeId)!)}
-                                className="text-left hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
-                              >
-                                <span className="font-medium whitespace-normal break-words">
-                                  {entry.recipeTitle}
-                                </span>
-                              </button>
-                              {(() => {
-                                const recipe = recipes.find(r => r.id === entry.recipeId);
-                                return recipe ? (
-                                  <Badge 
-                                    variant="secondary" 
-                                    className={`text-xs w-fit ${getCategoryBadgeStyle(recipe.category)} print:bg-gray-200 print:text-gray-800`}
-                                  >
-                                    {recipe.category}
-                                  </Badge>
-                                ) : null;
-                              })()}
-                            </div>
+                          <div className="flex flex-col gap-1 min-w-0 flex-1">
+                            <button
+                              onClick={() => handleRecipeClick(recipes.find(r => r.id === entry.recipeId)!)}
+                              className="text-left hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
+                            >
+                              <span className="font-medium whitespace-normal break-words">
+                                {entry.recipeTitle}
+                              </span>
+                            </button>
+                            {(() => {
+                              const recipe = recipes.find(r => r.id === entry.recipeId);
+                              return recipe ? (
+                                <Badge 
+                                  variant="secondary" 
+                                  className={`text-xs w-fit ${getCategoryBadgeStyle(recipe.category)} print:bg-gray-200 print:text-gray-800`}
+                                >
+                                  {recipe.category}
+                                </Badge>
+                              ) : null;
+                            })()}
                           </div>
                           <Button
                             variant="ghost"
