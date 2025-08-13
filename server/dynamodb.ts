@@ -47,6 +47,9 @@ export const keys = {
   },
   session: {
     data: (sessionId: string) => ({ PK: `SESSION#${sessionId}`, SK: "DATA" }),
+  },
+  mealPlan: {
+    entry: (userId: string, date: string, entryId: string) => ({ PK: `USER#${userId}#MEALPLAN`, SK: `DATE#${date}#ENTRY#${entryId}` })
   }
 };
 

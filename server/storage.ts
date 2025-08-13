@@ -5,7 +5,10 @@ import {
   type InsertRecipe,
   type UpdateUser,
   type UsageTracking,
-} from "@flavorbot/shared/schemas";
+  type MealPlanEntry,
+  type CreateMealPlanEntryData,
+  type MealPlanResponse,
+} from "@flavorbot/shared";
 // Import storage implementations
 import { DynamoDBStorage } from "./dynamodb-storage";
 import { MemoryStorage } from "./storage-fallback";
@@ -35,6 +38,12 @@ export interface IStorage {
 
   // User lookup by email
   getUserByEmail(email: string): Promise<User | undefined>;
+
+  // Meal plan operations
+  addRecipeToMealPlan(userId: string, date: string, recipeId: number, recipeTitle: string): Promise<MealPlanEntry>;
+  removeRecipeFromMealPlan(userId: string, mealPlanEntryId: number): Promise<void>;
+  getMealPlanForDateRange(userId: string, startDate: string, endDate: string): Promise<MealPlanResponse>;
+  getMealPlanForDate(userId: string, date: string): Promise<MealPlanEntry[]>;
 }
 
 // Create storage instance with fallback for development

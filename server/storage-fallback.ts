@@ -5,7 +5,10 @@ import {
   type InsertRecipe,
   type UpdateUser,
   type UsageTracking,
-} from "@flavorbot/shared/schemas";
+  type MealPlanEntry,
+  type CreateMealPlanEntryData,
+  type MealPlanResponse,
+} from "@flavorbot/shared";
 import { IStorage } from "./storage";
 import { createId } from "@paralleldrive/cuid2";
 
@@ -14,7 +17,9 @@ export class MemoryStorage implements IStorage {
   private users: Map<string, User> = new Map();
   private recipes: Map<number, Recipe> = new Map();
   private usage: Map<string, UsageTracking> = new Map();
+  private mealPlans: Map<number, MealPlanEntry> = new Map();
   private recipeIdCounter = 1;
+  private mealPlanIdCounter = 1;
 
   async getUser(id: string): Promise<User | undefined> {
     return this.users.get(id);
@@ -180,5 +185,59 @@ export class MemoryStorage implements IStorage {
       }
     }
     return undefined;
+  }
+
+  // Meal plan operations
+  async addRecipeToMealPlan(userId: string, date: string, recipeId: number, recipeTitle: string): Promise<MealPlanEntry> {
+    const existingEntries = Array.from(this.mealPlans.values()).filter(entry => 
+      entry.userId === userId && entry.date === date
+    );
+
+    if (existingEntries.length >= 10) {
+      throw new Error("Cannot add more than 10 recipes per day");
+    }
+
+    const mealPlanEntry: MealPlanEntry = {
+      id: this.mealPlanIdCounter++,
+      userId,
+      date,
+      recipeId,
+      recipeTitle,
+      createdAt: new Date().toISOString(),
+    };
+
+    this.mealPlans.set(mealPlanEntry.id, mealPlanEntry);
+    return mealPlanEntry;
+  }
+
+  async removeRecipeFromMealPlan(userId: string, mealPlanEntryId: number): Promise<void> {
+    const entry = this.mealPlans.get(mealPlanEntryId);
+    if (entry && entry.userId === userId) {
+      this.mealPlans.delete(mealPlanEntryId);
+    }
+  }
+
+  async getMealPlanForDateRange(userId: string, startDate: string, endDate: string): Promise<MealPlanResponse> {
+    const entries = Array.from(this.mealPlans.values()).filter(entry => 
+      entry.userId === userId && 
+      entry.date >= startDate && 
+      entry.date <= endDate
+    );
+
+    const groupedByDate: MealPlanResponse = {};
+    for (const entry of entries) {
+      if (!groupedByDate[entry.date]) {
+        groupedByDate[entry.date] = [];
+      }
+      groupedByDate[entry.date].push(entry);
+    }
+
+    return groupedByDate;
+  }
+
+  async getMealPlanForDate(userId: string, date: string): Promise<MealPlanEntry[]> {
+    return Array.from(this.mealPlans.values()).filter(entry => 
+      entry.userId === userId && entry.date === date
+    );
   }
 }

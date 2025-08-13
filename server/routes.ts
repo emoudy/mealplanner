@@ -600,6 +600,78 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Meal plan routes
+  app.get("/api/meal-plan", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const { startDate, endDate, date } = req.query;
+
+      if (date) {
+        // Get meal plan for specific date
+        const entries = await storage.getMealPlanForDate(userId, date as string);
+        res.json(entries);
+      } else if (startDate && endDate) {
+        // Get meal plan for date range
+        const mealPlan = await storage.getMealPlanForDateRange(userId, startDate as string, endDate as string);
+        res.json(mealPlan);
+      } else {
+        res.status(400).json({ message: "Please provide either 'date' or both 'startDate' and 'endDate'" });
+      }
+    } catch (error) {
+      console.error("Error getting meal plan:", error);
+      res.status(500).json({ message: "Failed to get meal plan" });
+    }
+  });
+
+  app.post("/api/meal-plan", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const { date, recipeId, recipeTitle } = req.body;
+
+      if (!date || !recipeId || !recipeTitle) {
+        return res.status(400).json({ message: "Date, recipeId, and recipeTitle are required" });
+      }
+
+      const entry = await storage.addRecipeToMealPlan(userId, date, recipeId, recipeTitle);
+      res.status(201).json(entry);
+    } catch (error) {
+      console.error("Error adding recipe to meal plan:", error);
+      if (error instanceof Error && error.message.includes("Cannot add more than 10 recipes")) {
+        res.status(400).json({ message: error.message });
+      } else {
+        res.status(500).json({ message: "Failed to add recipe to meal plan" });
+      }
+    }
+  });
+
+  app.delete("/api/meal-plan/:entryId", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const entryId = parseInt(req.params.entryId);
+      if (isNaN(entryId)) {
+        return res.status(400).json({ message: "Invalid entry ID" });
+      }
+
+      await storage.removeRecipeFromMealPlan(userId, entryId);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error removing recipe from meal plan:", error);
+      res.status(500).json({ message: "Failed to remove recipe from meal plan" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

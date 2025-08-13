@@ -10,6 +10,7 @@ import {
   BookOpen, 
   MessageCircle, 
   UtensilsCrossed,
+  Calendar,
   Settings, 
   LogOut,
   User
@@ -81,7 +82,7 @@ export function Navigation() {
               >
                 <MessageCircle className="w-5 h-5" aria-hidden="true" />
               </Button>
-              
+
               <Button 
                 variant={location === '/recipes' ? 'default' : 'ghost'}
                 size="icon"
@@ -93,6 +94,19 @@ export function Navigation() {
                 title="My Recipes"
               >
                 <BookOpen className="w-5 h-5" aria-hidden="true" />
+              </Button>
+
+              <Button 
+                variant={location === '/calendar' ? 'default' : 'ghost'}
+                size="icon"
+                className="w-10 h-10"
+                onClick={() => navigate('/calendar')}
+                aria-label="Meal Calendar - Plan your meals"
+                aria-current={location === '/calendar' ? 'page' : undefined}
+                role="menuitem"
+                title="Meal Calendar"
+              >
+                <Calendar className="w-5 h-5" aria-hidden="true" />
               </Button>
               
               <Button 

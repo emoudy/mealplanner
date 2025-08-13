@@ -3,6 +3,7 @@ export * from './api/client';
 
 // Types
 export * from './types/recipe';
+export * from './types/meal-plan';
 export * from './types/auth';
 export * from './types/chat';
 

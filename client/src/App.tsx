@@ -14,6 +14,7 @@ import Landing from "@/pages/Landing";
 import Home from "@/pages/Home";
 import Recipes from "@/pages/Recipes";
 import Chatbot from "@/pages/Chatbot";
+import CalendarPage from "@/pages/calendar-page";
 import Settings from "@/pages/Settings";
 import NotFound from "@/pages/not-found";
 import AuthPage from "@/pages/auth-page";
@@ -42,6 +43,7 @@ function Router() {
             <Route path="/" component={Home} />
             <Route path="/recipes" component={Recipes} />
             <Route path="/chatbot" component={Chatbot} />
+            <Route path="/calendar" component={CalendarPage} />
             <Route path="/settings" component={Settings} />
           </>
         ) : (

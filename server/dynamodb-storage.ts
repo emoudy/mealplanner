@@ -5,7 +5,10 @@ import {
   type InsertRecipe,
   type UpdateUser,
   type UsageTracking,
-} from "@flavorbot/shared/schemas";
+  type MealPlanEntry,
+  type CreateMealPlanEntryData,
+  type MealPlanResponse,
+} from "@flavorbot/shared";
 import { IStorage } from "./storage";
 import { docClient, tableName, keys, generateId, generateRecipeId } from "./dynamodb";
 import { GetCommand, PutCommand, UpdateCommand, DeleteCommand, QueryCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
@@ -486,5 +489,157 @@ export class DynamoDBStorage implements IStorage {
     // This would require scanning to find all search indexes for this recipe
     // In a production system, you'd maintain a reverse index
     // For now, we'll skip this implementation
+  }
+
+  // Meal plan operations
+  async addRecipeToMealPlan(userId: string, date: string, recipeId: number, recipeTitle: string): Promise<MealPlanEntry> {
+    try {
+      // Check current entries for the date to enforce 10 recipe limit
+      const existingEntries = await this.getMealPlanForDate(userId, date);
+      if (existingEntries.length >= 10) {
+        throw new Error("Cannot add more than 10 recipes per day");
+      }
+
+      const mealPlanId = generateId();
+      const now = new Date().toISOString();
+      
+      const mealPlanEntry: MealPlanEntry = {
+        id: parseInt(mealPlanId), // Convert to number for consistency
+        userId,
+        date,
+        recipeId,
+        recipeTitle,
+        createdAt: now,
+      };
+
+      await docClient.send(new PutCommand({
+        TableName: tableName,
+        Item: {
+          ...keys.mealPlan.entry(userId, date, mealPlanId),
+          ...mealPlanEntry,
+          EntityType: "MEAL_PLAN_ENTRY"
+        }
+      }));
+
+      return mealPlanEntry;
+    } catch (error) {
+      console.error("Error adding recipe to meal plan:", error);
+      throw error;
+    }
+  }
+
+  async removeRecipeFromMealPlan(userId: string, mealPlanEntryId: number): Promise<void> {
+    try {
+      // Note: We'd need to query to find the entry first since we don't have the date
+      // For simplicity, we'll use a scan to find the entry
+      const response = await docClient.send(new ScanCommand({
+        TableName: tableName,
+        FilterExpression: "#userId = :userId AND #entryId = :entryId AND #entityType = :entityType",
+        ExpressionAttributeNames: {
+          "#userId": "userId",
+          "#entryId": "id",
+          "#entityType": "EntityType"
+        },
+        ExpressionAttributeValues: {
+          ":userId": userId,
+          ":entryId": mealPlanEntryId,
+          ":entityType": "MEAL_PLAN_ENTRY"
+        }
+      }));
+
+      if (response.Items && response.Items.length > 0) {
+        const item = response.Items[0];
+        await docClient.send(new DeleteCommand({
+          TableName: tableName,
+          Key: {
+            PK: item.PK,
+            SK: item.SK
+          }
+        }));
+      }
+    } catch (error) {
+      console.error("Error removing recipe from meal plan:", error);
+      throw error;
+    }
+  }
+
+  async getMealPlanForDateRange(userId: string, startDate: string, endDate: string): Promise<MealPlanResponse> {
+    try {
+      const response = await docClient.send(new QueryCommand({
+        TableName: tableName,
+        KeyConditionExpression: "#pk = :pk AND #sk BETWEEN :startSk AND :endSk",
+        ExpressionAttributeNames: {
+          "#pk": "PK",
+          "#sk": "SK"
+        },
+        ExpressionAttributeValues: {
+          ":pk": `USER#${userId}#MEALPLAN`,
+          ":startSk": `DATE#${startDate}`,
+          ":endSk": `DATE#${endDate}#ZZZZ` // Use ZZZZ to ensure we get all entries for end date
+        }
+      }));
+
+      const groupedByDate: MealPlanResponse = {};
+      
+      if (response.Items) {
+        for (const item of response.Items) {
+          const entry: MealPlanEntry = {
+            id: item.id,
+            userId: item.userId,
+            date: item.date,
+            recipeId: item.recipeId,
+            recipeTitle: item.recipeTitle,
+            createdAt: item.createdAt,
+          };
+
+          if (!groupedByDate[entry.date]) {
+            groupedByDate[entry.date] = [];
+          }
+          groupedByDate[entry.date].push(entry);
+        }
+      }
+
+      return groupedByDate;
+    } catch (error) {
+      console.error("Error getting meal plan for date range:", error);
+      return {};
+    }
+  }
+
+  async getMealPlanForDate(userId: string, date: string): Promise<MealPlanEntry[]> {
+    try {
+      const response = await docClient.send(new QueryCommand({
+        TableName: tableName,
+        KeyConditionExpression: "#pk = :pk AND begins_with(#sk, :sk)",
+        ExpressionAttributeNames: {
+          "#pk": "PK",
+          "#sk": "SK"
+        },
+        ExpressionAttributeValues: {
+          ":pk": `USER#${userId}#MEALPLAN`,
+          ":sk": `DATE#${date}`
+        }
+      }));
+
+      const entries: MealPlanEntry[] = [];
+      
+      if (response.Items) {
+        for (const item of response.Items) {
+          entries.push({
+            id: item.id,
+            userId: item.userId,
+            date: item.date,
+            recipeId: item.recipeId,
+            recipeTitle: item.recipeTitle,
+            createdAt: item.createdAt,
+          });
+        }
+      }
+
+      return entries;
+    } catch (error) {
+      console.error("Error getting meal plan for date:", error);
+      return [];
+    }
   }
 }
