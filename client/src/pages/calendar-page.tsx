@@ -251,69 +251,74 @@ export default function CalendarPage() {
                       <DialogHeader>
                         <DialogTitle>Add Recipe for {format(day, 'MMMM d, yyyy')}</DialogTitle>
                       </DialogHeader>
-                      <div className="grid gap-4 max-h-96 overflow-y-auto">
-                        {recipes.length === 0 ? (
-                          <div className="text-center py-8">
-                            <p className="text-gray-500 mb-6">
-                              No recipes found. Create some recipes first!
-                            </p>
-                            <div className="flex gap-3 justify-center">
-                              <Link href="/chatbot">
-                                <Button 
-                                  onClick={() => setSelectedDate(null)}
-                                  className="flex items-center gap-2"
-                                >
-                                  <MessageCircle className="w-4 h-4" />
-                                  Ask FlavorBot
-                                </Button>
-                              </Link>
-                              <Button 
-                                variant="outline"
+                      <div className="space-y-4">
+                        {/* Action buttons - always visible */}
+                        <div className="flex gap-3 justify-center pb-4 border-b">
+                          <Link href="/chatbot">
+                            <Button 
+                              onClick={() => setSelectedDate(null)}
+                              className="flex items-center gap-2"
+                            >
+                              <MessageCircle className="w-4 h-4" />
+                              Ask FlavorBot
+                            </Button>
+                          </Link>
+                          <Button 
+                            variant="outline"
+                            onClick={() => {
+                              openAddRecipeModal();
+                              setSelectedDate(null);
+                            }}
+                            className="flex items-center gap-2"
+                          >
+                            <UtensilsCrossed className="w-4 h-4" />
+                            Add a Recipe
+                          </Button>
+                        </div>
+
+                        {/* Recipe list */}
+                        <div className="grid gap-4 max-h-96 overflow-y-auto">
+                          {recipes.length === 0 ? (
+                            <div className="text-center py-8">
+                              <p className="text-gray-500">
+                                No recipes found. Use the buttons above to create or find recipes!
+                              </p>
+                            </div>
+                          ) : (
+                            recipes.map((recipe) => (
+                              <Card 
+                                key={recipe.id} 
+                                className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
                                 onClick={() => {
-                                  openAddRecipeModal();
+                                  handleAddRecipe(dateStr, recipe);
                                   setSelectedDate(null);
                                 }}
-                                className="flex items-center gap-2"
                               >
-                                <UtensilsCrossed className="w-4 h-4" />
-                                Add a Recipe
-                              </Button>
-                            </div>
-                          </div>
-                        ) : (
-                          recipes.map((recipe) => (
-                            <Card 
-                              key={recipe.id} 
-                              className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
-                              onClick={() => {
-                                handleAddRecipe(dateStr, recipe);
-                                setSelectedDate(null);
-                              }}
-                            >
-                              <CardContent className="p-4">
-                                <div className="flex items-center justify-between">
-                                  <div>
-                                    <h4 className="font-medium">{recipe.title}</h4>
-                                    <div className="flex items-center gap-4 text-sm text-gray-500 mt-1">
-                                      <span className="flex items-center gap-1">
-                                        <Clock className="w-3 h-3" />
-                                        {recipe.cookTime}m
-                                      </span>
-                                      <span className="flex items-center gap-1">
-                                        <Users className="w-3 h-3" />
-                                        {recipe.servings}
-                                      </span>
-                                      <Badge variant="outline" className="text-xs">
-                                        {recipe.category}
-                                      </Badge>
+                                <CardContent className="p-4">
+                                  <div className="flex items-center justify-between">
+                                    <div>
+                                      <h4 className="font-medium">{recipe.title}</h4>
+                                      <div className="flex items-center gap-4 text-sm text-gray-500 mt-1">
+                                        <span className="flex items-center gap-1">
+                                          <Clock className="w-3 h-3" />
+                                          {recipe.cookTime}m
+                                        </span>
+                                        <span className="flex items-center gap-1">
+                                          <Users className="w-3 h-3" />
+                                          {recipe.servings}
+                                        </span>
+                                        <Badge variant="outline" className="text-xs">
+                                          {recipe.category}
+                                        </Badge>
+                                      </div>
                                     </div>
+                                    <Plus className="w-4 h-4" />
                                   </div>
-                                  <Plus className="w-4 h-4" />
-                                </div>
-                              </CardContent>
-                            </Card>
-                          ))
-                        )}
+                                </CardContent>
+                              </Card>
+                            ))
+                          )}
+                        </div>
                       </div>
                     </DialogContent>
                   </Dialog>
