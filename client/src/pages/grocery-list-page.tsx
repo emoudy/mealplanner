@@ -5,7 +5,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { ShoppingCart, CalendarIcon, Check, X } from 'lucide-react';
+import { ShoppingCart, CalendarIcon, Check, X, Trash2 } from 'lucide-react';
 import { format, addDays, eachDayOfInterval } from 'date-fns';
 import { useQuery } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
@@ -100,6 +100,10 @@ export default function GroceryListPage() {
         i === index ? { ...item, checked: !item.checked } : item
       )
     );
+  };
+
+  const removeIngredient = (index: number) => {
+    setGroceryList(prev => prev.filter((_, i) => i !== index));
   };
 
   const clearList = () => {
@@ -230,14 +234,27 @@ export default function GroceryListPage() {
                 <div className="space-y-3">
                   {groceryList.map((item, index) => (
                     <div key={index} className="flex items-start gap-3 p-3 rounded-lg border bg-white dark:bg-gray-800">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="p-0 h-6 w-6 rounded-full border-2 border-gray-300 dark:border-gray-600"
-                        onClick={() => toggleIngredient(index)}
-                      >
-                        {item.checked && <Check className="w-4 h-4 text-green-600" />}
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="p-0 h-6 w-6 rounded-full border-2 border-gray-300 dark:border-gray-600"
+                          onClick={() => toggleIngredient(index)}
+                          aria-label={item.checked ? `Uncheck ${item.name}` : `Check ${item.name}`}
+                        >
+                          {item.checked && <Check className="w-4 h-4 text-green-600" />}
+                        </Button>
+                        
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="p-0 h-6 w-6 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                          onClick={() => removeIngredient(index)}
+                          aria-label={`Remove ${item.name} from grocery list`}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                       
                       <div className="flex-1 min-w-0">
                         <p className={cn(
