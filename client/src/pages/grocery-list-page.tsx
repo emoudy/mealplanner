@@ -5,7 +5,8 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { ShoppingCart, CalendarIcon, Check, X, Trash2 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { ShoppingCart, CalendarIcon, Check, X, Trash2, Plus } from 'lucide-react';
 import { format, addDays, eachDayOfInterval } from 'date-fns';
 import { useQuery } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
@@ -114,6 +115,8 @@ export default function GroceryListPage() {
   const [endDate, setEndDate] = useState<Date | undefined>(addDays(new Date(), 6));
   const [groceryList, setGroceryList] = useState<IngredientItem[]>([]);
   const [showCalendar, setShowCalendar] = useState<'start' | 'end' | null>(null);
+  const [newItemName, setNewItemName] = useState<string>('');
+  const [showAddForm, setShowAddForm] = useState<boolean>(false);
 
   // Fetch recipes
   const { data: recipes = [] } = useQuery<Recipe[]>({
@@ -226,6 +229,27 @@ export default function GroceryListPage() {
     setGroceryList(prev => prev.filter((_, i) => i !== index));
   };
 
+  const addCustomItem = () => {
+    if (!newItemName.trim()) return;
+    
+    const newItem: IngredientItem = {
+      name: newItemName.toLowerCase().trim(),
+      recipes: [{ name: 'Custom Item', count: 1 }],
+      totalQuantity: 1,
+      originalUnit: '1',
+      checked: false,
+    };
+    
+    setGroceryList(prev => [...prev, newItem]);
+    setNewItemName('');
+    setShowAddForm(false);
+  };
+
+  const handleAddFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    addCustomItem();
+  };
+
   const clearList = () => {
     setGroceryList([]);
   };
@@ -336,6 +360,16 @@ export default function GroceryListPage() {
                     Grocery List ({groceryList.length} items)
                   </CardTitle>
                   <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setShowAddForm(!showAddForm)}
+                      className="flex items-center gap-1"
+                      aria-label="Add custom item to grocery list"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Add Item
+                    </Button>
                     <Button variant="outline" size="sm" onClick={clearChecked}>
                       Clear Checked
                     </Button>
@@ -348,6 +382,42 @@ export default function GroceryListPage() {
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     For meals from {format(startDate, "MMM d")} to {format(endDate, "MMM d, yyyy")}
                   </p>
+                )}
+
+                {showAddForm && (
+                  <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <form onSubmit={handleAddFormSubmit} className="flex gap-2">
+                      <Input
+                        type="text"
+                        placeholder="Enter item name (e.g., Milk, Bread, Paper towels)"
+                        value={newItemName}
+                        onChange={(e) => setNewItemName(e.target.value)}
+                        className="flex-1"
+                        aria-label="Custom grocery item name"
+                        autoFocus
+                      />
+                      <Button 
+                        type="submit" 
+                        size="sm" 
+                        disabled={!newItemName.trim()}
+                        aria-label="Add item to grocery list"
+                      >
+                        Add
+                      </Button>
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => {
+                          setShowAddForm(false);
+                          setNewItemName('');
+                        }}
+                        aria-label="Cancel adding item"
+                      >
+                        Cancel
+                      </Button>
+                    </form>
+                  </div>
                 )}
               </CardHeader>
               <CardContent>
@@ -410,9 +480,54 @@ export default function GroceryListPage() {
                 <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
                   No recipes found
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
                   No recipes are planned for the selected date range. Add some recipes to your meal plan first.
                 </p>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowAddForm(true)}
+                  className="flex items-center gap-2"
+                  aria-label="Add custom item to grocery list"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Custom Item
+                </Button>
+                
+                {showAddForm && (
+                  <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg text-left">
+                    <form onSubmit={handleAddFormSubmit} className="flex gap-2">
+                      <Input
+                        type="text"
+                        placeholder="Enter item name (e.g., Milk, Bread, Paper towels)"
+                        value={newItemName}
+                        onChange={(e) => setNewItemName(e.target.value)}
+                        className="flex-1"
+                        aria-label="Custom grocery item name"
+                        autoFocus
+                      />
+                      <Button 
+                        type="submit" 
+                        size="sm" 
+                        disabled={!newItemName.trim()}
+                        aria-label="Add item to grocery list"
+                      >
+                        Add
+                      </Button>
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => {
+                          setShowAddForm(false);
+                          setNewItemName('');
+                        }}
+                        aria-label="Cancel adding item"
+                      >
+                        Cancel
+                      </Button>
+                    </form>
+                  </div>
+                )}
               </CardContent>
             </Card>
           )}
