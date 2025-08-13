@@ -6,7 +6,10 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
-import { ShoppingCart, CalendarIcon, Check, X, Trash2, Plus, Printer } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { ShoppingCart, CalendarIcon, Check, X, Trash2, Plus, Printer, Filter } from 'lucide-react';
 import { format, addDays, eachDayOfInterval } from 'date-fns';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
@@ -307,6 +310,8 @@ export default function GroceryListPage() {
   const [showCalendar, setShowCalendar] = useState<'start' | 'end' | null>(null);
   const [newItemName, setNewItemName] = useState<string>('');
   const [showAddForm, setShowAddForm] = useState<boolean>(false);
+  const [selectedRecipeIds, setSelectedRecipeIds] = useState<number[]>([]);
+  const [showCustomItems, setShowCustomItems] = useState<boolean>(true);
 
   // Fetch recipes
   const { data: recipes = [] } = useQuery<Recipe[]>({
@@ -369,10 +374,20 @@ export default function GroceryListPage() {
         });
       });
 
-      // Process ingredients from recipe instances with counts
+      // Initialize selected recipes if empty (all recipes selected by default)
+      if (selectedRecipeIds.length === 0 && recipeInstances.length > 0) {
+        setSelectedRecipeIds(recipeInstances.map(ri => ri.recipe.id));
+      }
+
+      // Filter recipe instances based on selected recipes
+      const filteredRecipeInstances = selectedRecipeIds.length > 0 
+        ? recipeInstances.filter(ri => selectedRecipeIds.includes(ri.recipe.id))
+        : recipeInstances;
+
+      // Process ingredients from filtered recipe instances with counts
       const ingredientQuantityMap = new Map<string, { totalQuantity: number; originalUnit: string; recipes: Map<string, number> }>();
       
-      recipeInstances.forEach(({ recipe, count }) => {
+      filteredRecipeInstances.forEach(({ recipe, count }) => {
         if (recipe.ingredients && Array.isArray(recipe.ingredients)) {
           recipe.ingredients.forEach((ingredient: string) => {
             const parsed = parseIngredient(ingredient);
@@ -413,17 +428,19 @@ export default function GroceryListPage() {
         };
       });
 
-      // Add custom grocery items to the list
-      const customItems: IngredientItem[] = customGroceryItems.map((item: CustomGroceryItem) => ({
-        name: item.name,
-        recipes: [{ name: 'Custom Item', count: 1 }],
-        totalQuantity: 1,
-        originalUnit: item.unit || '1',
-        category: item.category,
-        checked: false,
-        isCustom: true,
-        id: item.id
-      }));
+      // Add custom grocery items to the list (if enabled)
+      const customItems: IngredientItem[] = showCustomItems 
+        ? customGroceryItems.map((item: CustomGroceryItem) => ({
+            name: item.name,
+            recipes: [{ name: 'Custom Item', count: 1 }],
+            totalQuantity: 1,
+            originalUnit: item.unit || '1',
+            category: item.category,
+            checked: false,
+            isCustom: true,
+            id: item.id
+          }))
+        : [];
 
       // Combine recipe ingredients with custom items
       const combinedList = [...newGroceryList, ...customItems];
@@ -579,6 +596,55 @@ export default function GroceryListPage() {
     window.print();
   };
 
+  // Get available recipes from current meal plan
+  const getAvailableRecipes = () => {
+    if (!startDate || !endDate) return [];
+    
+    // This will be populated when grocery list is generated
+    const recipeMap = new Map<number, { recipe: Recipe; count: number }>();
+    
+    // Return current recipes from the grocery list
+    const uniqueRecipes = groceryList
+      .filter(item => !item.isCustom)
+      .reduce((acc, item) => {
+        item.recipes.forEach(recipeInfo => {
+          if (recipeInfo.name !== 'Custom Item') {
+            const recipe = recipes.find(r => r.title === recipeInfo.name);
+            if (recipe) {
+              acc.set(recipe.id, { recipe, count: recipeInfo.count });
+            }
+          }
+        });
+        return acc;
+      }, recipeMap);
+
+    return Array.from(uniqueRecipes.values());
+  };
+
+  const handleRecipeFilterChange = (recipeId: number, checked: boolean) => {
+    if (checked) {
+      setSelectedRecipeIds(prev => [...prev, recipeId]);
+    } else {
+      setSelectedRecipeIds(prev => prev.filter(id => id !== recipeId));
+    }
+  };
+
+  const handleSelectAllRecipes = () => {
+    const allRecipeIds = getAvailableRecipes().map(ri => ri.recipe.id);
+    setSelectedRecipeIds(allRecipeIds);
+  };
+
+  const handleDeselectAllRecipes = () => {
+    setSelectedRecipeIds([]);
+  };
+
+  // Re-filter grocery list when recipe selection or custom items toggle changes
+  useEffect(() => {
+    if (groceryList.length > 0) {
+      generateGroceryList();
+    }
+  }, [selectedRecipeIds, showCustomItems]);
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 print:bg-white print:min-h-0">
       <div className="container mx-auto px-4 py-8 print:px-0 print:py-0">
@@ -670,6 +736,79 @@ export default function GroceryListPage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Filters Section */}
+          {groceryList.length > 0 && (
+            <Card className="mb-6 print:hidden">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Filter className="w-5 h-5" />
+                  Filters
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col lg:flex-row gap-6">
+                  {/* Recipe Filter */}
+                  <div className="flex-1">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-sm font-medium">Show Recipes:</Label>
+                        <div className="flex gap-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={handleSelectAllRecipes}
+                            className="text-xs"
+                          >
+                            Select All
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={handleDeselectAllRecipes}
+                            className="text-xs"
+                          >
+                            Clear All
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-32 overflow-y-auto">
+                        {getAvailableRecipes().map(({ recipe, count }) => (
+                          <div key={recipe.id} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`recipe-${recipe.id}`}
+                              checked={selectedRecipeIds.includes(recipe.id)}
+                              onCheckedChange={(checked) => 
+                                handleRecipeFilterChange(recipe.id, checked as boolean)
+                              }
+                            />
+                            <Label
+                              htmlFor={`recipe-${recipe.id}`}
+                              className="text-sm cursor-pointer flex-1"
+                            >
+                              {recipe.title} ({count}x)
+                            </Label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Custom Items Toggle */}
+                  <div className="flex items-center space-x-3 lg:border-l lg:pl-6">
+                    <Switch
+                      id="show-custom-items"
+                      checked={showCustomItems}
+                      onCheckedChange={setShowCustomItems}
+                    />
+                    <Label htmlFor="show-custom-items" className="text-sm font-medium">
+                      Show Custom Items
+                    </Label>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Grocery List */}
           {groceryList.length > 0 && (

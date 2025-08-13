@@ -46,6 +46,7 @@ FlavorBot is structured as a cross-platform application with a high degree of co
 - Simplified recipe editing with numbered text instructions.
 - Smart suggestion button behavior (category vs. recipe generation).
 - Enhanced recipe save functionality from AI-generated recipes.
+- Advanced grocery list filtering with recipe selection dropdown and custom items toggle.
 
 **UI/UX Decisions:**
 - Clean, modern interface.
