@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -314,7 +314,21 @@ export default function GroceryListPage() {
   });
 
   const generateGroceryList = async () => {
-    if (!startDate || !endDate) return;
+    if (!startDate || !endDate) {
+      // Even if no date range, show custom items
+      const customItems: IngredientItem[] = customGroceryItems.map((item: CustomGroceryItem) => ({
+        name: item.name,
+        recipes: [{ name: 'Custom Item', count: 1 }],
+        totalQuantity: 1,
+        originalUnit: item.unit || '1',
+        category: item.category,
+        checked: false,
+        isCustom: true,
+        id: item.id
+      }));
+      setGroceryList(customItems.sort((a, b) => a.name.localeCompare(b.name)));
+      return;
+    }
 
     try {
       // Fetch meal plan data for the selected date range
@@ -452,6 +466,13 @@ export default function GroceryListPage() {
     enabled: true,
   });
 
+  // Auto-regenerate list when custom items change
+  useEffect(() => {
+    if (customGroceryItems.length >= 0) { // Check if data has been loaded
+      generateGroceryList();
+    }
+  }, [customGroceryItems, startDate, endDate, recipes]);
+
   // Mutation to create custom grocery item
   const createCustomItemMutation = useMutation({
     mutationFn: async (itemData: { name: string; category: string; quantity?: string; unit?: string }) => {
@@ -480,11 +501,28 @@ export default function GroceryListPage() {
     
     try {
       // Create persistent custom item
-      await createCustomItemMutation.mutateAsync({
+      const newCustomItem = await createCustomItemMutation.mutateAsync({
         name: newItemName.trim(),
         category,
         quantity: '1',
         unit: 'item'
+      });
+
+      // Immediately add to current grocery list
+      const newGroceryItem: IngredientItem = {
+        name: newCustomItem.name,
+        recipes: [{ name: 'Custom Item', count: 1 }],
+        totalQuantity: 1,
+        originalUnit: newCustomItem.unit || '1',
+        category: newCustomItem.category,
+        checked: false,
+        isCustom: true,
+        id: newCustomItem.id
+      };
+
+      setGroceryList(prev => {
+        const combined = [...prev, newGroceryItem];
+        return combined.sort((a, b) => a.name.localeCompare(b.name));
       });
       
       setNewItemName('');
