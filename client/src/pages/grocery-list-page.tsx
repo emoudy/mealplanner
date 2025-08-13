@@ -375,14 +375,15 @@ export default function GroceryListPage() {
       });
 
       // Initialize selected recipes if empty (all recipes selected by default)
-      if (selectedRecipeIds.length === 0 && recipeInstances.length > 0) {
+      // Only do this on first generation, not when filters change
+      if (selectedRecipeIds.length === 0 && recipeInstances.length > 0 && groceryList.length === 0) {
         setSelectedRecipeIds(recipeInstances.map(ri => ri.recipe.id));
       }
 
       // Filter recipe instances based on selected recipes
       const filteredRecipeInstances = selectedRecipeIds.length > 0 
         ? recipeInstances.filter(ri => selectedRecipeIds.includes(ri.recipe.id))
-        : recipeInstances;
+        : [];
 
       // Process ingredients from filtered recipe instances with counts
       const ingredientQuantityMap = new Map<string, { totalQuantity: number; originalUnit: string; recipes: Map<string, number> }>();
@@ -750,15 +751,20 @@ export default function GroceryListPage() {
                 <div className="flex flex-col lg:flex-row gap-6">
                   {/* Recipe Filter */}
                   <div className="flex-1">
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-sm font-medium">Show Recipes:</Label>
+                    <fieldset className="space-y-3">
+                      <legend className="sr-only">Recipe Filter Options</legend>
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <Label className="text-sm font-medium" id="recipe-filter-label">
+                          Show Recipes:
+                        </Label>
                         <div className="flex gap-2">
                           <Button 
                             variant="outline" 
                             size="sm" 
                             onClick={handleSelectAllRecipes}
                             className="text-xs"
+                            aria-describedby="recipe-filter-label"
+                            aria-label="Select all recipes to include in grocery list"
                           >
                             Select All
                           </Button>
@@ -767,20 +773,31 @@ export default function GroceryListPage() {
                             size="sm" 
                             onClick={handleDeselectAllRecipes}
                             className="text-xs"
+                            aria-describedby="recipe-filter-label"
+                            aria-label="Clear all recipe selections from grocery list"
                           >
                             Clear All
                           </Button>
                         </div>
                       </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-32 overflow-y-auto">
+                      <div 
+                        className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-32 overflow-y-auto"
+                        role="group"
+                        aria-labelledby="recipe-filter-label"
+                        aria-describedby="recipe-filter-description"
+                      >
+                        <p id="recipe-filter-description" className="sr-only">
+                          Select which recipes to include in your grocery list. Unselecting a recipe will remove its ingredients from the list.
+                        </p>
                         {getAvailableRecipes().map(({ recipe, count }) => (
-                          <div key={recipe.id} className="flex items-center space-x-2">
+                          <div key={recipe.id} className="flex items-center space-x-2 p-1 rounded hover:bg-gray-50 dark:hover:bg-gray-800">
                             <Checkbox
                               id={`recipe-${recipe.id}`}
                               checked={selectedRecipeIds.includes(recipe.id)}
                               onCheckedChange={(checked) => 
                                 handleRecipeFilterChange(recipe.id, checked as boolean)
                               }
+                              aria-describedby={`recipe-${recipe.id}-description`}
                             />
                             <Label
                               htmlFor={`recipe-${recipe.id}`}
@@ -788,22 +805,31 @@ export default function GroceryListPage() {
                             >
                               {recipe.title} ({count}x)
                             </Label>
+                            <span id={`recipe-${recipe.id}-description`} className="sr-only">
+                              {selectedRecipeIds.includes(recipe.id) ? 'Selected' : 'Not selected'} - {recipe.title} appears {count} times in your meal plan
+                            </span>
                           </div>
                         ))}
                       </div>
-                    </div>
+                    </fieldset>
                   </div>
 
                   {/* Custom Items Toggle */}
-                  <div className="flex items-center space-x-3 lg:border-l lg:pl-6">
+                  <div className="flex items-center space-x-3 lg:border-l lg:pl-6 p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-800">
                     <Switch
                       id="show-custom-items"
                       checked={showCustomItems}
                       onCheckedChange={setShowCustomItems}
+                      aria-describedby="custom-items-description"
                     />
-                    <Label htmlFor="show-custom-items" className="text-sm font-medium">
-                      Show Custom Items
-                    </Label>
+                    <div className="flex flex-col">
+                      <Label htmlFor="show-custom-items" className="text-sm font-medium">
+                        Show Custom Items
+                      </Label>
+                      <span id="custom-items-description" className="text-xs text-muted-foreground">
+                        Toggle to show/hide items you added manually
+                      </span>
+                    </div>
                   </div>
                 </div>
               </CardContent>
