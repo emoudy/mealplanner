@@ -154,7 +154,7 @@ app.use((req, res, next) => {
   // Setup periodic cleanup of expired sessions (every 24 hours)
   setInterval(() => {
     try {
-      // Session cleanup is handled by PostgreSQL session store automatically
+      // Session cleanup is handled by DynamoDB session store automatically
       log("Session cleanup triggered");
     } catch (error) {
       console.error("Error during session cleanup:", error);
