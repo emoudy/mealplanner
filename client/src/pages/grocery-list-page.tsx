@@ -461,17 +461,28 @@ export default function GroceryListPage() {
   };
 
   // Query to load custom grocery items
-  const { data: customGroceryItems = [] } = useQuery({
+  const { data: customGroceryItems = [] } = useQuery<CustomGroceryItem[]>({
     queryKey: ['/api/grocery-items'],
     enabled: true,
   });
 
-  // Auto-regenerate list when custom items change
+  // Initial load of custom items only (no auto-regeneration)
   useEffect(() => {
-    if (customGroceryItems.length >= 0) { // Check if data has been loaded
-      generateGroceryList();
+    if (customGroceryItems.length > 0 && groceryList.length === 0) {
+      // Only show custom items on initial load if no grocery list exists
+      const customItems: IngredientItem[] = customGroceryItems.map((item: CustomGroceryItem) => ({
+        name: item.name,
+        recipes: [{ name: 'Custom Item', count: 1 }],
+        totalQuantity: 1,
+        originalUnit: item.unit || '1',
+        category: item.category,
+        checked: false,
+        isCustom: true,
+        id: item.id
+      }));
+      setGroceryList(customItems.sort((a, b) => a.name.localeCompare(b.name)));
     }
-  }, [customGroceryItems, startDate, endDate, recipes]);
+  }, [customGroceryItems]);
 
   // Mutation to create custom grocery item
   const createCustomItemMutation = useMutation({
@@ -532,28 +543,37 @@ export default function GroceryListPage() {
     }
   };
 
+  const deleteAllItems = async () => {
+    // Delete all custom items from backend
+    const customItems = groceryList.filter(item => item.isCustom && item.id);
+    
+    try {
+      // Delete all custom items from database
+      await Promise.all(
+        customItems.map(item => 
+          deleteCustomItemMutation.mutateAsync(item.id!)
+        )
+      );
+      
+      // Clear the entire grocery list
+      setGroceryList([]);
+    } catch (error) {
+      console.error('Failed to delete all custom items:', error);
+      // Still clear the list locally even if backend fails
+      setGroceryList([]);
+    }
+  };
+
   const handleAddFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     addCustomItem();
   };
 
-  const clearList = () => {
-    setGroceryList([]);
-  };
 
-  const clearCustomItems = async () => {
-    try {
-      // Clear all custom items from backend
-      await apiRequest('DELETE', '/api/grocery-items');
-      queryClient.invalidateQueries({ queryKey: ['/api/grocery-items'] });
-    } catch (error) {
-      console.error('Failed to clear custom items:', error);
-    }
-  };
 
-  const clearChecked = () => {
-    setGroceryList(prev => prev.filter(item => !item.checked));
-  };
+
+
+
 
   const printGroceryList = () => {
     window.print();
@@ -681,19 +701,8 @@ export default function GroceryListPage() {
                       <Printer className="w-4 h-4" />
                       Print
                     </Button>
-                    <Button variant="outline" size="sm" onClick={clearChecked} className="print:hidden">
-                      Clear Checked
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={clearCustomItems}
-                      className="print:hidden text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300"
-                    >
-                      Clear Custom
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={clearList} className="print:hidden">
-                      Clear All
+                    <Button variant="outline" size="sm" onClick={deleteAllItems} className="print:hidden">
+                      Delete All
                     </Button>
                   </div>
                 </div>
