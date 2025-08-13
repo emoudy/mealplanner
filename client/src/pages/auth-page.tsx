@@ -8,7 +8,6 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertCircle, ChefHat, Loader2 } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
@@ -59,31 +58,30 @@ export default function AuthPage() {
 
   const loginMutation = useMutation({
     mutationFn: async (data: z.infer<typeof loginSchema>) => {
-      const response = await apiRequest("POST", "/api/login", data);
-      return response.json();
+      const res = await apiRequest("POST", "/api/login", data);
+      return await res.json();
     },
-    onSuccess: (user) => {
-      // Update the cache immediately and invalidate to trigger refetch
-      queryClient.setQueryData(["/api/user"], user);
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+    onSuccess: (data) => {
+      if (data.requiresVerification) {
+        toast({
+          title: "Email Verification Required",
+          description: "Please check your email and click the verification link before logging in.",
+          variant: "destructive",
+        });
+        return;
+      }
       
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       toast({
         title: "Welcome back!",
-        description: "You've successfully logged in.",
+        description: "You have successfully logged in.",
       });
-      
-      // Navigate to home page using wouter with small delay to ensure state update
-      setTimeout(() => {
-        setLocation('/');
-      }, 200);
+      setLocation("/");
     },
-    onError: (error: any) => {
-      const message = error.message || "Invalid email or password";
+    onError: (error: Error) => {
       toast({
         title: "Login failed",
-        description: message.includes("verify your email") 
-          ? "Please verify your email before logging in. Check your inbox for verification instructions."
-          : message,
+        description: error.message,
         variant: "destructive",
       });
     },
@@ -92,38 +90,30 @@ export default function AuthPage() {
   const registerMutation = useMutation({
     mutationFn: async (data: z.infer<typeof registerSchema>) => {
       const { confirmPassword, ...registerData } = data;
-      const response = await apiRequest("POST", "/api/register", registerData);
-      return response.json();
+      const res = await apiRequest("POST", "/api/register", registerData);
+      return await res.json();
     },
-    onSuccess: (result) => {
-      if (result.requiresVerification) {
+    onSuccess: (data) => {
+      if (data.requiresVerification) {
         toast({
-          title: "Account Created!",
-          description: "Check browser console for verification link (development mode).",
+          title: "Account Created Successfully!",
+          description: "Please check your email and click the verification link to activate your account.",
         });
-        
-        // In development mode, log the verification URL to console
-        if (result.developmentMode) {
-          console.log("🔗 Click to verify email:", window.location.origin + result.developmentMode.verificationUrl);
-          console.log("🔑 Verification token:", result.developmentMode.verificationToken);
-        }
-        
-        setActiveTab("login"); // Switch to login tab
-        registerForm.reset(); // Clear the form
-      } else {
-        // Legacy path if verification is not required
-        queryClient.setQueryData(["/api/user"], result);
-        queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-        toast({
-          title: "Welcome to FlavorBot!",
-          description: "Your account has been created successfully.",
-        });
+        setActiveTab("login");
+        return;
       }
+      
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      toast({
+        title: "Welcome to FlavorBot!",
+        description: "Your account has been created successfully.",
+      });
+      setLocation("/");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
         title: "Registration failed",
-        description: error.message || "Please try again",
+        description: error.message,
         variant: "destructive",
       });
     },
@@ -142,65 +132,39 @@ export default function AuthPage() {
     return <Redirect to="/" />;
   }
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
-      <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-8 items-center">
+      <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
         {/* Hero Section */}
-        <div className="space-y-6 text-center lg:text-left">
-          <div className="flex items-center justify-center lg:justify-start space-x-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-yellow-500 rounded-xl flex items-center justify-center">
+        <div className="text-center lg:text-left space-y-6">
+          <div className="flex items-center justify-center lg:justify-start gap-3 mb-8">
+            <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center">
               <ChefHat className="w-6 h-6 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">FlavorBot</h1>
+            <span className="text-2xl font-bold text-gray-900 dark:text-white">FlavorBot</span>
           </div>
           
-          <div className="space-y-4">
-            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white leading-tight">
-              Your AI-Powered
-              <span className="text-gradient bg-gradient-to-r from-red-500 to-yellow-500 bg-clip-text text-transparent"> Culinary Assistant</span>
-            </h2>
-            
-            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-lg mx-auto lg:mx-0">
-              Discover personalized recipes, get cooking assistance, and manage your culinary journey with intelligent AI recommendations.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-            <div className="p-4 bg-white/50 dark:bg-gray-800/50 rounded-lg backdrop-blur-sm">
-              <div className="text-2xl font-bold text-red-500">10,000+</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">AI-Generated Recipes</div>
-            </div>
-            <div className="p-4 bg-white/50 dark:bg-gray-800/50 rounded-lg backdrop-blur-sm">
-              <div className="text-2xl font-bold text-yellow-500">Smart</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Personalization</div>
-            </div>
-            <div className="p-4 bg-white/50 dark:bg-gray-800/50 rounded-lg backdrop-blur-sm">
-              <div className="text-2xl font-bold text-green-500">24/7</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Culinary Support</div>
-            </div>
-          </div>
+          <h1 className="text-4xl lg:text-5xl font-bold leading-tight">
+            Your AI-Powered <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500">Recipe</span> Assistant
+          </h1>
+          
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-lg mx-auto lg:mx-0">
+            Discover, save, and organize thousands of recipes with the help of AI. Get personalized 
+            recommendations and never run out of meal ideas again.
+          </p>
         </div>
 
-        {/* Auth Forms */}
+        {/* Auth Card */}
         <div className="w-full max-w-md mx-auto">
-          <Card className="shadow-2xl border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md">
-            <CardHeader className="space-y-1 text-center">
-              <CardTitle className="text-2xl font-bold">Get Started</CardTitle>
+          <Card className="border-0 shadow-2xl">
+            <CardHeader className="text-center pb-4">
+              <CardTitle className="text-2xl font-semibold">Get Started</CardTitle>
               <CardDescription>
                 Create an account or sign in to access your personalized recipe collection
               </CardDescription>
             </CardHeader>
-            
-            <CardContent>
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+            <CardContent className="space-y-6">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="login">Sign In</TabsTrigger>
                   <TabsTrigger value="register">Register</TabsTrigger>
@@ -256,14 +220,13 @@ export default function AuthPage() {
                     </Button>
                   </form>
 
-                  <div className="mt-6 space-y-4">
-                    <div className="text-center">
-                      <span className="text-sm text-gray-500">or</span>
-                    </div>
+                  {/* Replit OAuth Button for Login */}
+                  <div className="mt-6">
+                    <div className="text-center text-sm text-gray-500 mb-4">or</div>
                     <Button 
                       type="button"
                       variant="outline"
-                      className="w-full border-2 border-blue-500 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 dark:text-blue-400 dark:border-blue-400"
+                      className="w-full border-2 border-blue-500 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950"
                       onClick={() => window.location.href = '/api/auth/replit'}
                     >
                       Continue with Replit
@@ -326,7 +289,7 @@ export default function AuthPage() {
                       <Input
                         id="register-password"
                         type="password"
-                        placeholder="At least 8 characters"
+                        placeholder="Create a strong password"
                         {...registerForm.register("password")}
                       />
                       {registerForm.formState.errors.password && (
@@ -338,9 +301,9 @@ export default function AuthPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="confirmPassword">Confirm Password</Label>
+                      <Label htmlFor="confirm-password">Confirm Password</Label>
                       <Input
-                        id="confirmPassword"
+                        id="confirm-password"
                         type="password"
                         placeholder="Confirm your password"
                         {...registerForm.register("confirmPassword")}
@@ -369,14 +332,13 @@ export default function AuthPage() {
                     </Button>
                   </form>
 
-                  <div className="mt-6 space-y-4">
-                    <div className="text-center">
-                      <span className="text-sm text-gray-500">or</span>
-                    </div>
+                  {/* Replit OAuth Button for Register */}
+                  <div className="mt-6">
+                    <div className="text-center text-sm text-gray-500 mb-4">or</div>
                     <Button 
                       type="button"
                       variant="outline"
-                      className="w-full border-2 border-blue-500 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 dark:text-blue-400 dark:border-blue-400"
+                      className="w-full border-2 border-blue-500 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950"
                       onClick={() => window.location.href = '/api/auth/replit'}
                     >
                       Continue with Replit

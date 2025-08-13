@@ -16,7 +16,7 @@ import Recipes from "@/pages/Recipes";
 import Chatbot from "@/pages/Chatbot";
 import Settings from "@/pages/Settings";
 import NotFound from "@/pages/not-found";
-import AuthPage from "@/pages/auth-page-new";
+import AuthPage from "@/pages/auth-page";
 import VerifyEmailPage from "@/pages/verify-email";
 
 function Router() {
