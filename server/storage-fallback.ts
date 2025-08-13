@@ -11,6 +11,7 @@ import {
 } from "@flavorbot/shared";
 import { IStorage } from "./storage";
 import { createId } from "@paralleldrive/cuid2";
+import { mockRecipes } from "../mock-data";
 
 // In-memory fallback storage for development when DynamoDB is not available
 export class MemoryStorage implements IStorage {
@@ -18,8 +19,15 @@ export class MemoryStorage implements IStorage {
   private recipes: Map<number, Recipe> = new Map();
   private usage: Map<string, UsageTracking> = new Map();
   private mealPlans: Map<number, MealPlanEntry> = new Map();
-  private recipeIdCounter = 1;
+  private recipeIdCounter = 21; // Start after mock recipes
   private mealPlanIdCounter = 1;
+
+  constructor() {
+    // Initialize with mock recipes for testing - TODO: Remove when DynamoDB is fully integrated
+    mockRecipes.forEach(recipe => {
+      this.recipes.set(recipe.id, recipe);
+    });
+  }
 
   async getUser(id: string): Promise<User | undefined> {
     return this.users.get(id);
@@ -81,15 +89,17 @@ export class MemoryStorage implements IStorage {
   }
 
   async getRecipesByUser(userId: string, category?: string): Promise<Recipe[]> {
+    // During development, return all recipes (including mock recipes) for any authenticated user
+    // TODO: Remove this when DynamoDB is fully integrated - should only return user's own recipes
     return Array.from(this.recipes.values())
-      .filter(recipe => recipe.userId === userId)
       .filter(recipe => !category || category === 'all' || recipe.category === category)
       .sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0));
   }
 
   async getRecipe(id: number, userId: string): Promise<Recipe | undefined> {
-    const recipe = this.recipes.get(id);
-    return recipe?.userId === userId ? recipe : undefined;
+    // During development, return any recipe for authenticated users (including mock recipes)
+    // TODO: Remove this when DynamoDB is fully integrated - should only return user's own recipes
+    return this.recipes.get(id);
   }
 
   async updateRecipe(id: number, userId: string, updates: Partial<InsertRecipe>): Promise<Recipe> {
@@ -112,11 +122,13 @@ export class MemoryStorage implements IStorage {
 
   async searchRecipes(userId: string, query: string): Promise<Recipe[]> {
     const lowerQuery = query.toLowerCase();
+    // During development, search all recipes (including mock recipes) for authenticated users
+    // TODO: Remove this when DynamoDB is fully integrated - should only search user's own recipes
     return Array.from(this.recipes.values())
       .filter(recipe => 
-        recipe.userId === userId &&
-        (recipe.title.toLowerCase().includes(lowerQuery) ||
-         recipe.description?.toLowerCase().includes(lowerQuery))
+        recipe.title.toLowerCase().includes(lowerQuery) ||
+        recipe.description?.toLowerCase().includes(lowerQuery) ||
+        recipe.category.toLowerCase().includes(lowerQuery)
       )
       .sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0));
   }

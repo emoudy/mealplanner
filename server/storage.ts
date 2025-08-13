@@ -12,6 +12,7 @@ import {
 // Import storage implementations
 import { DynamoDBStorage } from "./dynamodb-storage";
 import { MemoryStorage } from "./storage-fallback";
+import { mockRecipes } from "../mock-data";
 
 export interface IStorage {
   // User operations
