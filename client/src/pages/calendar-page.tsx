@@ -12,7 +12,7 @@ import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { useAddRecipe } from '@/contexts/AddRecipeContext';
 import { Link } from 'wouter';
-import type { Recipe, MealPlanEntry, MealPlanResponse } from '@flavorbot/shared';
+import type { Recipe } from '@flavorbot/shared';
 
 export default function CalendarPage() {
   const { toast } = useToast();
@@ -268,122 +268,125 @@ export default function CalendarPage() {
             return (
               <Card key={dateStr} className={`calendar-card print-bg ${isCurrentDay ? 'ring-2 ring-brand-500' : ''}`}>
                 <CardHeader>
-                  <div className="space-y-4">
-                    <CardTitle className="text-lg text-center">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg flex items-center gap-2 print-text">
+                      <Calendar className="w-5 h-5" />
                       {format(day, 'EEEE, MMMM d, yyyy')}
                     </CardTitle>
                     
-                    {/* Action buttons directly accessible */}
-                    <div className="flex gap-3 justify-center print:hidden">
-                      <Link href="/chatbot">
+                    {/* Single Add Menu Item button */}
+                    <Dialog>
+                      <DialogTrigger asChild>
                         <Button 
-                          onClick={handleDialogClose}
-                          className="flex items-center gap-2"
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => setSelectedDate(dateStr)}
+                          disabled={dayEntries.length >= 10}
+                          className="flex items-center gap-2 print:hidden"
                         >
-                          <MessageCircle className="w-4 h-4" />
-                          Ask FlavorBot
+                          <Plus className="w-4 h-4" />
+                          Add Menu Item
                         </Button>
-                      </Link>
-                      <Button 
-                        variant="outline"
-                        onClick={() => {
-                          openAddRecipeModal();
-                          handleDialogClose();
-                        }}
-                        className="flex items-center gap-2"
-                      >
-                        <UtensilsCrossed className="w-4 h-4" />
-                        Add a Recipe
-                      </Button>
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button 
-                            variant="secondary" 
-                            size="sm"
-                            onClick={() => setSelectedDate(dateStr)}
-                            disabled={dayEntries.length >= 10}
-                            className="flex items-center gap-2"
-                          >
-                            <Plus className="w-4 h-4" />
-                            From My Recipes
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-2xl">
-                          <DialogHeader>
-                            <DialogTitle>Select from Your Recipes</DialogTitle>
-                          </DialogHeader>
-                          <div className="space-y-4">
-                            {/* Meal Type Filter */}
-                            <div className="space-y-2">
-                              <label className="text-sm font-medium">Filter by meal type:</label>
-                              <Tabs value={selectedMealType} onValueChange={setSelectedMealType}>
-                                <TabsList className="grid w-full grid-cols-5">
-                                  <TabsTrigger value="all">All</TabsTrigger>
-                                  <TabsTrigger value="breakfast">Breakfast</TabsTrigger>
-                                  <TabsTrigger value="lunch">Lunch</TabsTrigger>
-                                  <TabsTrigger value="dinner">Dinner</TabsTrigger>
-                                  <TabsTrigger value="snacks">Snacks</TabsTrigger>
-                                </TabsList>
-                              </Tabs>
-                            </div>
-
-                            {/* Recipe Dropdown */}
-                            <div className="space-y-2">
-                              <label className="text-sm font-medium">Select a recipe:</label>
-                              <Select onValueChange={(recipeId) => {
-                                const recipe = recipes.find(r => r.id.toString() === recipeId);
-                                if (recipe) {
-                                  handleAddRecipe(dateStr, recipe);
-                                  handleDialogClose();
-                                }
-                              }}>
-                                <SelectTrigger>
-                                  <SelectValue placeholder={
-                                    getFilteredRecipes().length === 0 
-                                      ? "No recipes found for this meal type" 
-                                      : `Choose from ${getFilteredRecipes().length} recipe${getFilteredRecipes().length !== 1 ? 's' : ''}`
-                                  } />
-                                </SelectTrigger>
-                                <SelectContent className="max-h-60">
-                                  {getFilteredRecipes().length === 0 ? (
-                                    <div className="p-4 text-center text-gray-500 text-sm">
-                                      No recipes found for this meal type. Create recipes or try a different filter.
-                                    </div>
-                                  ) : (
-                                    getFilteredRecipes().map((recipe) => (
-                                      <SelectItem key={recipe.id} value={recipe.id.toString()}>
-                                        <div className="flex items-center justify-between w-full">
-                                          <span className="font-medium">{recipe.title}</span>
-                                          <div className="flex items-center gap-3 text-xs text-gray-500 ml-3">
-                                            <span className="flex items-center gap-1">
-                                              <Clock className="w-3 h-3" />
-                                              {recipe.cookTime}m
-                                            </span>
-                                            <span className="flex items-center gap-1">
-                                              <Users className="w-3 h-3" />
-                                              {recipe.servings}
-                                            </span>
-                                            <Badge variant="outline" className="text-xs">
-                                              {recipe.category}
-                                            </Badge>
-                                          </div>
-                                        </div>
-                                      </SelectItem>
-                                    ))
-                                  )}
-                                </SelectContent>
-                              </Select>
-                            </div>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-2xl">
+                        <DialogHeader>
+                          <DialogTitle>Add Recipe for {format(day, 'MMMM d, yyyy')}</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          {/* Action buttons - always visible */}
+                          <div className="flex gap-3 justify-center pb-4 border-b">
+                            <Link href="/chatbot">
+                              <Button 
+                                onClick={handleDialogClose}
+                                className="flex items-center gap-2"
+                              >
+                                <MessageCircle className="w-4 h-4" />
+                                Ask FlavorBot
+                              </Button>
+                            </Link>
+                            <Button 
+                              variant="outline"
+                              onClick={() => {
+                                openAddRecipeModal();
+                                handleDialogClose();
+                              }}
+                              className="flex items-center gap-2"
+                            >
+                              <UtensilsCrossed className="w-4 h-4" />
+                              Add a Recipe
+                            </Button>
                           </div>
-                        </DialogContent>
-                      </Dialog>
-                    </div>
+
+                          {/* Meal Type Filter */}
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium">Filter by meal type:</label>
+                            <Tabs value={selectedMealType} onValueChange={setSelectedMealType}>
+                              <TabsList className="grid w-full grid-cols-5">
+                                <TabsTrigger value="all">All</TabsTrigger>
+                                <TabsTrigger value="breakfast">Breakfast</TabsTrigger>
+                                <TabsTrigger value="lunch">Lunch</TabsTrigger>
+                                <TabsTrigger value="dinner">Dinner</TabsTrigger>
+                                <TabsTrigger value="snacks">Snacks</TabsTrigger>
+                              </TabsList>
+                            </Tabs>
+                          </div>
+
+                          {/* Recipe Dropdown */}
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium">Select a recipe:</label>
+                            <Select onValueChange={(recipeId) => {
+                              const recipe = recipes.find(r => r.id.toString() === recipeId);
+                              if (recipe) {
+                                handleAddRecipe(dateStr, recipe);
+                                handleDialogClose();
+                              }
+                            }}>
+                              <SelectTrigger>
+                                <SelectValue placeholder={
+                                  getFilteredRecipes().length === 0 
+                                    ? "No recipes found for this meal type" 
+                                    : `Choose from ${getFilteredRecipes().length} recipe${getFilteredRecipes().length !== 1 ? 's' : ''}`
+                                } />
+                              </SelectTrigger>
+                              <SelectContent className="max-h-60">
+                                {getFilteredRecipes().length === 0 ? (
+                                  <div className="p-4 text-center text-gray-500 text-sm">
+                                    No recipes found for this meal type. Create recipes or try a different filter.
+                                  </div>
+                                ) : (
+                                  getFilteredRecipes().map((recipe) => (
+                                    <SelectItem key={recipe.id} value={recipe.id.toString()}>
+                                      <div className="flex items-center justify-between w-full">
+                                        <span className="font-medium">{recipe.title}</span>
+                                        <div className="flex items-center gap-3 text-xs text-gray-500 ml-3">
+                                          <span className="flex items-center gap-1">
+                                            <Clock className="w-3 h-3" />
+                                            {recipe.cookTime}m
+                                          </span>
+                                          <span className="flex items-center gap-1">
+                                            <Users className="w-3 h-3" />
+                                            {recipe.servings}
+                                          </span>
+                                          <Badge variant="outline" className="text-xs">
+                                            {recipe.category}
+                                          </Badge>
+                                        </div>
+                                      </div>
+                                    </SelectItem>
+                                  ))
+                                )}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 </CardHeader>
                 <CardContent>
                   {dayEntries.length === 0 ? (
                     <p className="text-gray-500 text-center py-8">
-                      No recipes planned for this day. Click "Add Recipe" to get started!
+                      No recipes planned for this day. Click "Add Menu Item" to get started!
                     </p>
                   ) : (
                     <div className="space-y-3">
