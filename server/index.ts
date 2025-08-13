@@ -139,14 +139,19 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  // Initialize DynamoDB table on startup
-  try {
-    await createDynamoDBTable();
-    console.log("DynamoDB initialization complete");
-  } catch (error) {
-    console.error("DynamoDB initialization failed:", error);
-    console.log("This is expected when using development setup without AWS credentials");
-    console.log("The application will continue running for demonstration purposes");
+  // Initialize DynamoDB table on startup (only if AWS credentials are available)
+  const hasAWSCredentials = process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY;
+  
+  if (hasAWSCredentials) {
+    try {
+      await createDynamoDBTable();
+      console.log("DynamoDB initialization complete");
+    } catch (error) {
+      console.error("DynamoDB initialization failed:", error);
+      console.log("Falling back to in-memory storage");
+    }
+  } else {
+    console.log("No AWS credentials found - using in-memory storage for development");
   }
 
   const server = await registerRoutes(app);

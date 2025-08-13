@@ -6,8 +6,9 @@ import {
   type UpdateUser,
   type UsageTracking,
 } from "@flavorbot/shared/schemas";
-// Import DynamoDB storage implementation
+// Import storage implementations
 import { DynamoDBStorage } from "./dynamodb-storage";
+import { MemoryStorage } from "./storage-fallback";
 
 export interface IStorage {
   // User operations
@@ -36,5 +37,18 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
 }
 
-// Use DynamoDB storage implementation
-export const storage = new DynamoDBStorage();
+// Create storage instance with fallback for development
+function createStorage(): IStorage {
+  // Check if we have AWS credentials
+  const hasAWSCredentials = process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY;
+  
+  if (hasAWSCredentials) {
+    console.log("Using DynamoDB storage (AWS credentials found)");
+    return new DynamoDBStorage();
+  } else {
+    console.log("Using in-memory storage (no AWS credentials - development mode)");
+    return new MemoryStorage();
+  }
+}
+
+export const storage = createStorage();
