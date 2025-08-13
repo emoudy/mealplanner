@@ -58,10 +58,21 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Email/password authentication only - removed Replit OAuth
-  setupEmailAuth(app);
+  // Setup email/password authentication
+  await setupEmailAuth(app);
+  
+  // Optionally setup Replit OAuth (easily removable)
+  try {
+    if (process.env.REPLIT_DOMAINS && process.env.REPL_ID) {
+      const { setupReplitAuth } = await import("./replit-auth");
+      await setupReplitAuth(app);
+      console.log("Replit OAuth enabled");
+    }
+  } catch (error: any) {
+    console.log("Replit OAuth not available:", error.message);
+  }
 
-  // Auth user route for email/password authentication
+  // Universal user endpoint that works with both auth methods
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
       const user = req.user; // User is already available from session
@@ -187,7 +198,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.id;
       const recipeId = parseInt(req.params.id);
-      const updates = insertRecipeSchema.partial().parse(req.body);
+      const updates = insertRecipeSchema.deepPartial().parse(req.body);
       const recipe = await dbStorage.updateRecipe(recipeId, userId, updates);
       res.json(recipe);
     } catch (error) {

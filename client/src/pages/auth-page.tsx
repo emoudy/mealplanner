@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertCircle, ChefHat, Loader2 } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
@@ -254,6 +255,18 @@ export default function AuthPage() {
                       )}
                     </Button>
                   </form>
+
+                  <div className="mt-4">
+                    <Separator className="my-4" />
+                    <Button 
+                      type="button"
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => window.location.href = '/api/auth/replit'}
+                    >
+                      Continue with Replit
+                    </Button>
+                  </div>
                 </TabsContent>
 
                 <TabsContent value="register" className="space-y-4">
@@ -353,6 +366,18 @@ export default function AuthPage() {
                       )}
                     </Button>
                   </form>
+
+                  <div className="mt-4">
+                    <Separator className="my-4" />
+                    <Button 
+                      type="button"
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => window.location.href = '/api/auth/replit'}
+                    >
+                      Continue with Replit
+                    </Button>
+                  </div>
                 </TabsContent>
               </Tabs>
             </CardContent>

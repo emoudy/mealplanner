@@ -34,7 +34,7 @@ FlavorBot is structured as a cross-platform application with a high degree of co
 - AI-powered recipe generation and recommendations.
 - Recipe collection management (save, edit, delete, categorize).
 - Interactive chatbot for culinary assistance with intelligent suggestion routing.
-- **Universal Authentication System:** Email/password registration and login for worldwide accessibility.
+- **Dual Authentication System:** Email/password registration and login for worldwide accessibility, plus optional Replit OAuth for seamless platform integration.
 - Email verification system with professional email templates and verification flow.
 - Responsive design with dark/light theme support.
 - Search and filter functionality.
@@ -58,7 +58,7 @@ FlavorBot is structured as a cross-platform application with a high degree of co
 ## External Dependencies
 - **Database:** Amazon DynamoDB (migrated from PostgreSQL) with AWS SDK v3
 - **AI Model:** Anthropic Claude
-- **Authentication:** Passport.js with Local Strategy (email/password) for universal access - Replit OAuth removed
+- **Authentication:** Passport.js with Local Strategy (email/password) for universal access + optional Replit OAuth as removable module
 - **Email Service:** Configurable SMTP (Gmail, SendGrid, etc.) for verification emails
 - **Session Management:** DynamoDB-backed sessions with custom session store
 - **Password Security:** Node.js crypto with scrypt hashing and salt
@@ -67,7 +67,7 @@ FlavorBot is structured as a cross-platform application with a high degree of co
 ## Recent Architectural Changes (August 2025)
 - **Complete DynamoDB Migration (August 2025):** Successfully migrated from PostgreSQL to Amazon DynamoDB with single table design. Implemented DynamoDB storage layer with AWS SDK integration, custom session store, and table auto-creation. Migration completed for learning purposes to understand NoSQL database patterns. The application maintains the same interface through storage abstraction while using DynamoDB's PK/SK pattern with GSIs for complex queries.
 - **Complete PostgreSQL Removal (August 2025):** Removed all PostgreSQL references from codebase while maintaining clean multi-repo architecture. Each repository (backend, web, mobile, shared) now has proper separation of concerns with DynamoDB as the exclusive data layer. Backend repo uses mock storage for independent development. All PostgreSQL tables (recipes, sessions, usage_tracking, users, user_sessions) completely dropped from database.
-- **Simplified Authentication System:** Completely removed Replit OAuth system and implemented clean email/password authentication for universal access.
+- **Dual Authentication System:** Maintained clean email/password authentication for universal access while adding optional Replit OAuth as easily removable module for platform integration.
 - **Mandatory Email Verification:** Implemented secure email verification requirement before account activation - users cannot log in until email is verified.
 - **Database Schema Updates:** Added `password`, `authProvider`, `emailVerified` fields to users table for secure authentication.
 - **Complete Email Verification Workflow:** Professional email verification system with tokens, dedicated verification page, and secure token validation.
@@ -78,6 +78,7 @@ FlavorBot is structured as a cross-platform application with a high degree of co
 - **WCAG 2.2 ADA Compliance (August 2025):** Implemented comprehensive accessibility features including proper ARIA labels, semantic HTML, keyboard navigation, screen reader support, skip links, focus management, and complete tab flow accessibility for all interactive elements.
 - **Multi-Repository Architecture Planning (August 2025):** Designed separation strategy for independent backend, frontend (web), and mobile teams with 70-80% code reuse through `@flavorbot/shared` NPM package.
 - **Complete Multi-Repository Architecture (August 2025):** Successfully implemented all 4 phases of repository separation enabling independent team development. Created `@flavorbot/shared` NPM package, `flavorbot-backend` Express API server, `flavorbot-web` React application, and `flavorbot-mobile` React Native app. Achieved 70-80% code reuse through shared package while maintaining team independence.
+- **Replit OAuth Integration (August 2025):** Added optional Replit OAuth authentication as a separate, easily removable module (`server/replit-auth.ts`) maintaining clean dual authentication system. Users can authenticate via email/password for universal access or Replit OAuth for seamless platform integration. System automatically detects and enables OAuth when REPLIT_DOMAINS and REPL_ID environment variables are present.
 
 ## Security Enhancements (January 2025)
 - **Comprehensive Security Implementation:** Added enterprise-grade security controls including rate limiting, input validation, and AI abuse prevention.

@@ -39,9 +39,21 @@ export const isAuthenticated = (req: any, res: any, next: any) => {
   return res.status(401).json({ message: "Unauthorized" });
 };
 
-export function setupEmailAuth(app: Express) {
-  // Setup session management with DynamoDB
-  const sessionStore = new DynamoDBSessionStore();
+export async function setupEmailAuth(app: Express) {
+  // Setup session management with fallback for development
+  let sessionStore;
+  const hasAWSCredentials = process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY;
+  
+  if (hasAWSCredentials) {
+    sessionStore = new DynamoDBSessionStore();
+  } else {
+    // Use memory store for development
+    const memorystore = await import('memorystore');
+    const MemoryStore = memorystore.default(session);
+    sessionStore = new MemoryStore({
+      checkPeriod: 86400000 // Prune expired entries every 24h
+    });
+  }
 
   app.use(session({
     secret: process.env.SESSION_SECRET || 'fallback-secret-key',
