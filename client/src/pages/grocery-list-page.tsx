@@ -6,7 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
-import { ShoppingCart, CalendarIcon, Check, X, Trash2, Plus } from 'lucide-react';
+import { ShoppingCart, CalendarIcon, Check, X, Trash2, Plus, Printer } from 'lucide-react';
 import { format, addDays, eachDayOfInterval } from 'date-fns';
 import { useQuery } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
@@ -44,7 +44,7 @@ function GroceryListByCategory({
         if (items.length === 0) return null;
 
         return (
-          <div key={category} className="space-y-3">
+          <div key={category} className="space-y-3 category-section">
             <h3 
               className={cn(
                 "text-lg font-semibold border-b pb-2",
@@ -62,27 +62,31 @@ function GroceryListByCategory({
                 );
                 
                 return (
-                  <div key={`${category}-${itemIndex}`} className="flex items-start gap-3 p-3 rounded-lg border bg-white dark:bg-gray-800">
+                  <div key={`${category}-${itemIndex}`} className="flex items-start gap-3 p-3 rounded-lg border bg-white dark:bg-gray-800 grocery-item">
+                    {/* Screen version button */}
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="p-0 h-6 w-6 rounded-full border-2 border-gray-300 dark:border-gray-600 flex-shrink-0"
+                      className="p-0 h-6 w-6 rounded-full border-2 border-gray-300 dark:border-gray-600 flex-shrink-0 print:hidden"
                       onClick={() => toggleIngredient(globalIndex)}
                       aria-label={item.checked ? `Uncheck ${item.name}` : `Check ${item.name}`}
                     >
                       {item.checked && <Check className="w-4 h-4 text-green-600" />}
                     </Button>
                     
-                    <div className="flex-1 min-w-0">
+                    {/* Print version checkbox */}
+                    <div className="hidden print:block checkbox"></div>
+                    
+                    <div className="flex-1 min-w-0 item-text">
                       <p className={cn(
                         "font-medium capitalize",
                         item.checked && "line-through text-gray-500 dark:text-gray-400"
                       )}>
                         {item.totalQuantity !== 1 ? `${item.originalUnit} ` : ''}{item.name}
                       </p>
-                      <div className="flex flex-wrap gap-1 mt-1">
+                      <div className="flex flex-wrap gap-1 mt-1 recipe-badges print:text-xs">
                         {item.recipes.map((recipe, recipeIndex) => (
-                          <Badge key={recipeIndex} variant="secondary" className="text-xs">
+                          <Badge key={recipeIndex} variant="secondary" className="text-xs print:bg-transparent print:text-gray-600 print:border-none print:p-0">
                             {recipe.name}{recipe.count > 1 ? ` (${recipe.count}×)` : ''}
                           </Badge>
                         ))}
@@ -92,7 +96,7 @@ function GroceryListByCategory({
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="p-0 h-6 w-6 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 flex-shrink-0"
+                      className="p-0 h-6 w-6 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 flex-shrink-0 print:hidden"
                       onClick={() => removeIngredient(globalIndex)}
                       aria-label={`Remove ${item.name} from grocery list`}
                     >
@@ -427,11 +431,15 @@ export default function GroceryListPage() {
     setGroceryList(prev => prev.filter(item => !item.checked));
   };
 
+  const printGroceryList = () => {
+    window.print();
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 print:bg-white print:min-h-0">
+      <div className="container mx-auto px-4 py-8 print:px-0 print:py-0">
+        <div className="max-w-4xl mx-auto print:max-w-none">
+          <div className="text-center mb-8 print:hidden">
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
               Grocery List Generator
             </h1>
@@ -441,7 +449,7 @@ export default function GroceryListPage() {
           </div>
 
           {/* Date Range Selection */}
-          <Card className="mb-6">
+          <Card className="mb-6 print:hidden">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CalendarIcon className="w-5 h-5" />
@@ -521,8 +529,8 @@ export default function GroceryListPage() {
 
           {/* Grocery List */}
           {groceryList.length > 0 && (
-            <Card>
-              <CardHeader>
+            <Card className="grocery-list-print">
+              <CardHeader className="print:hidden">
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
                     <ShoppingCart className="w-5 h-5" />
@@ -533,16 +541,26 @@ export default function GroceryListPage() {
                       variant="outline" 
                       size="sm" 
                       onClick={() => setShowAddForm(!showAddForm)}
-                      className="flex items-center gap-1"
+                      className="flex items-center gap-1 print:hidden"
                       aria-label="Add custom item to grocery list"
                     >
                       <Plus className="w-4 h-4" />
                       Add Item
                     </Button>
-                    <Button variant="outline" size="sm" onClick={clearChecked}>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={printGroceryList}
+                      className="flex items-center gap-1 print:hidden"
+                      aria-label="Print grocery list"
+                    >
+                      <Printer className="w-4 h-4" />
+                      Print
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={clearChecked} className="print:hidden">
                       Clear Checked
                     </Button>
-                    <Button variant="outline" size="sm" onClick={clearList}>
+                    <Button variant="outline" size="sm" onClick={clearList} className="print:hidden">
                       Clear All
                     </Button>
                   </div>
@@ -589,18 +607,35 @@ export default function GroceryListPage() {
                   </div>
                 )}
               </CardHeader>
-              <CardContent>
+              
+              {/* Print-only header */}
+              <div className="hidden print:block">
+                <h1>Grocery Shopping List</h1>
+                {startDate && endDate && (
+                  <div className="date-range">
+                    Meal Plan: {format(startDate, "MMM d")} - {format(endDate, "MMM d, yyyy")}
+                  </div>
+                )}
+              </div>
+
+              <CardContent className="print:p-0">
                 <GroceryListByCategory 
                   groceryList={groceryList} 
                   toggleIngredient={toggleIngredient}
                   removeIngredient={removeIngredient}
                 />
 
-                <Separator className="my-4" />
+                <Separator className="my-4 print:hidden" />
                 
-                <div className="text-sm text-gray-600 dark:text-gray-400">
+                <div className="text-sm text-gray-600 dark:text-gray-400 print:hidden">
                   <p>✓ Checked items: {groceryList.filter(item => item.checked).length}</p>
                   <p>○ Remaining items: {groceryList.filter(item => !item.checked).length}</p>
+                </div>
+
+                {/* Print-only summary */}
+                <div className="hidden print:block summary">
+                  <p>Total items: {groceryList.length}</p>
+                  <p>Date generated: {new Date().toLocaleDateString()}</p>
                 </div>
               </CardContent>
             </Card>

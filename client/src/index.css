@@ -334,4 +334,84 @@
     -webkit-print-color-adjust: exact;
     color-adjust: exact;
   }
+
+  /* Grocery List Print Styles */
+  .grocery-list-print {
+    font-family: Arial, sans-serif !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 20px !important;
+    background: white !important;
+  }
+  
+  .grocery-list-print h1 {
+    font-size: 18pt !important;
+    font-weight: bold !important;
+    text-align: center !important;
+    margin-bottom: 10pt !important;
+    border-bottom: 2px solid #000 !important;
+    padding-bottom: 5pt !important;
+    color: #000 !important;
+  }
+  
+  .grocery-list-print h3 {
+    font-size: 14pt !important;
+    font-weight: bold !important;
+    margin-top: 15pt !important;
+    margin-bottom: 8pt !important;
+    padding-bottom: 3pt !important;
+    border-bottom: 1px solid #666 !important;
+    color: #000 !important;
+  }
+  
+  .grocery-list-print .date-range {
+    text-align: center !important;
+    font-size: 10pt !important;
+    color: #666 !important;
+    margin-bottom: 15pt !important;
+  }
+  
+  .grocery-list-print .category-section {
+    margin-bottom: 20pt !important;
+    break-inside: avoid !important;
+  }
+  
+  .grocery-list-print .grocery-item {
+    display: flex !important;
+    align-items: flex-start !important;
+    padding: 3pt 0 !important;
+    border-bottom: 1px dotted #ccc !important;
+    break-inside: avoid !important;
+  }
+  
+  .grocery-list-print .checkbox {
+    width: 12pt !important;
+    height: 12pt !important;
+    border: 1px solid #000 !important;
+    margin-right: 8pt !important;
+    margin-top: 1pt !important;
+    flex-shrink: 0 !important;
+    background: white !important;
+  }
+  
+  .grocery-list-print .item-text {
+    flex: 1 !important;
+    font-size: 11pt !important;
+    text-transform: capitalize !important;
+    color: #000 !important;
+  }
+  
+  .grocery-list-print .recipe-badges {
+    font-size: 8pt !important;
+    color: #666 !important;
+    margin-top: 2pt !important;
+  }
+  
+  .grocery-list-print .summary {
+    margin-top: 20pt !important;
+    padding-top: 10pt !important;
+    border-top: 1px solid #000 !important;
+    font-size: 10pt !important;
+    color: #000 !important;
+  }
 }
