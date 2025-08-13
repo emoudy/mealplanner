@@ -38,7 +38,7 @@ function GroceryListByCategory({
   }, {} as Record<string, IngredientItem[]>);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 print:contents">
       {categories.map(category => {
         const items = categorizedItems[category];
         if (items.length === 0) return null;
@@ -55,14 +55,14 @@ function GroceryListByCategory({
             >
               {category} ({items.length})
             </h3>
-            <div className="space-y-3" role="group" aria-labelledby={`${category}-heading`}>
+            <div className="space-y-2 print:space-y-1" role="group" aria-labelledby={`${category}-heading`}>
               {items.map((item, itemIndex) => {
                 const globalIndex = groceryList.findIndex(globalItem => 
                   globalItem.name === item.name && globalItem.category === item.category
                 );
                 
                 return (
-                  <div key={`${category}-${itemIndex}`} className="flex items-start gap-3 p-3 rounded-lg border bg-white dark:bg-gray-800 grocery-item">
+                  <div key={`${category}-${itemIndex}`} className="flex items-start gap-3 p-3 print:p-0 print:gap-2 rounded-lg border print:border-none bg-white dark:bg-gray-800 print:bg-transparent grocery-item">
                     {/* Screen version button */}
                     <Button
                       variant="ghost"
@@ -82,11 +82,14 @@ function GroceryListByCategory({
                         "font-medium capitalize",
                         item.checked && "line-through text-gray-500 dark:text-gray-400"
                       )}>
-                        {item.totalQuantity !== 1 ? `${item.originalUnit} ` : ''}{item.name}
+                        <span className="item-quantity print:font-bold">
+                          {item.totalQuantity !== 1 ? `${item.originalUnit} ` : ''}
+                        </span>
+                        {item.name}
                       </p>
-                      <div className="flex flex-wrap gap-1 mt-1 recipe-badges print:text-xs">
+                      <div className="flex flex-wrap gap-1 mt-1 recipe-badges print:hidden">
                         {item.recipes.map((recipe, recipeIndex) => (
-                          <Badge key={recipeIndex} variant="secondary" className="text-xs print:bg-transparent print:text-gray-600 print:border-none print:p-0">
+                          <Badge key={recipeIndex} variant="secondary" className="text-xs">
                             {recipe.name}{recipe.count > 1 ? ` (${recipe.count}×)` : ''}
                           </Badge>
                         ))}
@@ -619,11 +622,13 @@ export default function GroceryListPage() {
               </div>
 
               <CardContent className="print:p-0">
-                <GroceryListByCategory 
-                  groceryList={groceryList} 
-                  toggleIngredient={toggleIngredient}
-                  removeIngredient={removeIngredient}
-                />
+                <div className="space-y-6 print:grocery-categories-grid">
+                  <GroceryListByCategory 
+                    groceryList={groceryList} 
+                    toggleIngredient={toggleIngredient}
+                    removeIngredient={removeIngredient}
+                  />
+                </div>
 
                 <Separator className="my-4 print:hidden" />
                 

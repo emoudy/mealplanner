@@ -243,6 +243,11 @@
   .print\\:hidden {
     display: none !important;
   }
+
+  /* Hide navigation and other page elements */
+  nav, header, .navigation, [role="navigation"] {
+    display: none !important;
+  }
   
   /* Ensure proper layout for printing */
   body {
@@ -335,83 +340,109 @@
     color-adjust: exact;
   }
 
-  /* Grocery List Print Styles */
+  /* Compact Grocery List Print Styles */
   .grocery-list-print {
     font-family: Arial, sans-serif !important;
     max-width: none !important;
     margin: 0 !important;
-    padding: 20px !important;
+    padding: 15px !important;
     background: white !important;
+    font-size: 10pt !important;
+    line-height: 1.3 !important;
   }
   
   .grocery-list-print h1 {
-    font-size: 18pt !important;
+    font-size: 16pt !important;
     font-weight: bold !important;
     text-align: center !important;
-    margin-bottom: 10pt !important;
+    margin: 0 0 8pt 0 !important;
     border-bottom: 2px solid #000 !important;
-    padding-bottom: 5pt !important;
-    color: #000 !important;
-  }
-  
-  .grocery-list-print h3 {
-    font-size: 14pt !important;
-    font-weight: bold !important;
-    margin-top: 15pt !important;
-    margin-bottom: 8pt !important;
-    padding-bottom: 3pt !important;
-    border-bottom: 1px solid #666 !important;
+    padding-bottom: 4pt !important;
     color: #000 !important;
   }
   
   .grocery-list-print .date-range {
     text-align: center !important;
-    font-size: 10pt !important;
+    font-size: 9pt !important;
     color: #666 !important;
-    margin-bottom: 15pt !important;
+    margin: 0 0 12pt 0 !important;
+    font-style: italic !important;
+  }
+  
+  /* Two-column layout for categories in print */
+  .print\\:grocery-categories-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 15pt !important;
+    margin-bottom: 10pt !important;
+  }
+
+  .print\\:contents {
+    display: contents !important;
   }
   
   .grocery-list-print .category-section {
-    margin-bottom: 20pt !important;
+    margin-bottom: 12pt !important;
     break-inside: avoid !important;
+  }
+  
+  .grocery-list-print h3 {
+    font-size: 11pt !important;
+    font-weight: bold !important;
+    margin: 0 0 4pt 0 !important;
+    padding-bottom: 2pt !important;
+    border-bottom: 1px solid #333 !important;
+    color: #000 !important;
   }
   
   .grocery-list-print .grocery-item {
     display: flex !important;
     align-items: flex-start !important;
-    padding: 3pt 0 !important;
-    border-bottom: 1px dotted #ccc !important;
+    padding: 2pt 0 !important;
     break-inside: avoid !important;
+    margin-bottom: 1pt !important;
   }
   
   .grocery-list-print .checkbox {
-    width: 12pt !important;
-    height: 12pt !important;
+    width: 10pt !important;
+    height: 10pt !important;
     border: 1px solid #000 !important;
-    margin-right: 8pt !important;
-    margin-top: 1pt !important;
+    margin: 1pt 6pt 0 0 !important;
     flex-shrink: 0 !important;
     background: white !important;
   }
   
   .grocery-list-print .item-text {
     flex: 1 !important;
-    font-size: 11pt !important;
+    font-size: 9pt !important;
     text-transform: capitalize !important;
     color: #000 !important;
+    line-height: 1.2 !important;
   }
   
-  .grocery-list-print .recipe-badges {
-    font-size: 8pt !important;
-    color: #666 !important;
-    margin-top: 2pt !important;
+  .grocery-list-print .item-quantity {
+    font-weight: bold !important;
+    margin-right: 4pt !important;
   }
   
   .grocery-list-print .summary {
-    margin-top: 20pt !important;
-    padding-top: 10pt !important;
+    margin-top: 15pt !important;
+    padding-top: 8pt !important;
     border-top: 1px solid #000 !important;
-    font-size: 10pt !important;
-    color: #000 !important;
+    font-size: 8pt !important;
+    color: #666 !important;
+    text-align: center !important;
+  }
+
+  /* Hide recipe badges in print for more space */
+  .grocery-list-print .recipe-badges {
+    display: none !important;
+  }
+
+  /* Ensure single column on very narrow content */
+  @media print and (max-width: 6in) {
+    .grocery-categories-grid {
+      grid-template-columns: 1fr !important;
+    }
   }
 }
