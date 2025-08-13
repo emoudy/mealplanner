@@ -23,8 +23,20 @@ interface IngredientItem {
 function parseIngredient(ingredient: string): { quantity: number; name: string; unit: string } {
   const trimmed = ingredient.trim();
   
+  // Handle Unicode fractions and regular fractions
+  let processedIngredient = trimmed
+    .replace(/¼/g, '1/4')
+    .replace(/½/g, '1/2')
+    .replace(/¾/g, '3/4')
+    .replace(/⅛/g, '1/8')
+    .replace(/⅜/g, '3/8')
+    .replace(/⅝/g, '5/8')
+    .replace(/⅞/g, '7/8')
+    .replace(/⅓/g, '1/3')
+    .replace(/⅔/g, '2/3');
+  
   // Try to match patterns like "2 Large Eggs", "1 cup flour", "1/2 teaspoon salt"
-  const match = trimmed.match(/^(\d+(?:\/\d+)?(?:\.\d+)?)\s+(.+)$/);
+  const match = processedIngredient.match(/^(\d+(?:\/\d+)?(?:\.\d+)?)\s+(.+)$/);
   
   if (match) {
     const quantityStr = match[1];
@@ -52,6 +64,49 @@ function parseIngredient(ingredient: string): { quantity: number; name: string; 
     name: trimmed,
     unit: '1'
   };
+}
+
+// Helper function to convert decimal back to fraction
+function formatQuantity(decimal: number): string {
+  if (decimal === Math.floor(decimal)) {
+    // Whole number
+    return decimal.toString();
+  }
+  
+  // Common fractions
+  const fractions = [
+    { decimal: 0.125, display: '1/8' },
+    { decimal: 0.25, display: '1/4' },
+    { decimal: 0.333, display: '1/3' },
+    { decimal: 0.375, display: '3/8' },
+    { decimal: 0.5, display: '1/2' },
+    { decimal: 0.625, display: '5/8' },
+    { decimal: 0.667, display: '2/3' },
+    { decimal: 0.75, display: '3/4' },
+    { decimal: 0.875, display: '7/8' },
+  ];
+  
+  // Check for exact matches first
+  for (const frac of fractions) {
+    if (Math.abs(decimal - frac.decimal) < 0.001) {
+      return frac.display;
+    }
+  }
+  
+  // Check for mixed numbers (e.g., 1.5 = 1 1/2)
+  const wholePart = Math.floor(decimal);
+  const fractionalPart = decimal - wholePart;
+  
+  if (wholePart > 0) {
+    for (const frac of fractions) {
+      if (Math.abs(fractionalPart - frac.decimal) < 0.001) {
+        return `${wholePart} ${frac.display}`;
+      }
+    }
+  }
+  
+  // Fall back to decimal with limited precision
+  return decimal.toFixed(2).replace(/\.?0+$/, '');
 }
 
 export default function GroceryListPage() {
@@ -139,19 +194,7 @@ export default function GroceryListPage() {
         }));
         
         // Format the total quantity properly
-        let displayQuantity: string;
-        if (data.totalQuantity === Math.floor(data.totalQuantity)) {
-          // Whole number
-          displayQuantity = data.totalQuantity.toString();
-        } else {
-          // Decimal - try to convert back to fraction if reasonable
-          const decimal = data.totalQuantity;
-          if (decimal === 0.5) displayQuantity = '1/2';
-          else if (decimal === 0.25) displayQuantity = '1/4';
-          else if (decimal === 0.75) displayQuantity = '3/4';
-          else if (decimal === 1.5) displayQuantity = '1 1/2';
-          else displayQuantity = decimal.toFixed(2).replace(/\.?0+$/, '');
-        }
+        const displayQuantity = formatQuantity(data.totalQuantity);
         
         return {
           name: ingredientName,
