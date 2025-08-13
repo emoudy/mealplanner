@@ -5,10 +5,27 @@ import {
   type InsertRecipe,
   type UpdateUser,
   type UsageTracking,
-  type MealPlanEntry,
-  type CreateMealPlanEntryData,
-  type MealPlanResponse,
 } from "@flavorbot/shared";
+
+// Meal plan types
+export interface MealPlanEntry {
+  id: number;
+  userId: string;
+  date: string;
+  recipeId: number;
+  recipeTitle: string;
+  createdAt: Date;
+}
+
+export interface CreateMealPlanEntryData {
+  date: string;
+  recipeId: number;
+  recipeTitle: string;
+}
+
+export interface MealPlanResponse {
+  [date: string]: MealPlanEntry[];
+}
 // Import storage implementations
 import { DynamoDBStorage } from "./dynamodb-storage";
 import { MemoryStorage } from "./storage-fallback";
@@ -45,6 +62,32 @@ export interface IStorage {
   removeRecipeFromMealPlan(userId: string, mealPlanEntryId: number): Promise<void>;
   getMealPlanForDateRange(userId: string, startDate: string, endDate: string): Promise<MealPlanResponse>;
   getMealPlanForDate(userId: string, date: string): Promise<MealPlanEntry[]>;
+
+  // Custom grocery item operations
+  createCustomGroceryItem(userId: string, item: CreateCustomGroceryItem): Promise<CustomGroceryItem>;
+  getUserCustomGroceryItems(userId: string): Promise<CustomGroceryItem[]>;
+  updateCustomGroceryItem(itemId: string, userId: string, updates: Partial<CreateCustomGroceryItem>): Promise<CustomGroceryItem>;
+  deleteCustomGroceryItem(itemId: string, userId: string): Promise<void>;
+  clearAllCustomGroceryItems(userId: string): Promise<void>;
+}
+
+// Custom grocery item types
+export interface CustomGroceryItem {
+  id: string;
+  userId: string;
+  name: string;
+  category: string;
+  quantity?: string;
+  unit?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface CreateCustomGroceryItem {
+  name: string;
+  category: string;
+  quantity?: string;
+  unit?: string;
 }
 
 // Create storage instance with fallback for development

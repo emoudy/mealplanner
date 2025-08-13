@@ -6,7 +6,7 @@ import {
   type UpdateUser,
   type UsageTracking,
 } from "@flavorbot/shared";
-import type { MealPlanEntry, CreateMealPlanEntryData, MealPlanResponse } from "@flavorbot/shared/types/meal-plan";
+import type { MealPlanEntry, CreateMealPlanEntryData, MealPlanResponse, CustomGroceryItem, CreateCustomGroceryItem } from "./storage";
 import { IStorage } from "./storage";
 import { mockRecipes } from "../mock-data";
 import { docClient, tableName, keys, generateId, generateRecipeId } from "./dynamodb";
@@ -701,6 +701,175 @@ export class DynamoDBStorage implements IStorage {
     } catch (error) {
       console.error("Error getting meal plan for date:", error);
       return [];
+    }
+  }
+
+  // Custom grocery item operations
+  async createCustomGroceryItem(userId: string, item: CreateCustomGroceryItem): Promise<CustomGroceryItem> {
+    const itemId = generateId();
+    const now = new Date().toISOString();
+
+    const groceryItem = {
+      ...keys.user.groceryItem(userId, itemId),
+      id: itemId,
+      userId,
+      name: item.name,
+      category: item.category,
+      quantity: item.quantity || "",
+      unit: item.unit || "",
+      createdAt: now,
+      updatedAt: now,
+      EntityType: "CUSTOM_GROCERY_ITEM"
+    };
+
+    try {
+      await docClient.send(new PutCommand({
+        TableName: tableName,
+        Item: groceryItem
+      }));
+
+      return {
+        id: itemId,
+        userId,
+        name: item.name,
+        category: item.category,
+        quantity: item.quantity,
+        unit: item.unit,
+        createdAt: new Date(now),
+        updatedAt: new Date(now)
+      };
+    } catch (error) {
+      console.error("Error creating custom grocery item:", error);
+      throw error;
+    }
+  }
+
+  async getUserCustomGroceryItems(userId: string): Promise<CustomGroceryItem[]> {
+    try {
+      const response = await docClient.send(new QueryCommand({
+        TableName: tableName,
+        KeyConditionExpression: "#pk = :pk AND begins_with(#sk, :sk)",
+        ExpressionAttributeNames: {
+          "#pk": "PK",
+          "#sk": "SK"
+        },
+        ExpressionAttributeValues: {
+          ":pk": `USER#${userId}`,
+          ":sk": "GROCERY#"
+        }
+      }));
+
+      const items: CustomGroceryItem[] = [];
+
+      if (response.Items) {
+        for (const item of response.Items) {
+          items.push({
+            id: item.id,
+            userId: item.userId,
+            name: item.name,
+            category: item.category,
+            quantity: item.quantity,
+            unit: item.unit,
+            createdAt: new Date(item.createdAt),
+            updatedAt: new Date(item.updatedAt)
+          });
+        }
+      }
+
+      return items;
+    } catch (error) {
+      console.error("Error getting custom grocery items:", error);
+      return [];
+    }
+  }
+
+  async updateCustomGroceryItem(itemId: string, userId: string, updates: Partial<CreateCustomGroceryItem>): Promise<CustomGroceryItem> {
+    const now = new Date().toISOString();
+
+    try {
+      const updateExpressions = [];
+      const expressionAttributeNames: Record<string, string> = {};
+      const expressionAttributeValues: Record<string, any> = {};
+
+      if (updates.name !== undefined) {
+        updateExpressions.push("#name = :name");
+        expressionAttributeNames["#name"] = "name";
+        expressionAttributeValues[":name"] = updates.name;
+      }
+
+      if (updates.category !== undefined) {
+        updateExpressions.push("#category = :category");
+        expressionAttributeNames["#category"] = "category";
+        expressionAttributeValues[":category"] = updates.category;
+      }
+
+      if (updates.quantity !== undefined) {
+        updateExpressions.push("#quantity = :quantity");
+        expressionAttributeNames["#quantity"] = "quantity";
+        expressionAttributeValues[":quantity"] = updates.quantity;
+      }
+
+      if (updates.unit !== undefined) {
+        updateExpressions.push("#unit = :unit");
+        expressionAttributeNames["#unit"] = "unit";
+        expressionAttributeValues[":unit"] = updates.unit;
+      }
+
+      updateExpressions.push("#updatedAt = :updatedAt");
+      expressionAttributeNames["#updatedAt"] = "updatedAt";
+      expressionAttributeValues[":updatedAt"] = now;
+
+      const response = await docClient.send(new UpdateCommand({
+        TableName: tableName,
+        Key: keys.user.groceryItem(userId, itemId),
+        UpdateExpression: `SET ${updateExpressions.join(", ")}`,
+        ExpressionAttributeNames: expressionAttributeNames,
+        ExpressionAttributeValues: expressionAttributeValues,
+        ReturnValues: "ALL_NEW"
+      }));
+
+      if (!response.Attributes) {
+        throw new Error("Failed to update custom grocery item");
+      }
+
+      return {
+        id: response.Attributes.id,
+        userId: response.Attributes.userId,
+        name: response.Attributes.name,
+        category: response.Attributes.category,
+        quantity: response.Attributes.quantity,
+        unit: response.Attributes.unit,
+        createdAt: new Date(response.Attributes.createdAt),
+        updatedAt: new Date(response.Attributes.updatedAt)
+      };
+    } catch (error) {
+      console.error("Error updating custom grocery item:", error);
+      throw error;
+    }
+  }
+
+  async deleteCustomGroceryItem(itemId: string, userId: string): Promise<void> {
+    try {
+      await docClient.send(new DeleteCommand({
+        TableName: tableName,
+        Key: keys.user.groceryItem(userId, itemId)
+      }));
+    } catch (error) {
+      console.error("Error deleting custom grocery item:", error);
+      throw error;
+    }
+  }
+
+  async clearAllCustomGroceryItems(userId: string): Promise<void> {
+    try {
+      const items = await this.getUserCustomGroceryItems(userId);
+      
+      for (const item of items) {
+        await this.deleteCustomGroceryItem(item.id, userId);
+      }
+    } catch (error) {
+      console.error("Error clearing custom grocery items:", error);
+      throw error;
     }
   }
 }

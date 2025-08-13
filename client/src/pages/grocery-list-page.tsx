@@ -8,8 +8,9 @@ import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import { ShoppingCart, CalendarIcon, Check, X, Trash2, Plus, Printer } from 'lucide-react';
 import { format, addDays, eachDayOfInterval } from 'date-fns';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
+import { apiRequest } from '@/lib/queryClient';
 import type { Recipe } from '@flavorbot/shared';
 
 interface IngredientItem {
@@ -19,6 +20,20 @@ interface IngredientItem {
   originalUnit: string;
   category: string;
   checked: boolean;
+  isCustom?: boolean; // Flag to identify user-added custom items
+  id?: string; // For custom items to enable persistence
+}
+
+// Type for custom grocery items that persist across sessions
+interface CustomGroceryItem {
+  id: string;
+  userId: string;
+  name: string;
+  category: string;
+  quantity?: string;
+  unit?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 // Component for displaying categorized grocery list
@@ -285,6 +300,7 @@ function formatQuantity(decimal: number): string {
 }
 
 export default function GroceryListPage() {
+  const queryClient = useQueryClient();
   const [startDate, setStartDate] = useState<Date | undefined>(new Date());
   const [endDate, setEndDate] = useState<Date | undefined>(addDays(new Date(), 6));
   const [groceryList, setGroceryList] = useState<IngredientItem[]>([]);
@@ -383,9 +399,24 @@ export default function GroceryListPage() {
         };
       });
 
+      // Add custom grocery items to the list
+      const customItems: IngredientItem[] = customGroceryItems.map((item: CustomGroceryItem) => ({
+        name: item.name,
+        recipes: [{ name: 'Custom Item', count: 1 }],
+        totalQuantity: 1,
+        originalUnit: item.unit || '1',
+        category: item.category,
+        checked: false,
+        isCustom: true,
+        id: item.id
+      }));
+
+      // Combine recipe ingredients with custom items
+      const combinedList = [...newGroceryList, ...customItems];
+
       // Sort alphabetically
-      newGroceryList.sort((a, b) => a.name.localeCompare(b.name));
-      setGroceryList(newGroceryList);
+      combinedList.sort((a, b) => a.name.localeCompare(b.name));
+      setGroceryList(combinedList);
     } catch (error) {
       console.error('Error generating grocery list:', error);
       setGroceryList([]);
@@ -400,25 +431,67 @@ export default function GroceryListPage() {
     );
   };
 
-  const removeIngredient = (index: number) => {
+  const removeIngredient = async (index: number) => {
+    const item = groceryList[index];
+    
+    // If it's a custom item, delete from backend
+    if (item.isCustom && item.id) {
+      try {
+        await deleteCustomItemMutation.mutateAsync(item.id);
+      } catch (error) {
+        console.error('Failed to delete custom item:', error);
+      }
+    }
+    
     setGroceryList(prev => prev.filter((_, i) => i !== index));
   };
 
-  const addCustomItem = () => {
+  // Query to load custom grocery items
+  const { data: customGroceryItems = [] } = useQuery({
+    queryKey: ['/api/grocery-items'],
+    enabled: true,
+  });
+
+  // Mutation to create custom grocery item
+  const createCustomItemMutation = useMutation({
+    mutationFn: async (itemData: { name: string; category: string; quantity?: string; unit?: string }) => {
+      const response = await apiRequest('POST', '/api/grocery-items', itemData);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/grocery-items'] });
+    },
+  });
+
+  // Mutation to delete custom grocery item
+  const deleteCustomItemMutation = useMutation({
+    mutationFn: async (itemId: string) => {
+      await apiRequest('DELETE', `/api/grocery-items/${itemId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/grocery-items'] });
+    },
+  });
+
+  const addCustomItem = async () => {
     if (!newItemName.trim()) return;
     
-    const newItem: IngredientItem = {
-      name: newItemName.toLowerCase().trim(),
-      recipes: [{ name: 'Custom Item', count: 1 }],
-      totalQuantity: 1,
-      originalUnit: '1',
-      category: categorizeIngredient(newItemName.toLowerCase().trim()),
-      checked: false,
-    };
+    const category = categorizeIngredient(newItemName.toLowerCase().trim());
     
-    setGroceryList(prev => [...prev, newItem]);
-    setNewItemName('');
-    setShowAddForm(false);
+    try {
+      // Create persistent custom item
+      await createCustomItemMutation.mutateAsync({
+        name: newItemName.trim(),
+        category,
+        quantity: '1',
+        unit: 'item'
+      });
+      
+      setNewItemName('');
+      setShowAddForm(false);
+    } catch (error) {
+      console.error('Failed to add custom item:', error);
+    }
   };
 
   const handleAddFormSubmit = (e: React.FormEvent) => {
@@ -428,6 +501,16 @@ export default function GroceryListPage() {
 
   const clearList = () => {
     setGroceryList([]);
+  };
+
+  const clearCustomItems = async () => {
+    try {
+      // Clear all custom items from backend
+      await apiRequest('DELETE', '/api/grocery-items');
+      queryClient.invalidateQueries({ queryKey: ['/api/grocery-items'] });
+    } catch (error) {
+      console.error('Failed to clear custom items:', error);
+    }
   };
 
   const clearChecked = () => {
@@ -562,6 +645,14 @@ export default function GroceryListPage() {
                     </Button>
                     <Button variant="outline" size="sm" onClick={clearChecked} className="print:hidden">
                       Clear Checked
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={clearCustomItems}
+                      className="print:hidden text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300"
+                    >
+                      Clear Custom
                     </Button>
                     <Button variant="outline" size="sm" onClick={clearList} className="print:hidden">
                       Clear All

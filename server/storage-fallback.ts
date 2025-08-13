@@ -6,8 +6,7 @@ import {
   type UpdateUser,
   type UsageTracking,
 } from "@flavorbot/shared";
-import type { MealPlanEntry, CreateMealPlanEntryData, MealPlanResponse } from "@flavorbot/shared/types/meal-plan";
-import { IStorage } from "./storage";
+import type { IStorage, CustomGroceryItem, CreateCustomGroceryItem, MealPlanEntry, CreateMealPlanEntryData, MealPlanResponse } from "./storage";
 import { createId } from "@paralleldrive/cuid2";
 import { mockRecipes } from "../mock-data";
 
@@ -17,8 +16,10 @@ export class MemoryStorage implements IStorage {
   private recipes: Map<number, Recipe> = new Map();
   private usage: Map<string, UsageTracking> = new Map();
   private mealPlans: Map<number, MealPlanEntry> = new Map();
+  private customGroceryItems: Map<string, CustomGroceryItem> = new Map();
   private recipeIdCounter = 21; // Start after mock recipes
   private mealPlanIdCounter = 1;
+  private groceryItemIdCounter = 1;
 
   constructor() {
     // Only initialize with mock recipes in development environment
@@ -274,5 +275,62 @@ export class MemoryStorage implements IStorage {
     return Array.from(this.mealPlans.values()).filter(entry => 
       entry.userId === userId && entry.date === date
     );
+  }
+
+  // Custom grocery item operations
+  async createCustomGroceryItem(userId: string, item: CreateCustomGroceryItem): Promise<CustomGroceryItem> {
+    const itemId = `grocery-${this.groceryItemIdCounter++}`;
+    const now = new Date();
+
+    const groceryItem: CustomGroceryItem = {
+      id: itemId,
+      userId,
+      name: item.name,
+      category: item.category,
+      quantity: item.quantity,
+      unit: item.unit,
+      createdAt: now,
+      updatedAt: now
+    };
+
+    this.customGroceryItems.set(itemId, groceryItem);
+    return groceryItem;
+  }
+
+  async getUserCustomGroceryItems(userId: string): Promise<CustomGroceryItem[]> {
+    return Array.from(this.customGroceryItems.values()).filter(item => item.userId === userId);
+  }
+
+  async updateCustomGroceryItem(itemId: string, userId: string, updates: Partial<CreateCustomGroceryItem>): Promise<CustomGroceryItem> {
+    const existing = this.customGroceryItems.get(itemId);
+    if (!existing || existing.userId !== userId) {
+      throw new Error("Custom grocery item not found");
+    }
+
+    const updated: CustomGroceryItem = {
+      ...existing,
+      ...updates,
+      updatedAt: new Date()
+    };
+
+    this.customGroceryItems.set(itemId, updated);
+    return updated;
+  }
+
+  async deleteCustomGroceryItem(itemId: string, userId: string): Promise<void> {
+    const existing = this.customGroceryItems.get(itemId);
+    if (!existing || existing.userId !== userId) {
+      throw new Error("Custom grocery item not found");
+    }
+
+    this.customGroceryItems.delete(itemId);
+  }
+
+  async clearAllCustomGroceryItems(userId: string): Promise<void> {
+    for (const [itemId, item] of this.customGroceryItems) {
+      if (item.userId === userId) {
+        this.customGroceryItems.delete(itemId);
+      }
+    }
   }
 }

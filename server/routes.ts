@@ -672,6 +672,92 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Custom grocery item routes
+  app.post("/api/grocery-items", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const { name, category, quantity, unit } = req.body;
+
+      if (!name || !category) {
+        return res.status(400).json({ message: "Name and category are required" });
+      }
+
+      const item = await dbStorage.createCustomGroceryItem(userId, { name, category, quantity, unit });
+      res.status(201).json(item);
+    } catch (error: any) {
+      console.error("Error creating custom grocery item:", error);
+      res.status(500).json({ message: error.message || "Failed to create grocery item" });
+    }
+  });
+
+  app.get("/api/grocery-items", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const items = await dbStorage.getUserCustomGroceryItems(userId);
+      res.json(items);
+    } catch (error: any) {
+      console.error("Error getting custom grocery items:", error);
+      res.status(500).json({ message: error.message || "Failed to get grocery items" });
+    }
+  });
+
+  app.put("/api/grocery-items/:id", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const itemId = req.params.id;
+      const { name, category, quantity, unit } = req.body;
+
+      const item = await dbStorage.updateCustomGroceryItem(itemId, userId, { name, category, quantity, unit });
+      res.json(item);
+    } catch (error: any) {
+      console.error("Error updating custom grocery item:", error);
+      res.status(500).json({ message: error.message || "Failed to update grocery item" });
+    }
+  });
+
+  app.delete("/api/grocery-items/:id", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const itemId = req.params.id;
+      await dbStorage.deleteCustomGroceryItem(itemId, userId);
+      res.status(200).json({ message: "Grocery item deleted" });
+    } catch (error: any) {
+      console.error("Error deleting custom grocery item:", error);
+      res.status(500).json({ message: error.message || "Failed to delete grocery item" });
+    }
+  });
+
+  app.delete("/api/grocery-items", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      await dbStorage.clearAllCustomGroceryItems(userId);
+      res.status(200).json({ message: "All custom grocery items cleared" });
+    } catch (error: any) {
+      console.error("Error clearing custom grocery items:", error);
+      res.status(500).json({ message: error.message || "Failed to clear grocery items" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

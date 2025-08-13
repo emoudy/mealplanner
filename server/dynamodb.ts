@@ -30,6 +30,7 @@ export const tableName = process.env.DYNAMODB_TABLE_NAME || "flavorbot-dev";
 // USER#userId        | RECIPE#recipeId      | User's recipe
 // USER#userId        | USAGE#YYYY-MM        | Monthly usage stats
 // USER#userId        | SESSION#sessionId    | Session data
+// USER#userId        | GROCERY#itemId       | Custom grocery item
 // RECIPE#category    | RECIPE#recipeId      | Recipe by category (GSI)
 // SEARCH#term        | RECIPE#recipeId      | Recipe search index (GSI)
 
@@ -40,6 +41,7 @@ export const keys = {
     recipe: (userId: string, recipeId: string) => ({ PK: `USER#${userId}`, SK: `RECIPE#${recipeId}` }),
     usage: (userId: string, month: string) => ({ PK: `USER#${userId}`, SK: `USAGE#${month}` }),
     session: (userId: string, sessionId: string) => ({ PK: `USER#${userId}`, SK: `SESSION#${sessionId}` }),
+    groceryItem: (userId: string, itemId: string) => ({ PK: `USER#${userId}`, SK: `GROCERY#${itemId}` }),
   },
   recipe: {
     byCategory: (category: string, recipeId: string) => ({ PK: `RECIPE#${category}`, SK: `RECIPE#${recipeId}` }),
