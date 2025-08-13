@@ -5,11 +5,10 @@ import {
   type InsertRecipe,
   type UpdateUser,
   type UsageTracking,
-  type MealPlanEntry,
-  type CreateMealPlanEntryData,
-  type MealPlanResponse,
 } from "@flavorbot/shared";
+import type { MealPlanEntry, CreateMealPlanEntryData, MealPlanResponse } from "@flavorbot/shared/types/meal-plan";
 import { IStorage } from "./storage";
+import { mockRecipes } from "../mock-data";
 import { docClient, tableName, keys, generateId, generateRecipeId } from "./dynamodb";
 import { GetCommand, PutCommand, UpdateCommand, DeleteCommand, QueryCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
 // Remove bcrypt import as it's not needed for DynamoDB storage
@@ -220,7 +219,7 @@ export class DynamoDBStorage implements IStorage {
         })
       }));
 
-      return (response.Items || []).map(item => ({
+      let recipes: Recipe[] = (response.Items || []).map(item => ({
         id: item.id,
         userId: item.userId,
         title: item.title,
@@ -235,38 +234,72 @@ export class DynamoDBStorage implements IStorage {
         createdAt: new Date(item.createdAt),
         updatedAt: new Date(item.updatedAt),
       }));
+
+      // In development, also include mock recipes for testing
+      if (process.env.NODE_ENV === 'development') {
+        recipes = [...recipes, ...mockRecipes];
+      }
+
+      if (category && category !== 'all') {
+        recipes = recipes.filter(recipe => recipe.category === category);
+      }
+
+      return recipes.sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0));
     } catch (error) {
       console.error("Error getting recipes by user:", error);
+      // In development, fall back to mock recipes only
+      if (process.env.NODE_ENV === 'development') {
+        let recipes = [...mockRecipes];
+        if (category && category !== 'all') {
+          recipes = recipes.filter(recipe => recipe.category === category);
+        }
+        return recipes.sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0));
+      }
       return [];
     }
   }
 
   async getRecipe(id: number, userId: string): Promise<Recipe | undefined> {
     try {
+      // First try to get from user's own recipes
       const response = await docClient.send(new GetCommand({
         TableName: tableName,
         Key: keys.user.recipe(userId, id.toString())
       }));
 
-      if (!response.Item) return undefined;
+      if (response.Item) {
+        return {
+          id: response.Item.id,
+          userId: response.Item.userId,
+          title: response.Item.title,
+          description: response.Item.description,
+          ingredients: response.Item.ingredients,
+          instructions: response.Item.instructions,
+          category: response.Item.category,
+          cookTime: response.Item.cookTime,
+          servings: response.Item.servings,
+          imageUrl: response.Item.imageUrl,
+          isFromAI: response.Item.isFromAI || false,
+          createdAt: new Date(response.Item.createdAt),
+          updatedAt: new Date(response.Item.updatedAt),
+        };
+      }
 
-      return {
-        id: response.Item.id,
-        userId: response.Item.userId,
-        title: response.Item.title,
-        description: response.Item.description,
-        ingredients: response.Item.ingredients,
-        instructions: response.Item.instructions,
-        category: response.Item.category,
-        cookTime: response.Item.cookTime,
-        servings: response.Item.servings,
-        imageUrl: response.Item.imageUrl,
-        isFromAI: response.Item.isFromAI || false,
-        createdAt: new Date(response.Item.createdAt),
-        updatedAt: new Date(response.Item.updatedAt),
-      };
+      // In development, also check mock recipes
+      if (process.env.NODE_ENV === 'development') {
+        const mockRecipe = mockRecipes.find(recipe => recipe.id === id);
+        if (mockRecipe) {
+          return mockRecipe;
+        }
+      }
+
+      return undefined;
     } catch (error) {
       console.error("Error getting recipe:", error);
+      // In development, fall back to mock recipes
+      if (process.env.NODE_ENV === 'development') {
+        return mockRecipes.find(recipe => recipe.id === id);
+      }
       return undefined;
     }
   }
@@ -316,6 +349,9 @@ export class DynamoDBStorage implements IStorage {
 
   async searchRecipes(userId: string, query: string): Promise<Recipe[]> {
     try {
+      const lowerQuery = query.toLowerCase();
+      let recipes: Recipe[] = [];
+
       // Search in user's recipes by scanning with filter
       const response = await docClient.send(new QueryCommand({
         TableName: tableName,
@@ -328,23 +364,48 @@ export class DynamoDBStorage implements IStorage {
         }
       }));
 
-      return (response.Items || []).map(item => ({
-        id: item.id,
-        userId: item.userId,
-        title: item.title,
-        description: item.description,
-        ingredients: item.ingredients,
-        instructions: item.instructions,
-        category: item.category,
-        cookTime: item.cookTime,
-        servings: item.servings,
-        imageUrl: item.imageUrl,
-        isFromAI: item.isFromAI || false,
-        createdAt: new Date(item.createdAt),
-        updatedAt: new Date(item.updatedAt),
-      }));
+      if (response.Items) {
+        recipes = response.Items.map(item => ({
+          id: item.id,
+          userId: item.userId,
+          title: item.title,
+          description: item.description,
+          ingredients: item.ingredients,
+          instructions: item.instructions,
+          category: item.category,
+          cookTime: item.cookTime,
+          servings: item.servings,
+          imageUrl: item.imageUrl,
+          isFromAI: item.isFromAI || false,
+          createdAt: new Date(item.createdAt),
+          updatedAt: new Date(item.updatedAt),
+        }));
+      }
+
+      // In development, also search mock recipes
+      if (process.env.NODE_ENV === 'development') {
+        const mockResults = mockRecipes.filter(recipe => 
+          recipe.title.toLowerCase().includes(lowerQuery) ||
+          recipe.description?.toLowerCase().includes(lowerQuery) ||
+          recipe.category.toLowerCase().includes(lowerQuery)
+        );
+        recipes = [...recipes, ...mockResults];
+      }
+
+      return recipes.sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0));
     } catch (error) {
       console.error("Error searching recipes:", error);
+      // In development, fall back to searching mock recipes only
+      if (process.env.NODE_ENV === 'development') {
+        const lowerQuery = query.toLowerCase();
+        return mockRecipes
+          .filter(recipe => 
+            recipe.title.toLowerCase().includes(lowerQuery) ||
+            recipe.description?.toLowerCase().includes(lowerQuery) ||
+            recipe.category.toLowerCase().includes(lowerQuery)
+          )
+          .sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0));
+      }
       return [];
     }
   }

@@ -5,10 +5,8 @@ import {
   type InsertRecipe,
   type UpdateUser,
   type UsageTracking,
-  type MealPlanEntry,
-  type CreateMealPlanEntryData,
-  type MealPlanResponse,
 } from "@flavorbot/shared";
+import type { MealPlanEntry, CreateMealPlanEntryData, MealPlanResponse } from "@flavorbot/shared/types/meal-plan";
 import { IStorage } from "./storage";
 import { createId } from "@paralleldrive/cuid2";
 import { mockRecipes } from "../mock-data";
@@ -23,10 +21,13 @@ export class MemoryStorage implements IStorage {
   private mealPlanIdCounter = 1;
 
   constructor() {
-    // Initialize with mock recipes for testing - TODO: Remove when DynamoDB is fully integrated
-    mockRecipes.forEach(recipe => {
-      this.recipes.set(recipe.id, recipe);
-    });
+    // Only initialize with mock recipes in development environment
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Development mode: Loading mock recipes for testing');
+      mockRecipes.forEach(recipe => {
+        this.recipes.set(recipe.id, recipe);
+      });
+    }
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -41,8 +42,8 @@ export class MemoryStorage implements IStorage {
       emailVerified: userData.emailVerified || false,
       emailVerificationToken: userData.emailVerificationToken || null,
       authProvider: userData.authProvider || "email",
-      firstName: userData.firstName || null,
-      lastName: userData.lastName || null,
+      firstName: userData.firstName ?? null,
+      lastName: userData.lastName ?? null,
       profileImageUrl: userData.profileImageUrl || null,
       subscriptionTier: userData.subscriptionTier || "free",
       subscriptionStatus: userData.subscriptionStatus || "active",
@@ -89,17 +90,31 @@ export class MemoryStorage implements IStorage {
   }
 
   async getRecipesByUser(userId: string, category?: string): Promise<Recipe[]> {
-    // During development, return all recipes (including mock recipes) for any authenticated user
-    // TODO: Remove this when DynamoDB is fully integrated - should only return user's own recipes
-    return Array.from(this.recipes.values())
+    let recipes;
+    
+    if (process.env.NODE_ENV === 'development') {
+      // In development, show all recipes (including mock data) for testing
+      recipes = Array.from(this.recipes.values());
+    } else {
+      // In production, only show user's own recipes
+      recipes = Array.from(this.recipes.values()).filter(recipe => recipe.userId === userId);
+    }
+    
+    return recipes
       .filter(recipe => !category || category === 'all' || recipe.category === category)
       .sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0));
   }
 
   async getRecipe(id: number, userId: string): Promise<Recipe | undefined> {
-    // During development, return any recipe for authenticated users (including mock recipes)
-    // TODO: Remove this when DynamoDB is fully integrated - should only return user's own recipes
-    return this.recipes.get(id);
+    const recipe = this.recipes.get(id);
+    
+    if (process.env.NODE_ENV === 'development') {
+      // In development, allow access to all recipes (including mock data)
+      return recipe;
+    } else {
+      // In production, only allow access to user's own recipes
+      return recipe?.userId === userId ? recipe : undefined;
+    }
   }
 
   async updateRecipe(id: number, userId: string, updates: Partial<InsertRecipe>): Promise<Recipe> {
@@ -122,9 +137,17 @@ export class MemoryStorage implements IStorage {
 
   async searchRecipes(userId: string, query: string): Promise<Recipe[]> {
     const lowerQuery = query.toLowerCase();
-    // During development, search all recipes (including mock recipes) for authenticated users
-    // TODO: Remove this when DynamoDB is fully integrated - should only search user's own recipes
-    return Array.from(this.recipes.values())
+    let recipes;
+    
+    if (process.env.NODE_ENV === 'development') {
+      // In development, search all recipes (including mock data)
+      recipes = Array.from(this.recipes.values());
+    } else {
+      // In production, only search user's own recipes
+      recipes = Array.from(this.recipes.values()).filter(recipe => recipe.userId === userId);
+    }
+    
+    return recipes
       .filter(recipe => 
         recipe.title.toLowerCase().includes(lowerQuery) ||
         recipe.description?.toLowerCase().includes(lowerQuery) ||
