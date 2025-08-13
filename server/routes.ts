@@ -198,7 +198,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.id;
       const recipeId = parseInt(req.params.id);
-      const updates = insertRecipeSchema.deepPartial().parse(req.body);
+      const updates = insertRecipeSchema.partial().parse(req.body);
       const recipe = await dbStorage.updateRecipe(recipeId, userId, updates);
       res.json(recipe);
     } catch (error) {
@@ -612,11 +612,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       if (date) {
         // Get meal plan for specific date
-        const entries = await storage.getMealPlanForDate(userId, date as string);
+        const entries = await dbStorage.getMealPlanForDate(userId, date as string);
         res.json(entries);
       } else if (startDate && endDate) {
         // Get meal plan for date range
-        const mealPlan = await storage.getMealPlanForDateRange(userId, startDate as string, endDate as string);
+        const mealPlan = await dbStorage.getMealPlanForDateRange(userId, startDate as string, endDate as string);
         res.json(mealPlan);
       } else {
         res.status(400).json({ message: "Please provide either 'date' or both 'startDate' and 'endDate'" });
@@ -640,7 +640,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Date, recipeId, and recipeTitle are required" });
       }
 
-      const entry = await storage.addRecipeToMealPlan(userId, date, recipeId, recipeTitle);
+      const entry = await dbStorage.addRecipeToMealPlan(userId, date, recipeId, recipeTitle);
       res.status(201).json(entry);
     } catch (error) {
       console.error("Error adding recipe to meal plan:", error);
@@ -664,7 +664,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid entry ID" });
       }
 
-      await storage.removeRecipeFromMealPlan(userId, entryId);
+      await dbStorage.removeRecipeFromMealPlan(userId, entryId);
       res.status(204).send();
     } catch (error) {
       console.error("Error removing recipe from meal plan:", error);

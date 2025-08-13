@@ -5,16 +5,20 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, ChevronLeft, ChevronRight, Plus, X, Clock, Users, BookOpen } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, Plus, X, Clock, Users, BookOpen, MessageCircle, UtensilsCrossed } from 'lucide-react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isToday, addDays, startOfWeek, endOfWeek } from 'date-fns';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
+import { useAddRecipe } from '@/contexts/AddRecipeContext';
+import { Link } from 'wouter';
 import type { Recipe, MealPlanEntry, MealPlanResponse } from '@flavorbot/shared';
 
 export default function CalendarPage() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { openAddRecipeModal } = useAddRecipe();
+
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<'month' | 'week'>('month');
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -249,9 +253,33 @@ export default function CalendarPage() {
                       </DialogHeader>
                       <div className="grid gap-4 max-h-96 overflow-y-auto">
                         {recipes.length === 0 ? (
-                          <p className="text-center text-gray-500 py-8">
-                            No recipes found. Create some recipes first!
-                          </p>
+                          <div className="text-center py-8">
+                            <p className="text-gray-500 mb-6">
+                              No recipes found. Create some recipes first!
+                            </p>
+                            <div className="flex gap-3 justify-center">
+                              <Link href="/chatbot">
+                                <Button 
+                                  onClick={() => setSelectedDate(null)}
+                                  className="flex items-center gap-2"
+                                >
+                                  <MessageCircle className="w-4 h-4" />
+                                  Ask FlavorBot
+                                </Button>
+                              </Link>
+                              <Button 
+                                variant="outline"
+                                onClick={() => {
+                                  openAddRecipeModal();
+                                  setSelectedDate(null);
+                                }}
+                                className="flex items-center gap-2"
+                              >
+                                <UtensilsCrossed className="w-4 h-4" />
+                                Add a Recipe
+                              </Button>
+                            </div>
+                          </div>
                         ) : (
                           recipes.map((recipe) => (
                             <Card 
