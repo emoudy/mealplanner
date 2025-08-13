@@ -20,7 +20,7 @@ export default function CalendarPage() {
   const { openAddRecipeModal } = useAddRecipe();
 
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [viewMode, setViewMode] = useState<'month' | 'week'>('month');
+  const [viewMode, setViewMode] = useState<'month' | 'week' | 'daily'>('month');
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
 
@@ -31,10 +31,16 @@ export default function CalendarPage() {
         start: format(startOfMonth(currentDate), 'yyyy-MM-dd'),
         end: format(endOfMonth(currentDate), 'yyyy-MM-dd')
       };
-    } else {
+    } else if (viewMode === 'week') {
       return {
         start: format(startOfWeek(currentDate), 'yyyy-MM-dd'),
         end: format(endOfWeek(currentDate), 'yyyy-MM-dd')
+      };
+    } else { // daily
+      const currentDateStr = format(currentDate, 'yyyy-MM-dd');
+      return {
+        start: currentDateStr,
+        end: currentDateStr
       };
     }
   };
@@ -102,16 +108,20 @@ export default function CalendarPage() {
   const navigatePrevious = () => {
     if (viewMode === 'month') {
       setCurrentDate(subMonths(currentDate, 1));
-    } else {
+    } else if (viewMode === 'week') {
       setCurrentDate(addDays(currentDate, -7));
+    } else { // daily
+      setCurrentDate(addDays(currentDate, -1));
     }
   };
 
   const navigateNext = () => {
     if (viewMode === 'month') {
       setCurrentDate(addMonths(currentDate, 1));
-    } else {
+    } else if (viewMode === 'week') {
       setCurrentDate(addDays(currentDate, 7));
+    } else { // daily
+      setCurrentDate(addDays(currentDate, 1));
     }
   };
 
@@ -122,11 +132,13 @@ export default function CalendarPage() {
         start: startOfMonth(currentDate),
         end: endOfMonth(currentDate)
       });
-    } else {
+    } else if (viewMode === 'week') {
       return eachDayOfInterval({
         start: startOfWeek(currentDate),
         end: endOfWeek(currentDate)
       });
+    } else { // daily
+      return [currentDate];
     }
   };
 
@@ -164,10 +176,12 @@ export default function CalendarPage() {
   const formatDateHeader = () => {
     if (viewMode === 'month') {
       return format(currentDate, 'MMMM yyyy');
-    } else {
+    } else if (viewMode === 'week') {
       const weekStart = startOfWeek(currentDate);
       const weekEnd = endOfWeek(currentDate);
       return `${format(weekStart, 'MMM d')} - ${format(weekEnd, 'MMM d, yyyy')}`;
+    } else { // daily
+      return format(currentDate, 'EEEE, MMMM d, yyyy');
     }
   };
 
@@ -186,10 +200,11 @@ export default function CalendarPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'month' | 'week')}>
+          <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'month' | 'week' | 'daily')}>
             <TabsList>
               <TabsTrigger value="month">Monthly</TabsTrigger>
               <TabsTrigger value="week">Weekly</TabsTrigger>
+              <TabsTrigger value="daily">Daily</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
@@ -211,16 +226,165 @@ export default function CalendarPage() {
       </div>
 
       {/* Calendar Grid */}
-      <div className={`grid gap-4 ${viewMode === 'month' ? 'grid-cols-7' : 'grid-cols-7'} mb-8`}>
-        {/* Day headers */}
-        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-          <div key={day} className="text-center font-medium text-gray-500 dark:text-gray-400 py-2">
-            {day}
-          </div>
-        ))}
+      {viewMode === 'daily' ? (
+        // Daily View - Single day with full recipe titles
+        <div className="max-w-2xl mx-auto">
+          {daysToDisplay.map((day) => {
+            const dateStr = format(day, 'yyyy-MM-dd');
+            const dayEntries = mealPlan[dateStr] || [];
+            const isCurrentDay = isToday(day);
 
-        {/* Calendar days */}
-        {daysToDisplay.map((day) => {
+            return (
+              <Card key={dateStr} className={`${isCurrentDay ? 'ring-2 ring-brand-500' : ''}`}>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg">
+                      {format(day, 'EEEE, MMMM d, yyyy')}
+                    </CardTitle>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => setSelectedDate(dateStr)}
+                          disabled={dayEntries.length >= 10}
+                          className="flex items-center gap-2"
+                        >
+                          <Plus className="w-4 h-4" />
+                          Add Recipe
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-2xl">
+                        <DialogHeader>
+                          <DialogTitle>Add Recipe for {format(day, 'MMMM d, yyyy')}</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          {/* Action buttons - always visible */}
+                          <div className="flex gap-3 justify-center pb-4 border-b">
+                            <Link href="/chatbot">
+                              <Button 
+                                onClick={() => setSelectedDate(null)}
+                                className="flex items-center gap-2"
+                              >
+                                <MessageCircle className="w-4 h-4" />
+                                Ask FlavorBot
+                              </Button>
+                            </Link>
+                            <Button 
+                              variant="outline"
+                              onClick={() => {
+                                openAddRecipeModal();
+                                setSelectedDate(null);
+                              }}
+                              className="flex items-center gap-2"
+                            >
+                              <UtensilsCrossed className="w-4 h-4" />
+                              Add a Recipe
+                            </Button>
+                          </div>
+
+                          {/* Recipe list */}
+                          <div className="grid gap-4 max-h-96 overflow-y-auto">
+                            {recipes.length === 0 ? (
+                              <div className="text-center py-8">
+                                <p className="text-gray-500">
+                                  No recipes found. Use the buttons above to create or find recipes!
+                                </p>
+                              </div>
+                            ) : (
+                              recipes.map((recipe) => (
+                                <Card 
+                                  key={recipe.id} 
+                                  className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
+                                  onClick={() => {
+                                    handleAddRecipe(dateStr, recipe);
+                                    setSelectedDate(null);
+                                  }}
+                                >
+                                  <CardContent className="p-4">
+                                    <div className="flex items-center justify-between">
+                                      <div>
+                                        <h4 className="font-medium">{recipe.title}</h4>
+                                        <div className="flex items-center gap-4 text-sm text-gray-500 mt-1">
+                                          <span className="flex items-center gap-1">
+                                            <Clock className="w-3 h-3" />
+                                            {recipe.cookTime}m
+                                          </span>
+                                          <span className="flex items-center gap-1">
+                                            <Users className="w-3 h-3" />
+                                            {recipe.servings}
+                                          </span>
+                                          <Badge variant="outline" className="text-xs">
+                                            {recipe.category}
+                                          </Badge>
+                                        </div>
+                                      </div>
+                                      <Plus className="w-4 h-4" />
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                              ))
+                            )}
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {dayEntries.length === 0 ? (
+                    <p className="text-gray-500 text-center py-8">
+                      No recipes planned for this day. Click "Add Recipe" to get started!
+                    </p>
+                  ) : (
+                    <div className="space-y-3">
+                      {dayEntries.map((entry, index) => (
+                        <div 
+                          key={entry.id}
+                          className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className="w-6 h-6 bg-brand-500 text-white rounded-full flex items-center justify-center text-xs font-medium">
+                              {index + 1}
+                            </span>
+                            <button
+                              onClick={() => handleRecipeClick(recipes.find(r => r.id === entry.recipeId)!)}
+                              className="text-left hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
+                            >
+                              <span className="font-medium whitespace-normal break-words">
+                                {entry.recipeTitle}
+                              </span>
+                            </button>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleRemoveRecipe(entry.id)}
+                            className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      ) : (
+        // Month/Week View - Grid layout
+        <div className={`grid gap-4 ${viewMode === 'month' ? 'grid-cols-7' : 'grid-cols-7'} mb-8`}>
+          {/* Day headers */}
+          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+            <div key={day} className="text-center font-medium text-gray-500 dark:text-gray-400 py-2">
+              {day}
+            </div>
+          ))}
+
+          {/* Calendar days */}
+          {daysToDisplay.map((day) => {
           const dateStr = format(day, 'yyyy-MM-dd');
           const dayEntries = mealPlan[dateStr] || [];
           const isCurrentDay = isToday(day);
@@ -362,8 +526,9 @@ export default function CalendarPage() {
               </CardContent>
             </Card>
           );
-        })}
-      </div>
+          })}
+        </div>
+      )}
 
       {/* Recipe Detail Dialog */}
       {selectedRecipe && (
