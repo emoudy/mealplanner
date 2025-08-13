@@ -354,27 +354,15 @@ export default function GroceryListPage() {
                 <div className="space-y-3">
                   {groceryList.map((item, index) => (
                     <div key={index} className="flex items-start gap-3 p-3 rounded-lg border bg-white dark:bg-gray-800">
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="p-0 h-6 w-6 rounded-full border-2 border-gray-300 dark:border-gray-600"
-                          onClick={() => toggleIngredient(index)}
-                          aria-label={item.checked ? `Uncheck ${item.name}` : `Check ${item.name}`}
-                        >
-                          {item.checked && <Check className="w-4 h-4 text-green-600" />}
-                        </Button>
-                        
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="p-0 h-6 w-6 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
-                          onClick={() => removeIngredient(index)}
-                          aria-label={`Remove ${item.name} from grocery list`}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="p-0 h-6 w-6 rounded-full border-2 border-gray-300 dark:border-gray-600 flex-shrink-0"
+                        onClick={() => toggleIngredient(index)}
+                        aria-label={item.checked ? `Uncheck ${item.name}` : `Check ${item.name}`}
+                      >
+                        {item.checked && <Check className="w-4 h-4 text-green-600" />}
+                      </Button>
                       
                       <div className="flex-1 min-w-0">
                         <p className={cn(
@@ -391,6 +379,16 @@ export default function GroceryListPage() {
                           ))}
                         </div>
                       </div>
+
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="p-0 h-6 w-6 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 flex-shrink-0"
+                        onClick={() => removeIngredient(index)}
+                        aria-label={`Remove ${item.name} from grocery list`}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </div>
                   ))}
                 </div>
