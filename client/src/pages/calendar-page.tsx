@@ -471,7 +471,7 @@ export default function CalendarPage() {
           return (
             <Card 
               key={dateStr} 
-              className={`calendar-card print-bg min-h-32 ${isCurrentDay ? 'ring-2 ring-brand-500' : ''} ${dayEntries.length > 0 ? 'bg-green-50 dark:bg-green-950' : ''}`}
+              className={`calendar-card print-bg min-h-40 ${isCurrentDay ? 'ring-2 ring-brand-500' : ''} ${dayEntries.length > 0 ? 'bg-green-50 dark:bg-green-950' : ''}`}
             >
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
@@ -596,7 +596,7 @@ export default function CalendarPage() {
                       >
                         <div className="flex items-center justify-between mb-1">
                           <span 
-                            className="truncate flex-1 mr-1 print-text print:cursor-default font-medium"
+                            className="flex-1 mr-1 print-text print:cursor-default font-medium leading-tight break-words"
                             onClick={() => {
                               if (recipe) handleRecipeClick(recipe);
                             }}
