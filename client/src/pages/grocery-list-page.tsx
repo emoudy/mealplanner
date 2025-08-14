@@ -572,13 +572,26 @@ export default function GroceryListPage() {
   };
 
   const toggleIngredient = (index: number) => {
-    setGroceryList(prev => 
-      prev.map((item, i) => 
+    setGroceryList(prev => {
+      const newList = prev.map((item, i) => 
         i === index ? { ...item, checked: !item.checked } : item
-      )
-    );
-    // Auto-save item state changes
-    setTimeout(() => autoSaveItemChanges(), 500);
+      );
+      
+      // Auto-save with the updated list
+      setTimeout(() => {
+        if (newList.length > 0) {
+          saveGroceryListMutation.mutateAsync({
+            items: newList,
+            selectedRecipeIds,
+            showCustomItems
+          }).catch(error => {
+            console.error('Failed to auto-save item changes:', error);
+          });
+        }
+      }, 500);
+      
+      return newList;
+    });
   };
 
   const removeIngredient = async (index: number) => {
@@ -593,9 +606,24 @@ export default function GroceryListPage() {
       }
     }
     
-    setGroceryList(prev => prev.filter((_, i) => i !== index));
-    // Auto-save item removal
-    setTimeout(() => autoSaveItemChanges(), 500);
+    setGroceryList(prev => {
+      const newList = prev.filter((_, i) => i !== index);
+      
+      // Auto-save item removal with the updated list
+      setTimeout(() => {
+        if (newList.length > 0) {
+          saveGroceryListMutation.mutateAsync({
+            items: newList,
+            selectedRecipeIds,
+            showCustomItems
+          }).catch(error => {
+            console.error('Failed to auto-save item changes:', error);
+          });
+        }
+      }, 500);
+      
+      return newList;
+    });
   };
 
   // Remove duplicate query - using customItems from above
@@ -674,13 +702,24 @@ export default function GroceryListPage() {
 
       setGroceryList(prev => {
         const combined = [...prev, newGroceryItem];
-        return combined.sort((a, b) => a.name.localeCompare(b.name));
+        const newList = combined.sort((a, b) => a.name.localeCompare(b.name));
+        
+        // Auto-save after adding custom item with the updated list
+        setTimeout(() => {
+          saveGroceryListMutation.mutateAsync({
+            items: newList,
+            selectedRecipeIds,
+            showCustomItems
+          }).catch(error => {
+            console.error('Failed to auto-save item changes:', error);
+          });
+        }, 500);
+        
+        return newList;
       });
       
       setNewItemName('');
       setShowAddForm(false);
-      // Auto-save after adding custom item
-      setTimeout(() => autoSaveItemChanges(), 500);
     } catch (error) {
       console.error('Failed to add custom item:', error);
     }
