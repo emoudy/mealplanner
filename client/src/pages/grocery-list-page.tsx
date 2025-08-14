@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { ShoppingCart, CalendarIcon, Check, X, Trash2, Plus, Printer, Filter, Save, Download } from 'lucide-react';
+import { ShoppingCart, CalendarIcon, Check, X, Trash2, Plus, Printer, Filter, Save } from 'lucide-react';
 import { format, addDays, eachDayOfInterval } from 'date-fns';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
@@ -381,7 +381,7 @@ export default function GroceryListPage() {
   });
 
   // Saved grocery list queries and mutations
-  const { data: savedGroceryList } = useQuery({
+  const { data: savedGroceryList } = useQuery<{ id: string; userId: string; items: any[]; createdAt: Date; updatedAt: Date; } | null>({
     queryKey: ['/api/saved-grocery-list'],
     retry: false,
   });
@@ -413,7 +413,6 @@ export default function GroceryListPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/saved-grocery-list'] });
-      setGroceryList([]);
     },
   });
 
@@ -674,6 +673,17 @@ export default function GroceryListPage() {
     }
   };
 
+  // Auto-save when grocery list changes (debounced)
+  useEffect(() => {
+    if (groceryList.length > 0) {
+      const timeoutId = setTimeout(() => {
+        saveGroceryList();
+      }, 2000); // Save after 2 seconds of no changes
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [groceryList]);
+
   const loadSavedGroceryList = () => {
     if (savedGroceryList?.items) {
       const loadedItems: IngredientItem[] = savedGroceryList.items.map((item: any) => ({
@@ -696,18 +706,18 @@ export default function GroceryListPage() {
       // Delete saved grocery list if it exists
       if (savedGroceryList) {
         await deleteSavedGroceryListMutation.mutateAsync();
-      } else {
-        // Just clear the local list if no saved list
-        setGroceryList([]);
       }
       
-      // Also delete all custom items from backend
+      // Delete all custom items from backend
       const customItems = groceryList.filter(item => item.isCustom && item.id);
       await Promise.all(
         customItems.map(item => 
           deleteCustomItemMutation.mutateAsync(item.id!)
         )
       );
+      
+      // Clear the local list
+      setGroceryList([]);
     } catch (error) {
       console.error('Failed to delete grocery list:', error);
       // Still clear the list locally even if backend fails
@@ -1002,26 +1012,13 @@ export default function GroceryListPage() {
                       Add Item
                     </Button>
                     
-                    {savedGroceryList && (
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={loadSavedGroceryList}
-                        className="flex items-center gap-1 print:hidden bg-green-50 hover:bg-green-100 border-green-200 text-green-700 dark:bg-green-900/20 dark:hover:bg-green-900/30 dark:border-green-800 dark:text-green-300"
-                        aria-label="Load your saved grocery list"
-                      >
-                        <Download className="w-4 h-4" />
-                        Load Saved
-                      </Button>
-                    )}
-                    
                     <Button 
                       variant="outline" 
                       size="sm" 
                       onClick={saveGroceryList}
                       disabled={groceryList.length === 0 || saveGroceryListMutation.isPending}
                       className="flex items-center gap-1 print:hidden"
-                      aria-label="Save current grocery list"
+                      aria-label="Save current grocery list for future use"
                     >
                       <Save className="w-4 h-4" />
                       {saveGroceryListMutation.isPending ? 'Saving...' : 'Save List'}
@@ -1044,10 +1041,10 @@ export default function GroceryListPage() {
                       onClick={deleteAllItems} 
                       disabled={deleteSavedGroceryListMutation.isPending}
                       className="print:hidden"
-                      aria-label="Delete grocery list and all items"
+                      aria-label="Delete entire grocery list and all saved data"
                     >
                       <Trash2 className="w-4 h-4" />
-                      {deleteSavedGroceryListMutation.isPending ? 'Deleting...' : (savedGroceryList ? 'Delete Grocery List' : 'Delete All')}
+                      {deleteSavedGroceryListMutation.isPending ? 'Deleting...' : 'Delete All'}
                     </Button>
                   </div>
                 </div>
