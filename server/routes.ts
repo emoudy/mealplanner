@@ -766,11 +766,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "User not authenticated" });
       }
 
-      const { items } = req.body;
+      const { items, selectedRecipeIds, showCustomItems } = req.body;
       const savedList = {
         id: `saved-list-${userId}`,
         userId,
         items: items || [],
+        selectedRecipeIds: selectedRecipeIds || [],
+        showCustomItems: showCustomItems !== undefined ? showCustomItems : true,
         createdAt: new Date(),
         updatedAt: new Date()
       };

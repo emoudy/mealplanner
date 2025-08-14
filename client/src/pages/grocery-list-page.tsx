@@ -381,7 +381,15 @@ export default function GroceryListPage() {
   });
 
   // Saved grocery list queries and mutations
-  const { data: savedGroceryList } = useQuery<{ id: string; userId: string; items: any[]; createdAt: Date; updatedAt: Date; } | null>({
+  const { data: savedGroceryList } = useQuery<{ 
+    id: string; 
+    userId: string; 
+    items: any[]; 
+    selectedRecipeIds?: number[];
+    showCustomItems?: boolean;
+    createdAt: Date; 
+    updatedAt: Date; 
+  } | null>({
     queryKey: ['/api/saved-grocery-list'],
     retry: false,
   });
@@ -400,7 +408,11 @@ export default function GroceryListPage() {
         customId: item.id
       }));
       
-      await apiRequest('POST', '/api/saved-grocery-list', { items: savedItems });
+      await apiRequest('POST', '/api/saved-grocery-list', { 
+        items: savedItems,
+        selectedRecipeIds,
+        showCustomItems
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/saved-grocery-list'] });
@@ -688,6 +700,7 @@ export default function GroceryListPage() {
   }, [savedGroceryList, hasLoadedFromSaved, groceryList.length]);
 
   // Auto-save when grocery list changes (debounced) - but not when loading from saved
+  // Note: Filter changes (selectedRecipeIds, showCustomItems) do NOT trigger auto-save
   useEffect(() => {
     if (groceryList.length > 0 && hasLoadedFromSaved) {
       const timeoutId = setTimeout(() => {
@@ -710,6 +723,14 @@ export default function GroceryListPage() {
         isCustom: item.isCustom || false,
         id: item.customId
       }));
+      
+      // Restore the saved filter states
+      if (savedGroceryList.selectedRecipeIds) {
+        setSelectedRecipeIds(savedGroceryList.selectedRecipeIds);
+      }
+      if (savedGroceryList.showCustomItems !== undefined) {
+        setShowCustomItems(savedGroceryList.showCustomItems);
+      }
       
       setGroceryList(loadedItems);
     }
