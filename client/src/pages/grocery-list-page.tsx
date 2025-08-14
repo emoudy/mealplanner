@@ -417,6 +417,9 @@ export default function GroceryListPage() {
   });
 
   const generateGroceryList = async () => {
+    // Reset the loaded flag when generating a new list
+    setHasLoadedFromSaved(true);
+    
     if (!startDate || !endDate) {
       // Even if no date range, show custom items
       const customItemsList: IngredientItem[] = customItems.map((item: CustomGroceryItem) => ({
@@ -673,25 +676,27 @@ export default function GroceryListPage() {
     }
   };
 
-  // Auto-load saved grocery list when component mounts and data becomes available
+  // Track if we've loaded from saved data to prevent infinite loops
+  const [hasLoadedFromSaved, setHasLoadedFromSaved] = useState(false);
+
+  // Auto-load saved grocery list only once when component mounts
   useEffect(() => {
-    if (savedGroceryList?.items && savedGroceryList.items.length > 0) {
-      // Always load saved data when it's available, regardless of current list length
-      // This ensures saved items are restored even if there's a timing issue
+    if (savedGroceryList?.items && savedGroceryList.items.length > 0 && !hasLoadedFromSaved && groceryList.length === 0) {
+      setHasLoadedFromSaved(true);
       loadSavedGroceryList();
     }
-  }, [savedGroceryList]);
+  }, [savedGroceryList, hasLoadedFromSaved, groceryList.length]);
 
-  // Auto-save when grocery list changes (debounced)
+  // Auto-save when grocery list changes (debounced) - but not when loading from saved
   useEffect(() => {
-    if (groceryList.length > 0) {
+    if (groceryList.length > 0 && hasLoadedFromSaved) {
       const timeoutId = setTimeout(() => {
         saveGroceryList();
       }, 2000); // Save after 2 seconds of no changes
 
       return () => clearTimeout(timeoutId);
     }
-  }, [groceryList]);
+  }, [groceryList, hasLoadedFromSaved]);
 
   const loadSavedGroceryList = () => {
     if (savedGroceryList?.items && savedGroceryList.items.length > 0) {
@@ -706,11 +711,7 @@ export default function GroceryListPage() {
         id: item.customId
       }));
       
-      // Force a state update to ensure UI reflects the loaded data
-      setGroceryList([]);
-      setTimeout(() => {
-        setGroceryList(loadedItems);
-      }, 50);
+      setGroceryList(loadedItems);
     }
   };
 
@@ -729,11 +730,13 @@ export default function GroceryListPage() {
         )
       );
       
-      // Clear the local list
+      // Reset the loaded flag and clear the local list
+      setHasLoadedFromSaved(false);
       setGroceryList([]);
     } catch (error) {
       console.error('Failed to delete grocery list:', error);
       // Still clear the list locally even if backend fails
+      setHasLoadedFromSaved(false);
       setGroceryList([]);
     }
   };
