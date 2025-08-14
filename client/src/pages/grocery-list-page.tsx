@@ -699,17 +699,8 @@ export default function GroceryListPage() {
     }
   }, [savedGroceryList, hasLoadedFromSaved, groceryList.length]);
 
-  // Auto-save when grocery list changes (debounced) - but not when loading from saved
-  // Note: Filter changes (selectedRecipeIds, showCustomItems) do NOT trigger auto-save
-  useEffect(() => {
-    if (groceryList.length > 0 && hasLoadedFromSaved) {
-      const timeoutId = setTimeout(() => {
-        saveGroceryList();
-      }, 2000); // Save after 2 seconds of no changes
-
-      return () => clearTimeout(timeoutId);
-    }
-  }, [groceryList, hasLoadedFromSaved]);
+  // Auto-save is now completely removed - all saves are manual via "Save List" button
+  // This prevents the button flickering and gives users full control over when to save
 
   const loadSavedGroceryList = () => {
     if (savedGroceryList?.items && savedGroceryList.items.length > 0) {
