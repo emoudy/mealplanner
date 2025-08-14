@@ -6,7 +6,7 @@ import {
   type UpdateUser,
   type UsageTracking,
 } from "@flavorbot/shared";
-import type { IStorage, CustomGroceryItem, CreateCustomGroceryItem, MealPlanEntry, CreateMealPlanEntryData, MealPlanResponse } from "./storage";
+import type { IStorage, CustomGroceryItem, CreateCustomGroceryItem, MealPlanEntry, CreateMealPlanEntryData, MealPlanResponse, SavedGroceryList, SavedGroceryItem } from "./storage";
 import { createId } from "@paralleldrive/cuid2";
 import { mockRecipes } from "../mock-data";
 
@@ -332,5 +332,36 @@ export class MemoryStorage implements IStorage {
         this.customGroceryItems.delete(itemId);
       }
     }
+  }
+
+  // Saved grocery list operations (in-memory for development)
+  private savedGroceryLists = new Map<string, SavedGroceryList>();
+
+  async saveGroceryList(userId: string, list: SavedGroceryList): Promise<SavedGroceryList> {
+    this.savedGroceryLists.set(userId, { ...list, updatedAt: new Date() });
+    return this.savedGroceryLists.get(userId)!;
+  }
+
+  async getSavedGroceryList(userId: string): Promise<SavedGroceryList | undefined> {
+    return this.savedGroceryLists.get(userId);
+  }
+
+  async updateGroceryListItem(userId: string, itemId: string, updates: Partial<SavedGroceryItem>): Promise<void> {
+    const savedList = this.savedGroceryLists.get(userId);
+    if (!savedList) {
+      throw new Error("No saved grocery list found");
+    }
+
+    const itemIndex = savedList.items.findIndex(item => item.id === itemId);
+    if (itemIndex === -1) {
+      throw new Error("Item not found in grocery list");
+    }
+
+    savedList.items[itemIndex] = { ...savedList.items[itemIndex], ...updates };
+    await this.saveGroceryList(userId, savedList);
+  }
+
+  async deleteSavedGroceryList(userId: string): Promise<void> {
+    this.savedGroceryLists.delete(userId);
   }
 }

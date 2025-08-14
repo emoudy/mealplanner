@@ -6,7 +6,7 @@ import {
   type UpdateUser,
   type UsageTracking,
 } from "@flavorbot/shared";
-import type { MealPlanEntry, CreateMealPlanEntryData, MealPlanResponse, CustomGroceryItem, CreateCustomGroceryItem } from "./storage";
+import type { MealPlanEntry, CreateMealPlanEntryData, MealPlanResponse, CustomGroceryItem, CreateCustomGroceryItem, SavedGroceryList, SavedGroceryItem } from "./storage";
 import { IStorage } from "./storage";
 import { mockRecipes } from "../mock-data";
 import { docClient, tableName, keys, generateId, generateRecipeId } from "./dynamodb";
@@ -869,6 +869,87 @@ export class DynamoDBStorage implements IStorage {
       }
     } catch (error) {
       console.error("Error clearing custom grocery items:", error);
+      throw error;
+    }
+  }
+
+  // Saved grocery list operations
+  async saveGroceryList(userId: string, list: SavedGroceryList): Promise<SavedGroceryList> {
+    try {
+      const now = new Date().toISOString();
+      const groceryListData = {
+        ...list,
+        updatedAt: now
+      };
+
+      await docClient.send(new PutCommand({
+        TableName: tableName,
+        Item: {
+          ...keys.user.savedGroceryList(userId),
+          ...groceryListData,
+          EntityType: "SAVED_GROCERY_LIST"
+        }
+      }));
+
+      return groceryListData;
+    } catch (error) {
+      console.error("Error saving grocery list:", error);
+      throw error;
+    }
+  }
+
+  async getSavedGroceryList(userId: string): Promise<SavedGroceryList | undefined> {
+    try {
+      const response = await docClient.send(new GetCommand({
+        TableName: tableName,
+        Key: keys.user.savedGroceryList(userId)
+      }));
+
+      if (!response.Item) {
+        return undefined;
+      }
+
+      return {
+        id: response.Item.id,
+        userId: response.Item.userId,
+        items: response.Item.items,
+        createdAt: response.Item.createdAt,
+        updatedAt: response.Item.updatedAt,
+      };
+    } catch (error) {
+      console.error("Error getting saved grocery list:", error);
+      throw error;
+    }
+  }
+
+  async updateGroceryListItem(userId: string, itemId: string, updates: Partial<SavedGroceryItem>): Promise<void> {
+    try {
+      const savedList = await this.getSavedGroceryList(userId);
+      if (!savedList) {
+        throw new Error("No saved grocery list found");
+      }
+
+      const itemIndex = savedList.items.findIndex(item => item.id === itemId);
+      if (itemIndex === -1) {
+        throw new Error("Item not found in grocery list");
+      }
+
+      savedList.items[itemIndex] = { ...savedList.items[itemIndex], ...updates };
+      await this.saveGroceryList(userId, savedList);
+    } catch (error) {
+      console.error("Error updating grocery list item:", error);
+      throw error;
+    }
+  }
+
+  async deleteSavedGroceryList(userId: string): Promise<void> {
+    try {
+      await docClient.send(new DeleteCommand({
+        TableName: tableName,
+        Key: keys.user.savedGroceryList(userId)
+      }));
+    } catch (error) {
+      console.error("Error deleting saved grocery list:", error);
       throw error;
     }
   }

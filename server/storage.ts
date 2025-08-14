@@ -69,6 +69,12 @@ export interface IStorage {
   updateCustomGroceryItem(itemId: string, userId: string, updates: Partial<CreateCustomGroceryItem>): Promise<CustomGroceryItem>;
   deleteCustomGroceryItem(itemId: string, userId: string): Promise<void>;
   clearAllCustomGroceryItems(userId: string): Promise<void>;
+
+  // Saved grocery list operations
+  saveGroceryList(userId: string, list: SavedGroceryList): Promise<SavedGroceryList>;
+  getSavedGroceryList(userId: string): Promise<SavedGroceryList | undefined>;
+  updateGroceryListItem(userId: string, itemId: string, updates: Partial<SavedGroceryItem>): Promise<void>;
+  deleteSavedGroceryList(userId: string): Promise<void>;
 }
 
 // Custom grocery item types
@@ -88,6 +94,26 @@ export interface CreateCustomGroceryItem {
   category: string;
   quantity?: string;
   unit?: string;
+}
+
+// Saved grocery list types
+export interface SavedGroceryItem {
+  id: string;
+  name: string;
+  category: string;
+  totalQuantity: number;
+  originalUnit: string;
+  checked: boolean;
+  isCustom?: boolean;
+  recipes: { name: string; count: number }[];
+}
+
+export interface SavedGroceryList {
+  id: string;
+  userId: string;
+  items: SavedGroceryItem[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 // Create storage instance with fallback for development

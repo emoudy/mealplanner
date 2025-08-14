@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { ShoppingCart, CalendarIcon, Check, X, Trash2, Plus, Printer, Filter } from 'lucide-react';
+import { ShoppingCart, CalendarIcon, Check, X, Trash2, Plus, Printer, Filter, Save, Download } from 'lucide-react';
 import { format, addDays, eachDayOfInterval } from 'date-fns';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
@@ -380,6 +380,43 @@ export default function GroceryListPage() {
     queryKey: ['/api/grocery-items'],
   });
 
+  // Saved grocery list queries and mutations
+  const { data: savedGroceryList } = useQuery({
+    queryKey: ['/api/saved-grocery-list'],
+    retry: false,
+  });
+
+  const saveGroceryListMutation = useMutation({
+    mutationFn: async (items: IngredientItem[]) => {
+      const savedItems = items.map(item => ({
+        id: `${item.name}-${Math.random().toString(36).substr(2, 9)}`,
+        name: item.name,
+        category: item.category,
+        checked: item.checked,
+        totalQuantity: item.totalQuantity,
+        originalUnit: item.originalUnit,
+        recipes: item.recipes,
+        isCustom: item.isCustom,
+        customId: item.id
+      }));
+      
+      await apiRequest('POST', '/api/saved-grocery-list', { items: savedItems });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/saved-grocery-list'] });
+    },
+  });
+
+  const deleteSavedGroceryListMutation = useMutation({
+    mutationFn: async () => {
+      await apiRequest('DELETE', '/api/saved-grocery-list');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/saved-grocery-list'] });
+      setGroceryList([]);
+    },
+  });
+
   const generateGroceryList = async () => {
     if (!startDate || !endDate) {
       // Even if no date range, show custom items
@@ -544,9 +581,16 @@ export default function GroceryListPage() {
   // Remove duplicate query - using customItems from above
 
   // Initial load of custom items only (no auto-regeneration)
+  // Load saved grocery list on initial load
   useEffect(() => {
-    if (customItems.length > 0 && groceryList.length === 0) {
-      // Only show custom items on initial load if no grocery list exists
+    if (savedGroceryList && groceryList.length === 0) {
+      loadSavedGroceryList();
+    }
+  }, [savedGroceryList]);
+
+  useEffect(() => {
+    if (customItems.length > 0 && groceryList.length === 0 && !savedGroceryList) {
+      // Only show custom items on initial load if no grocery list exists and no saved list
       const customItemsList: IngredientItem[] = customItems.map((item: CustomGroceryItem) => ({
         name: item.name,
         recipes: [{ name: 'Custom Item', count: 1 }],
@@ -559,7 +603,7 @@ export default function GroceryListPage() {
       }));
       setGroceryList(customItemsList.sort((a, b) => a.name.localeCompare(b.name)));
     }
-  }, [customItems]);
+  }, [customItems, savedGroceryList]);
 
   // Mutation to create custom grocery item
   const createCustomItemMutation = useMutation({
@@ -620,22 +664,52 @@ export default function GroceryListPage() {
     }
   };
 
-  const deleteAllItems = async () => {
-    // Delete all custom items from backend
-    const customItems = groceryList.filter(item => item.isCustom && item.id);
+  const saveGroceryList = async () => {
+    if (groceryList.length === 0) return;
     
     try {
-      // Delete all custom items from database
+      await saveGroceryListMutation.mutateAsync(groceryList);
+    } catch (error) {
+      console.error('Failed to save grocery list:', error);
+    }
+  };
+
+  const loadSavedGroceryList = () => {
+    if (savedGroceryList?.items) {
+      const loadedItems: IngredientItem[] = savedGroceryList.items.map((item: any) => ({
+        name: item.name,
+        category: item.category,
+        checked: item.checked,
+        totalQuantity: item.totalQuantity,
+        originalUnit: item.originalUnit,
+        recipes: item.recipes,
+        isCustom: item.isCustom,
+        id: item.customId
+      }));
+      
+      setGroceryList(loadedItems);
+    }
+  };
+
+  const deleteAllItems = async () => {
+    try {
+      // Delete saved grocery list if it exists
+      if (savedGroceryList) {
+        await deleteSavedGroceryListMutation.mutateAsync();
+      } else {
+        // Just clear the local list if no saved list
+        setGroceryList([]);
+      }
+      
+      // Also delete all custom items from backend
+      const customItems = groceryList.filter(item => item.isCustom && item.id);
       await Promise.all(
         customItems.map(item => 
           deleteCustomItemMutation.mutateAsync(item.id!)
         )
       );
-      
-      // Clear the entire grocery list
-      setGroceryList([]);
     } catch (error) {
-      console.error('Failed to delete all custom items:', error);
+      console.error('Failed to delete grocery list:', error);
       // Still clear the list locally even if backend fails
       setGroceryList([]);
     }
@@ -916,7 +990,7 @@ export default function GroceryListPage() {
                     <ShoppingCart className="w-5 h-5" />
                     Grocery List ({getFilteredGroceryList().length} items)
                   </CardTitle>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-wrap">
                     <Button 
                       variant="outline" 
                       size="sm" 
@@ -927,6 +1001,32 @@ export default function GroceryListPage() {
                       <Plus className="w-4 h-4" />
                       Add Item
                     </Button>
+                    
+                    {savedGroceryList && (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={loadSavedGroceryList}
+                        className="flex items-center gap-1 print:hidden bg-green-50 hover:bg-green-100 border-green-200 text-green-700 dark:bg-green-900/20 dark:hover:bg-green-900/30 dark:border-green-800 dark:text-green-300"
+                        aria-label="Load your saved grocery list"
+                      >
+                        <Download className="w-4 h-4" />
+                        Load Saved
+                      </Button>
+                    )}
+                    
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={saveGroceryList}
+                      disabled={groceryList.length === 0 || saveGroceryListMutation.isPending}
+                      className="flex items-center gap-1 print:hidden"
+                      aria-label="Save current grocery list"
+                    >
+                      <Save className="w-4 h-4" />
+                      {saveGroceryListMutation.isPending ? 'Saving...' : 'Save List'}
+                    </Button>
+                    
                     <Button 
                       variant="outline" 
                       size="sm" 
@@ -937,8 +1037,17 @@ export default function GroceryListPage() {
                       <Printer className="w-4 h-4" />
                       Print
                     </Button>
-                    <Button variant="outline" size="sm" onClick={deleteAllItems} className="print:hidden">
-                      Delete All
+                    
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={deleteAllItems} 
+                      disabled={deleteSavedGroceryListMutation.isPending}
+                      className="print:hidden"
+                      aria-label="Delete grocery list and all items"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      {deleteSavedGroceryListMutation.isPending ? 'Deleting...' : (savedGroceryList ? 'Delete Grocery List' : 'Delete All')}
                     </Button>
                   </div>
                 </div>

@@ -758,6 +758,83 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Saved grocery list routes
+  app.post('/api/saved-grocery-list', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const { items } = req.body;
+      const savedList = {
+        id: `saved-list-${userId}`,
+        userId,
+        items: items || [],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      const result = await dbStorage.saveGroceryList(userId, savedList);
+      res.status(201).json(result);
+    } catch (error) {
+      console.error("Error saving grocery list:", error);
+      res.status(500).json({ message: "Failed to save grocery list" });
+    }
+  });
+
+  app.get('/api/saved-grocery-list', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const savedList = await dbStorage.getSavedGroceryList(userId);
+      if (!savedList) {
+        return res.status(404).json({ message: "No saved grocery list found" });
+      }
+
+      res.json(savedList);
+    } catch (error) {
+      console.error("Error getting saved grocery list:", error);
+      res.status(500).json({ message: "Failed to get saved grocery list" });
+    }
+  });
+
+  app.patch('/api/saved-grocery-list/:itemId', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const { itemId } = req.params;
+      const updates = req.body;
+
+      await dbStorage.updateGroceryListItem(userId, itemId, updates);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error updating grocery list item:", error);
+      res.status(500).json({ message: "Failed to update grocery list item" });
+    }
+  });
+
+  app.delete('/api/saved-grocery-list', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      await dbStorage.deleteSavedGroceryList(userId);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting saved grocery list:", error);
+      res.status(500).json({ message: "Failed to delete saved grocery list" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

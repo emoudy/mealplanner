@@ -42,6 +42,7 @@ export const keys = {
     usage: (userId: string, month: string) => ({ PK: `USER#${userId}`, SK: `USAGE#${month}` }),
     session: (userId: string, sessionId: string) => ({ PK: `USER#${userId}`, SK: `SESSION#${sessionId}` }),
     groceryItem: (userId: string, itemId: string) => ({ PK: `USER#${userId}`, SK: `GROCERY#${itemId}` }),
+    savedGroceryList: (userId: string) => ({ PK: `USER#${userId}`, SK: "SAVED_GROCERY_LIST" }),
   },
   recipe: {
     byCategory: (category: string, recipeId: string) => ({ PK: `RECIPE#${category}`, SK: `RECIPE#${recipeId}` }),
