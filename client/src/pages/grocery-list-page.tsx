@@ -49,7 +49,7 @@ function GroceryListByCategory({
   toggleIngredient: (index: number) => void;
   removeIngredient: (index: number) => void;
 }) {
-  const categories = ['Produce', 'Dairy & Eggs', 'Meat & Seafood', 'Bakery / Bread', 'Baking & Pantry', 'Other'];
+  const categories = ['Produce', 'Dairy & Eggs', 'Meat & Seafood', 'Bakery / Bread', 'Pantry', 'Baking', 'Spices and Condiments', 'Beverages', 'Household Goods', 'Other'];
   const categorizedItems = categories.reduce((acc, category) => {
     acc[category] = groceryList.filter(item => item.category === category);
     return acc;
@@ -140,13 +140,21 @@ function getCategoryStyles(category: string): string {
     case 'Produce':
       return 'text-green-700 dark:text-green-300 border-green-200 dark:border-green-800';
     case 'Dairy & Eggs':
-      return 'text-yellow-700 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800';
+      return 'text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800';
     case 'Meat & Seafood':
       return 'text-red-700 dark:text-red-300 border-red-200 dark:border-red-800';
     case 'Bakery / Bread':
-      return 'text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800';
-    case 'Baking & Pantry':
+      return 'text-yellow-700 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800';
+    case 'Pantry':
+      return 'text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800';
+    case 'Baking':
       return 'text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800';
+    case 'Spices and Condiments':
+      return 'text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800';
+    case 'Beverages':
+      return 'text-cyan-700 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800';
+    case 'Household Goods':
+      return 'text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800';
     case 'Other':
       return 'text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600';
     default:
@@ -158,7 +166,7 @@ function getCategoryStyles(category: string): string {
 function categorizeIngredient(ingredientName: string): string {
   const name = ingredientName.toLowerCase();
   
-  // Produce
+  // Produce (fresh fruits, vegetables, fresh herbs)
   if (name.includes('lettuce') || name.includes('tomato') || name.includes('onion') || 
       name.includes('garlic') || name.includes('bell pepper') || name.includes('cucumber') ||
       name.includes('carrot') || name.includes('celery') || name.includes('potato') ||
@@ -167,7 +175,8 @@ function categorizeIngredient(ingredientName: string): string {
       name.includes('avocado') || name.includes('broccoli') || name.includes('zucchini') ||
       name.includes('corn') || name.includes('peas') || name.includes('beans') ||
       name.includes('cilantro') || name.includes('parsley') || name.includes('basil') ||
-      name.includes('ginger') || name.includes('jalapeño') || name.includes('pepper')) {
+      name.includes('mint') || name.includes('fresh') || name.includes('jalapeño') ||
+      name.includes('berries') || name.includes('berry') || name.includes('fruit')) {
     return 'Produce';
   }
   
@@ -195,17 +204,65 @@ function categorizeIngredient(ingredientName: string): string {
     return 'Bakery / Bread';
   }
   
-  // Baking & Pantry
-  if (name.includes('flour') || name.includes('sugar') || name.includes('salt') ||
-      name.includes('pepper') || name.includes('oil') || name.includes('vinegar') ||
-      name.includes('sauce') || name.includes('pasta') || name.includes('rice') ||
-      name.includes('spice') || name.includes('herb') || name.includes('vanilla') ||
-      name.includes('baking powder') || name.includes('baking soda') || name.includes('honey') ||
-      name.includes('syrup') || name.includes('stock') || name.includes('broth') ||
-      name.includes('coconut milk') || name.includes('can') || name.includes('jar') ||
-      name.includes('bottle') || name.includes('paprika') || name.includes('cumin') ||
-      name.includes('oregano') || name.includes('thyme') || name.includes('rosemary')) {
-    return 'Baking & Pantry';
+  // Spices and Condiments (spices, dried herbs, condiments, sauces)
+  if (name.includes('cinnamon') || name.includes('nutmeg') || name.includes('ginger') ||
+      name.includes('ketchup') || name.includes('mustard') || name.includes('salt') ||
+      name.includes('pepper') || name.includes('oregano') || name.includes('thyme') ||
+      name.includes('rosemary') || name.includes('paprika') || name.includes('cumin') ||
+      name.includes('chili powder') || name.includes('garlic powder') || name.includes('onion powder') ||
+      name.includes('spice') || name.includes('seasoning') || name.includes('blend') ||
+      name.includes('sauce') || name.includes('vinegar') || name.includes('mayo') ||
+      name.includes('mayonnaise') || name.includes('relish') || name.includes('pickle') ||
+      name.includes('olives') || name.includes('tahini') || name.includes('glaze') ||
+      name.includes('dressing') || name.includes('marinade')) {
+    return 'Spices and Condiments';
+  }
+  
+  // Baking (baking-specific ingredients)
+  if (name.includes('flour') || name.includes('sugar') || name.includes('brown sugar') ||
+      name.includes('powdered sugar') || name.includes('baking powder') || name.includes('baking soda') ||
+      name.includes('vanilla') || name.includes('extract') || name.includes('cocoa') ||
+      name.includes('chocolate chips') || name.includes('yeast') || name.includes('cornstarch') ||
+      name.includes('jell-o') || name.includes('jello') || name.includes('pudding') ||
+      name.includes('gelatin') || name.includes('dessert mix') || name.includes('cake mix') ||
+      name.includes('frosting') || name.includes('icing')) {
+    return 'Baking';
+  }
+  
+  // Beverages (drinks, cooking wines, liquid ingredients)
+  if (name.includes('juice') || name.includes('soda') || name.includes('water') ||
+      name.includes('wine') || name.includes('beer') || name.includes('coffee') ||
+      name.includes('tea') || name.includes('milk') || name.includes('smoothie') ||
+      name.includes('energy drink') || name.includes('sports drink') || name.includes('kombucha') ||
+      name.includes('sparkling') || name.includes('beverage')) {
+    return 'Beverages';
+  }
+  
+  // Pantry (canned goods, grains, pasta, oils, snacks, cereals)
+  if (name.includes('pasta') || name.includes('rice') || name.includes('quinoa') ||
+      name.includes('granola') || name.includes('oats') || name.includes('cereal') ||
+      name.includes('crackers') || name.includes('chips') || name.includes('pretzels') ||
+      name.includes('nuts') || name.includes('dried fruit') || name.includes('granola bar') ||
+      name.includes('energy bar') || name.includes('oil') || name.includes('olive oil') ||
+      name.includes('coconut oil') || name.includes('can') || name.includes('jar') ||
+      name.includes('bottle') || name.includes('stock') || name.includes('broth') ||
+      name.includes('coconut milk') || name.includes('syrup') || name.includes('honey') ||
+      name.includes('pancake mix') || name.includes('oatmeal') || name.includes('beans') ||
+      name.includes('lentils') || name.includes('chickpeas') || name.includes('canned')) {
+    return 'Pantry';
+  }
+  
+  // Household Goods (cleaning supplies, paper products, personal care, kitchenware)
+  if (name.includes('detergent') || name.includes('bleach') || name.includes('cleaner') ||
+      name.includes('dish soap') || name.includes('trash bag') || name.includes('paper towel') ||
+      name.includes('toilet paper') || name.includes('tissue') || name.includes('towel') ||
+      name.includes('linen') || name.includes('kitchenware') || name.includes('pot') ||
+      name.includes('pan') || name.includes('dish') || name.includes('plate') ||
+      name.includes('appliance') || name.includes('tool') || name.includes('lightbulb') ||
+      name.includes('battery') || name.includes('toothbrush') || name.includes('toothpaste') ||
+      name.includes('deodorant') || name.includes('shampoo') || name.includes('soap') ||
+      name.includes('cleaning') || name.includes('household') || name.includes('laundry')) {
+    return 'Household Goods';
   }
   
   // Default to Other

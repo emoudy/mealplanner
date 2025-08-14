@@ -47,6 +47,7 @@ FlavorBot is structured as a cross-platform application with a high degree of co
 - Smart suggestion button behavior (category vs. recipe generation).
 - Enhanced recipe save functionality from AI-generated recipes.
 - Advanced grocery list filtering with recipe selection dropdown and custom items toggle.
+- Expanded grocery list categorization system with 9 specialized categories: Produce, Dairy & Eggs, Meat & Seafood, Bakery/Bread, Pantry (canned goods, grains, snacks), Baking (flour, sugar, dessert mixes), Spices and Condiments (seasonings, sauces), Beverages, and Household Goods (cleaning supplies, personal care).
 
 **UI/UX Decisions:**
 - Clean, modern interface.
