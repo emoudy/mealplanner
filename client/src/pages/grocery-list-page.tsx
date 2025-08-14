@@ -688,7 +688,11 @@ export default function GroceryListPage() {
     if (groceryList.length === 0) return;
     
     try {
-      await saveGroceryListMutation.mutateAsync(groceryList);
+      await saveGroceryListMutation.mutateAsync({
+        items: groceryList,
+        selectedRecipeIds,
+        showCustomItems
+      });
     } catch (error) {
       console.error('Failed to save grocery list:', error);
     }
@@ -708,9 +712,13 @@ export default function GroceryListPage() {
   // Auto-save only for individual item state changes (checked/unchecked, item removal, adding custom items)
   // Filter changes and list regeneration require manual "Save List" click
   const autoSaveItemChanges = async () => {
-    if (groceryList.length > 0 && savedGroceryList) {
+    if (groceryList.length > 0) {
       try {
-        await saveGroceryListMutation.mutateAsync(groceryList);
+        await saveGroceryListMutation.mutateAsync({
+          items: groceryList,
+          selectedRecipeIds,
+          showCustomItems
+        });
       } catch (error) {
         console.error('Failed to auto-save item changes:', error);
       }
