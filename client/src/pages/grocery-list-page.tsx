@@ -673,16 +673,17 @@ export default function GroceryListPage() {
     }
   };
 
-  // Auto-load saved grocery list when component mounts and savedGroceryList data is available
+  // Auto-load saved grocery list when component mounts and data becomes available
   useEffect(() => {
-    if (savedGroceryList?.items && savedGroceryList.items.length > 0) {
-      // Only auto-load if current list is empty or we haven't loaded from saved yet
-      if (groceryList.length === 0) {
-        console.log('Auto-loading saved grocery list with', savedGroceryList.items.length, 'items');
+    if (savedGroceryList?.items && savedGroceryList.items.length > 0 && groceryList.length === 0) {
+      // Use setTimeout to ensure the component is fully mounted and state is stable
+      const timeoutId = setTimeout(() => {
         loadSavedGroceryList();
-      }
+      }, 100);
+      
+      return () => clearTimeout(timeoutId);
     }
-  }, [savedGroceryList]);
+  }, [savedGroceryList, groceryList.length]);
 
   // Auto-save when grocery list changes (debounced)
   useEffect(() => {
@@ -696,20 +697,18 @@ export default function GroceryListPage() {
   }, [groceryList]);
 
   const loadSavedGroceryList = () => {
-    if (savedGroceryList?.items) {
-      console.log('Loading saved grocery list with items:', savedGroceryList.items);
+    if (savedGroceryList?.items && savedGroceryList.items.length > 0) {
       const loadedItems: IngredientItem[] = savedGroceryList.items.map((item: any) => ({
         name: item.name,
         category: item.category,
         checked: item.checked,
         totalQuantity: item.totalQuantity,
         originalUnit: item.originalUnit,
-        recipes: item.recipes || [], // Ensure recipes array exists
+        recipes: item.recipes || [],
         isCustom: item.isCustom || false,
         id: item.customId
       }));
       
-      console.log('Mapped loaded items:', loadedItems);
       setGroceryList(loadedItems);
     }
   };
