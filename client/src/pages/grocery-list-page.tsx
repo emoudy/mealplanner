@@ -673,6 +673,13 @@ export default function GroceryListPage() {
     }
   };
 
+  // Auto-load saved grocery list when component mounts and savedGroceryList data is available
+  useEffect(() => {
+    if (savedGroceryList?.items && groceryList.length === 0) {
+      loadSavedGroceryList();
+    }
+  }, [savedGroceryList]);
+
   // Auto-save when grocery list changes (debounced)
   useEffect(() => {
     if (groceryList.length > 0) {
