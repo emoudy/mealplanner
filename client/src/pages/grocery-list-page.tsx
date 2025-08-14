@@ -675,15 +675,12 @@ export default function GroceryListPage() {
 
   // Auto-load saved grocery list when component mounts and data becomes available
   useEffect(() => {
-    if (savedGroceryList?.items && savedGroceryList.items.length > 0 && groceryList.length === 0) {
-      // Use setTimeout to ensure the component is fully mounted and state is stable
-      const timeoutId = setTimeout(() => {
-        loadSavedGroceryList();
-      }, 100);
-      
-      return () => clearTimeout(timeoutId);
+    if (savedGroceryList?.items && savedGroceryList.items.length > 0) {
+      // Always load saved data when it's available, regardless of current list length
+      // This ensures saved items are restored even if there's a timing issue
+      loadSavedGroceryList();
     }
-  }, [savedGroceryList, groceryList.length]);
+  }, [savedGroceryList]);
 
   // Auto-save when grocery list changes (debounced)
   useEffect(() => {
@@ -709,7 +706,11 @@ export default function GroceryListPage() {
         id: item.customId
       }));
       
-      setGroceryList(loadedItems);
+      // Force a state update to ensure UI reflects the loaded data
+      setGroceryList([]);
+      setTimeout(() => {
+        setGroceryList(loadedItems);
+      }, 50);
     }
   };
 
