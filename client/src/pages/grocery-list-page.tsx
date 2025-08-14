@@ -575,6 +575,8 @@ export default function GroceryListPage() {
         i === index ? { ...item, checked: !item.checked } : item
       )
     );
+    // Auto-save item state changes
+    setTimeout(() => autoSaveItemChanges(), 500);
   };
 
   const removeIngredient = async (index: number) => {
@@ -590,6 +592,8 @@ export default function GroceryListPage() {
     }
     
     setGroceryList(prev => prev.filter((_, i) => i !== index));
+    // Auto-save item removal
+    setTimeout(() => autoSaveItemChanges(), 500);
   };
 
   // Remove duplicate query - using customItems from above
@@ -673,6 +677,8 @@ export default function GroceryListPage() {
       
       setNewItemName('');
       setShowAddForm(false);
+      // Auto-save after adding custom item
+      setTimeout(() => autoSaveItemChanges(), 500);
     } catch (error) {
       console.error('Failed to add custom item:', error);
     }
@@ -699,8 +705,17 @@ export default function GroceryListPage() {
     }
   }, [savedGroceryList, hasLoadedFromSaved, groceryList.length]);
 
-  // Auto-save is now completely removed - all saves are manual via "Save List" button
-  // This prevents the button flickering and gives users full control over when to save
+  // Auto-save only for individual item state changes (checked/unchecked, item removal, adding custom items)
+  // Filter changes and list regeneration require manual "Save List" click
+  const autoSaveItemChanges = async () => {
+    if (groceryList.length > 0 && savedGroceryList) {
+      try {
+        await saveGroceryListMutation.mutateAsync(groceryList);
+      } catch (error) {
+        console.error('Failed to auto-save item changes:', error);
+      }
+    }
+  };
 
   const loadSavedGroceryList = () => {
     if (savedGroceryList?.items && savedGroceryList.items.length > 0) {
