@@ -14,6 +14,7 @@ import { format, addDays, eachDayOfInterval } from 'date-fns';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
 import { apiRequest } from '@/lib/queryClient';
+import { useToast } from '@/hooks/use-toast';
 import type { Recipe } from '@flavorbot/shared';
 
 interface IngredientItem {
@@ -361,6 +362,7 @@ function formatQuantity(decimal: number): string {
 
 export default function GroceryListPage() {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
   const [startDate, setStartDate] = useState<Date | undefined>(new Date());
   const [endDate, setEndDate] = useState<Date | undefined>(addDays(new Date(), 6));
   const [groceryList, setGroceryList] = useState<IngredientItem[]>([]);
@@ -395,8 +397,8 @@ export default function GroceryListPage() {
   });
 
   const saveGroceryListMutation = useMutation({
-    mutationFn: async (items: IngredientItem[]) => {
-      const savedItems = items.map(item => ({
+    mutationFn: async (data: { items: IngredientItem[]; selectedRecipeIds: number[]; showCustomItems: boolean }) => {
+      const savedItems = data.items.map(item => ({
         id: `${item.name}-${Math.random().toString(36).substr(2, 9)}`,
         name: item.name,
         category: item.category,
@@ -410,8 +412,8 @@ export default function GroceryListPage() {
       
       await apiRequest('POST', '/api/saved-grocery-list', { 
         items: savedItems,
-        selectedRecipeIds,
-        showCustomItems
+        selectedRecipeIds: data.selectedRecipeIds,
+        showCustomItems: data.showCustomItems
       });
     },
     onSuccess: () => {
@@ -693,8 +695,17 @@ export default function GroceryListPage() {
         selectedRecipeIds,
         showCustomItems
       });
+      toast({
+        title: "Grocery List Saved",
+        description: "Your grocery list has been saved successfully.",
+      });
     } catch (error) {
       console.error('Failed to save grocery list:', error);
+      toast({
+        title: "Save Failed",
+        description: "Failed to save grocery list. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
