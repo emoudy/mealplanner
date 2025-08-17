@@ -4,3 +4,11 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz
+
+# amplify
+.amplify
+amplify_outputs*
+amplifyconfiguration*
+
+# agent files
+.agent_state*
