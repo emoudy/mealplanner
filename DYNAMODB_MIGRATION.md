@@ -14,7 +14,7 @@ FlavorBot has been successfully migrated from PostgreSQL to Amazon DynamoDB. Thi
 ### 2. Data Model
 **Single Table Design:**
 ```
-Table: flavorbot-dev
+Table: mealplanner-dev
 
 Primary Key:
 - PK (Partition Key): String  
@@ -38,7 +38,7 @@ SESSION#sid     | DATA                 -> Express sessions
 **Environment Variables:**
 ```bash
 # DynamoDB Configuration
-DYNAMODB_TABLE_NAME=flavorbot-dev
+DYNAMODB_TABLE_NAME=mealplanner-dev
 AWS_REGION=us-east-1
 AWS_ACCESS_KEY_ID=        # Leave blank for local dev
 AWS_SECRET_ACCESS_KEY=    # Leave blank for local dev
@@ -81,7 +81,7 @@ The app will use fake AWS credentials by default and attempt to connect to AWS D
 2. Set environment variables:
    - `AWS_ACCESS_KEY_ID=your-key`
    - `AWS_SECRET_ACCESS_KEY=your-secret`
-   - `DYNAMODB_TABLE_NAME=flavorbot-dev`
+   - `DYNAMODB_TABLE_NAME=mealplanner-dev`
 
 ## Data Migration
 

@@ -92,7 +92,7 @@ All PostgreSQL references have been successfully removed from FlavorBot while ma
 
 ```bash
 # DynamoDB Configuration
-DYNAMODB_TABLE_NAME=flavorbot-dev
+DYNAMODB_TABLE_NAME=mealplanner-dev
 AWS_REGION=us-east-1
 AWS_ACCESS_KEY_ID=        # Leave blank for development
 AWS_SECRET_ACCESS_KEY=    # Leave blank for development

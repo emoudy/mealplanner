@@ -12,7 +12,7 @@ const client = new DynamoDBClient({
   }
 });
 
-const tableName = process.env.DYNAMODB_TABLE_NAME || "flavorbot-dev";
+const tableName = process.env.DYNAMODB_TABLE_NAME || "mealplanner-dev";
 
 export async function createDynamoDBTable() {
   try {

@@ -22,7 +22,7 @@ const client = new DynamoDBClient({
 });
 
 export const docClient = DynamoDBDocumentClient.from(client);
-export const tableName = process.env.DYNAMODB_TABLE_NAME || "flavorbot-dev";
+export const tableName = process.env.DYNAMODB_TABLE_NAME || "mealplanner-dev";
 
 // DynamoDB table structure:
 // PK (Partition Key) | SK (Sort Key)        | Data
