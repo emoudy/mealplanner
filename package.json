@@ -4,11 +4,17 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "dev": "NODE_ENV=development tsx server/index.ts",
-    "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
-    "start": "NODE_ENV=production node dist/index.js",
-    "check": "tsc",
-    "db:push": "drizzle-kit push"
+    "build:shared": "cd flavorbot-shared && npm run build",
+    "build:backend": "cd flavorbot-backend && npm run build",
+    "build:web": "cd flavorbot-web && npm run build",
+    "build:mobile": "cd flavorbot-mobile && npm run build",
+    "build:all": "npm run build:shared && npm run build:backend && npm run build:web && npm run build:mobile",
+    "install:all": "npm install && cd flavorbot-shared && npm install && cd ../flavorbot-backend && npm install && cd ../flavorbot-web && npm install && cd ../flavorbot-mobile && npm install",
+    "security-scan": "semgrep scan --config .semgrep/semgrep.yml .",
+    "security-scan-json": "semgrep scan --config .semgrep/semgrep.yml --json -o security-report.json .",
+    "security-scan-ci": "semgrep scan --config .semgrep/semgrep.yml --error --strict",
+    "test:all": "cd flavorbot-backend && npm test && cd ../flavorbot-web && npm test",
+    "setup-dynamodb": "cd server && npm run setup-dynamodb"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.37.0",
