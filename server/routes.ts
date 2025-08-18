@@ -60,17 +60,6 @@ const upload = multer({
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup email/password authentication
   await setupEmailAuth(app);
-  
-  // Optionally setup Replit OAuth (easily removable)
-  try {
-    if (process.env.REPLIT_DOMAINS && process.env.REPL_ID) {
-      const { setupReplitAuth } = await import("./replit-auth");
-      await setupReplitAuth(app);
-      console.log("Replit OAuth enabled");
-    }
-  } catch (error: any) {
-    console.log("Replit OAuth not available:", error.message);
-  }
 
   // Universal user endpoint that works with both auth methods
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
@@ -572,7 +561,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Recipe not found" });
       }
 
-      const smsContent = `${recipe.title}\n\n${recipe.description}\n\nGet the full recipe at: ${process.env.REPLIT_DOMAINS?.split(',')[0]}/recipes/${recipeId}${message ? `\n\n${message}` : ''}`;
+      const smsContent = `${recipe.title}\n\n${recipe.description}\n\nGet the full recipe at: ${req.get('host')}/recipes/${recipeId}${message ? `\n\n${message}` : ''}`;
 
       await twilioClient.messages.create({
         body: smsContent,

@@ -197,18 +197,6 @@ export default function AuthPage() {
                       "Sign In"
                     )}
                   </Button>
-                  
-                  <div className="mt-4">
-                    <div className="text-center text-sm text-muted-foreground mb-3">or</div>
-                    <Button 
-                      type="button"
-                      variant="outline"
-                      className="w-full border-2 border-blue-500 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 dark:text-blue-400"
-                      onClick={() => window.location.href = '/api/auth/replit'}
-                    >
-                      Continue with Replit
-                    </Button>
-                  </div>
                 </form>
               </TabsContent>
 
@@ -309,18 +297,6 @@ export default function AuthPage() {
                     )}
                   </Button>
                 </form>
-
-                <div className="mt-4">
-                  <div className="text-center text-sm text-muted-foreground mb-3">or</div>
-                  <Button 
-                    type="button"
-                    variant="outline"
-                    className="w-full border-2 border-blue-500 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 dark:text-blue-400"
-                    onClick={() => window.location.href = '/api/auth/replit'}
-                  >
-                    Continue with Replit
-                  </Button>
-                </div>
               </TabsContent>
             </Tabs>
           </CardContent>

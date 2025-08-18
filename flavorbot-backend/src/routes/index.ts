@@ -561,6 +561,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Recipe not found" });
       }
 
+      /// TODO: Get domain
       const smsContent = `${recipe.title}\n\n${recipe.description}\n\nGet the full recipe at: ${process.env.REPLIT_DOMAINS?.split(',')[0]}/recipes/${recipeId}${message ? `\n\n${message}` : ''}`;
 
       await twilioClient.messages.create({
