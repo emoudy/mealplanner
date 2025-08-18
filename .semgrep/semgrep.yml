@@ -1,0 +1,11 @@
+rules:
+  - id: community-secrets
+    languages: [generic]
+    message: "This pulls in the secrets pack"
+    severity: INFO
+
+# import multiple community packs
+imports:
+  - p/secrets
+  - p/xss
+  - p/default
