@@ -13,7 +13,9 @@ export const mockRecipes: Recipe[] = [
     servings: 4,
     category: "breakfast",
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
+    imageUrl: null,
+    isFromAI: false
   },
   {
     id: 2,
@@ -26,7 +28,9 @@ export const mockRecipes: Recipe[] = [
     servings: 3,
     category: "lunch",
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
+    imageUrl: null,
+    isFromAI: false
   },
   {
     id: 3,
@@ -39,7 +43,9 @@ export const mockRecipes: Recipe[] = [
     servings: 4,
     category: "dinner",
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
+    imageUrl: null,
+    isFromAI: false
   },
   {
     id: 4,
@@ -52,7 +58,9 @@ export const mockRecipes: Recipe[] = [
     servings: 12,
     category: "snacks",
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
+    imageUrl: null,
+    isFromAI: false
   },
   {
     id: 5,
@@ -65,7 +73,9 @@ export const mockRecipes: Recipe[] = [
     servings: 2,
     category: "breakfast",
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
+    imageUrl: null,
+    isFromAI: false
   },
   {
     id: 6,
@@ -78,7 +88,9 @@ export const mockRecipes: Recipe[] = [
     servings: 4,
     category: "dinner",
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
+    imageUrl: null,
+    isFromAI: false
   },
   {
     id: 7,
@@ -91,7 +103,9 @@ export const mockRecipes: Recipe[] = [
     servings: 4,
     category: "lunch",
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
+    imageUrl: null,
+    isFromAI: false
   },
   {
     id: 8,
@@ -104,7 +118,9 @@ export const mockRecipes: Recipe[] = [
     servings: 24,
     category: "snacks",
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
+    imageUrl: null,
+    isFromAI: false
   },
   {
     id: 9,
@@ -117,7 +133,9 @@ export const mockRecipes: Recipe[] = [
     servings: 2,
     category: "breakfast",
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
+    imageUrl: null,
+    isFromAI: false
   },
   {
     id: 10,
@@ -130,7 +148,9 @@ export const mockRecipes: Recipe[] = [
     servings: 4,
     category: "dinner",
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
+    imageUrl: null,
+    isFromAI: false
   },
   {
     id: 11,
@@ -143,7 +163,9 @@ export const mockRecipes: Recipe[] = [
     servings: 1,
     category: "lunch",
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
+    imageUrl: null,
+    isFromAI: false
   },
   {
     id: 12,
@@ -156,7 +178,9 @@ export const mockRecipes: Recipe[] = [
     servings: 4,
     category: "snacks",
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
+    imageUrl: null,
+    isFromAI: false
   },
   {
     id: 13,
@@ -169,7 +193,9 @@ export const mockRecipes: Recipe[] = [
     servings: 4,
     category: "breakfast",
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
+    imageUrl: null,
+    isFromAI: false
   },
   {
     id: 14,
@@ -182,7 +208,9 @@ export const mockRecipes: Recipe[] = [
     servings: 2,
     category: "lunch",
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
+    imageUrl: null,
+    isFromAI: false
   },
   {
     id: 15,
@@ -195,7 +223,9 @@ export const mockRecipes: Recipe[] = [
     servings: 4,
     category: "dinner",
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
+    imageUrl: null,
+    isFromAI: false
   },
   {
     id: 16,
@@ -208,7 +238,9 @@ export const mockRecipes: Recipe[] = [
     servings: 8,
     category: "snacks",
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
+    imageUrl: null,
+    isFromAI: false
   },
   {
     id: 17,
@@ -221,7 +253,9 @@ export const mockRecipes: Recipe[] = [
     servings: 1,
     category: "breakfast",
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
+    imageUrl: null,
+    isFromAI: false
   },
   {
     id: 18,
@@ -234,7 +268,9 @@ export const mockRecipes: Recipe[] = [
     servings: 4,
     category: "lunch",
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
+    imageUrl: null,
+    isFromAI: false
   },
   {
     id: 19,
@@ -247,7 +283,9 @@ export const mockRecipes: Recipe[] = [
     servings: 4,
     category: "dinner",
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
+    imageUrl: null,
+    isFromAI: false
   },
   {
     id: 20,
@@ -260,6 +298,8 @@ export const mockRecipes: Recipe[] = [
     servings: 2,
     category: "snacks",
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
+    imageUrl: null,
+    isFromAI: false
   }
 ];
