@@ -3,52 +3,43 @@
 
 import { IStorage } from "./index.js";
 import {
-  type User,
-  type UpsertUser,
-  type Recipe,
-  type InsertRecipe,
-  type UpdateUser,
-  type UsageTracking,
-} from "@flavorbot/shared/schemas";
+  type UserData,
+  type CreateUserData,
+  type UpdateUserData,
+  type RecipeData,
+  type RecipeListData,
+  type CreateRecipeData,
+  type UpdateRecipeData,
+  type UsageStatsData,
+  type UpdateUsageStatsData,
+} from "@flavorbot/shared/utils/schemas";
 
 // For backend development, use in-memory mock storage
 // In production, this would connect to the main DynamoDB implementation
 export class MockDynamoDBStorage implements IStorage {
-  private users: Map<string, User> = new Map();
-  private recipes: Map<number, Recipe> = new Map();
-  private usage: Map<string, UsageTracking> = new Map();
+  private users: Map<string, UserData> = new Map();
+  private recipes: Map<number, RecipeListData> = new Map();
+  private usage: Map<string, UsageStatsData> = new Map();
   private recipeIdCounter = 1;
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
-  }
-
-  async upsertUser(userData: UpsertUser): Promise<User> {
-    const user: User = {
-      id: userData.id || `user_${Date.now()}`,
-      email: userData.email,
-      password: userData.password,
-      emailVerified: userData.emailVerified || false,
-      emailVerificationToken: userData.emailVerificationToken,
-      authProvider: userData.authProvider || "email",
+  async createUser(userData: CreateUserData): Promise<UserData> {
+    const user: UserData = {
       firstName: userData.firstName,
       lastName: userData.lastName,
-      profileImageUrl: userData.profileImageUrl,
-      subscriptionTier: userData.subscriptionTier || "free",
-      subscriptionStatus: userData.subscriptionStatus || "active",
-      emailNotifications: userData.emailNotifications !== false,
-      dietaryPreferences: userData.dietaryPreferences || [],
-      bio: userData.bio,
-      darkMode: userData.darkMode || false,
-      createdAt: userData.createdAt || new Date(),
-      updatedAt: new Date(),
+      email: userData.email,
+      password: userData.password,
+      confirmPassword: userData.confirmPassword,
     };
     
     this.users.set(user.id, user);
     return user;
   }
 
-  async updateUser(id: string, updates: UpdateUser): Promise<User> {
+  async getUser(id: string): Promise<UserData | undefined> {
+    return this.users.get(id);
+  }
+
+  async updateUser(id: string, updates: UpdateUserData): Promise<UserData> {
     const existing = this.users.get(id);
     if (!existing) throw new Error("User not found");
     
@@ -57,8 +48,8 @@ export class MockDynamoDBStorage implements IStorage {
     return updated;
   }
 
-  async createRecipe(userId: string, recipe: InsertRecipe): Promise<Recipe> {
-    const newRecipe: Recipe = {
+  async createRecipe(userId: string, recipe: CreateRecipeData): Promise<RecipeData> {
+    const newRecipe: RecipeData = {
       id: this.recipeIdCounter++,
       userId,
       title: recipe.title,
@@ -78,19 +69,19 @@ export class MockDynamoDBStorage implements IStorage {
     return newRecipe;
   }
 
-  async getRecipesByUser(userId: string, category?: string): Promise<Recipe[]> {
+  async getRecipesByUser(userId: string, category?: string): Promise<RecipeListData[]> {
     return Array.from(this.recipes.values())
       .filter(recipe => recipe.userId === userId)
       .filter(recipe => !category || category === 'all' || recipe.category === category)
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }
 
-  async getRecipe(id: number, userId: string): Promise<Recipe | undefined> {
+  async getRecipe(id: number, userId: string): Promise<RecipeData | undefined> {
     const recipe = this.recipes.get(id);
     return recipe?.userId === userId ? recipe : undefined;
   }
 
-  async updateRecipe(id: number, userId: string, updates: Partial<InsertRecipe>): Promise<Recipe> {
+  async updateRecipe(id: number, userId: string, updates: Partial<UpdateRecipeData>): Promise<RecipeData> {
     const existing = this.recipes.get(id);
     if (!existing || existing.userId !== userId) {
       throw new Error("Recipe not found");
@@ -108,7 +99,7 @@ export class MockDynamoDBStorage implements IStorage {
     }
   }
 
-  async searchRecipes(userId: string, query: string): Promise<Recipe[]> {
+  async searchRecipes(userId: string, query: string): Promise<RecipeListData[]> {
     const lowerQuery = query.toLowerCase();
     return Array.from(this.recipes.values())
       .filter(recipe => 
@@ -119,7 +110,7 @@ export class MockDynamoDBStorage implements IStorage {
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }
 
-  async getUsageForMonth(userId: string, month: string): Promise<UsageTracking | undefined> {
+  async getUsageForMonth(userId: string, month: string): Promise<UsageStatsData> {
     return this.usage.get(`${userId}:${month}`);
   }
 
@@ -131,14 +122,9 @@ export class MockDynamoDBStorage implements IStorage {
       existing[field] = (existing[field] || 0) + 1;
       existing.updatedAt = new Date();
     } else {
-      const newUsage: UsageTracking = {
-        id: Date.now(),
-        userId,
-        month,
-        recipeQueries: field === 'recipeQueries' ? 1 : 0,
+      const newUsage: UpdateUsageStatsData = {
+        queries: field === 'recipeQueries' ? 1 : 0,
         recipesGenerated: field === 'recipesGenerated' ? 1 : 0,
-        createdAt: new Date(),
-        updatedAt: new Date(),
       };
       this.usage.set(key, newUsage);
     }
@@ -174,7 +160,7 @@ export class MockDynamoDBStorage implements IStorage {
     return token;
   }
 
-  async getUserByEmail(email: string): Promise<User | undefined> {
+  async getUserByEmail(email: string): Promise<UserData | undefined> {
     for (const user of this.users.values()) {
       if (user.email === email) {
         return user;

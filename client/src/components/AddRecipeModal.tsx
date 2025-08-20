@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 // Error handling now inline instead of using authUtils
-import { insertRecipeSchema } from '@shared/schema';
+import { createRecipeSchema } from '@flavorbot/shared/utils';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -21,10 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Minus } from 'lucide-react';
 import { z } from 'zod';
 
-const formSchema = insertRecipeSchema.extend({
-  ingredients: z.array(z.string().min(1, "Ingredient cannot be empty")),
-  instructions: z.array(z.string().min(1, "Instruction cannot be empty")),
-});
+const formSchema = createRecipeSchema;
 
 interface AddRecipeModalProps {
   open: boolean;

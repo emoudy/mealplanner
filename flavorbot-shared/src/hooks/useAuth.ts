@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import type { LoginData, RegisterData, EmailVerificationData } from "../schemas/index.js";
+import type { LoginData, CreateUserData, EmailVerificationData } from "../utils/schemas.js";
 import type { AuthResponse } from "../types/index.js";
 import { useApi } from "./useApi.js";
 
@@ -37,7 +37,7 @@ export function useAuth() {
 
   // Register mutation
   const registerMutation = useMutation({
-    mutationFn: (data: RegisterData) => api.auth.register(data),
+    mutationFn: (data: CreateUserData) => api.auth.register(data),
     onSuccess: (response: AuthResponse) => {
       if (!response.requiresVerification) {
         queryClient.setQueryData(["auth", "user"], response.user);

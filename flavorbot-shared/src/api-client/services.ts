@@ -1,7 +1,7 @@
 import type { ApiClient } from "./client.js";
 import type {
   LoginData,
-  RegisterData,
+  CreateUserData,
   EmailVerificationData,
   CreateRecipeData,
   UpdateRecipeData,
@@ -9,7 +9,7 @@ import type {
   ChatMessageData,
   GenerateRecipeData,
   UsageStatsData,
-} from "../schemas/index.js";
+} from "../utils/schemas.js";
 import type {
   AuthResponse,
   RecipeResponse,
@@ -28,7 +28,7 @@ export class AuthService {
     return this.client.post<AuthResponse>(API_ENDPOINTS.AUTH.LOGIN, data);
   }
 
-  async register(data: RegisterData): Promise<AuthResponse> {
+  async register(data: CreateUserData): Promise<AuthResponse> {
     return this.client.post<AuthResponse>(API_ENDPOINTS.AUTH.REGISTER, data);
   }
 

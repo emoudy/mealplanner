@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import type { CreateRecipeData, UpdateRecipeData, GenerateRecipeData } from "../schemas/index.js";
+import type { CreateRecipeData, UpdateRecipeData, GenerateRecipeData } from "../utils/schemas.js";
 import type { RecipeResponse } from "../types/index.js";
 import { useApi } from "./useApi.js";
 
