@@ -1,7 +1,7 @@
 // Mock data for testing - Remove when DynamoDB is fully integrated in AWS
-import type { Recipe } from '@flavorbot/shared';
+import { RecipeListData } from "../utils/schemas.js";
 
-export const mockRecipes: Recipe[] = [
+export const mockRecipes: RecipeListData = [
   {
     id: 1,
     userId: "mock-user",
@@ -9,12 +9,12 @@ export const mockRecipes: Recipe[] = [
     description: "Fluffy, golden pancakes perfect for weekend breakfast",
     ingredients: ["2 cups all-purpose flour", "2 tbsp sugar", "2 tsp baking powder", "1 tsp salt", "2 large eggs", "1¾ cups milk", "¼ cup melted butter"],
     instructions: ["Mix dry ingredients in a large bowl", "Whisk eggs, milk, and melted butter in separate bowl", "Combine wet and dry ingredients until just mixed", "Cook on griddle over medium heat until bubbles form", "Flip and cook until golden brown"],
+    category: "breakfast",
     cookTime: 15,
     servings: 4,
-    category: "breakfast",
+    imageUrl: null,
     createdAt: new Date(),
     updatedAt: new Date(),
-    imageUrl: null,
     isFromAI: false
   },
   {
