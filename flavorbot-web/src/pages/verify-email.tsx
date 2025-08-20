@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CheckCircle, AlertCircle, Loader2, Mail } from "lucide-react";
+import { CheckCircle, Loader2, Mail } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -50,6 +49,9 @@ export default function VerifyEmailPage() {
       });
       
       const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.message || "Verification failed");
+      }
       setIsVerified(true);
       toast({
         title: "Email Verified!",

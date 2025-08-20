@@ -45,7 +45,7 @@ export function AccessibilityAnnouncement({
 export function useAccessibilityAnnouncement() {
   const [announcement, setAnnouncement] = useState('');
 
-  const announce = (message: string, priority: 'polite' | 'assertive' = 'polite') => {
+  const announce = (message: string) => {
     setAnnouncement(''); // Clear first
     setTimeout(() => setAnnouncement(message), 100);
   };

@@ -21,7 +21,8 @@
     "emitDecoratorMetadata": true
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "../flavorbot-shared/src/utils/index.ts"
   ],
   "exclude": [
     "node_modules",

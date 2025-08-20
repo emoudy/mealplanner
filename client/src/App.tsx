@@ -22,7 +22,7 @@ import AuthPage from "@/pages/auth-page";
 import VerifyEmailPage from "@/pages/verify-email";
 
 function Router() {
-  const { isAuthenticated, isLoading, user } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
 
   // Don't render anything while loading
   if (isLoading) {
