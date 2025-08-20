@@ -1,6 +1,7 @@
 // Re-export all utilities
 export * from "./formatters.js";
 export * from "./validators.js";
+export * from "./schemas.js";
 
 // Common utility functions
 export function debounce<T extends (...args: any[]) => any>(
