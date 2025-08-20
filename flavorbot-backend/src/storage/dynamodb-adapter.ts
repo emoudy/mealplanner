@@ -12,7 +12,7 @@ import {
   type UpdateRecipeData,
   type UsageStatsData,
   type UpdateUsageStatsData,
-} from "@flavorbot/shared/utils/schemas";
+} from "@mealplanner/shared/utils/schemas";
 
 // For backend development, use in-memory mock storage
 // In production, this would connect to the main DynamoDB implementation

@@ -1,6 +1,6 @@
-# FlavorBot Web
+# MealPlanner Web
 
-React web application for FlavorBot - AI-powered recipe management platform.
+React web application for MealPlanner - AI-powered recipe management platform.
 
 ## Features
 
@@ -18,7 +18,7 @@ React web application for FlavorBot - AI-powered recipe management platform.
 ### Prerequisites
 
 - Node.js 18+
-- FlavorBot Backend running on port 5001
+- MealPlanner Backend running on port 5001
 
 ### Installation
 
@@ -60,7 +60,7 @@ npm run preview
 - **Icons**: Lucide React
 
 ### Key Features
-- Shared business logic via @flavorbot/shared
+- Shared business logic via @mealplanner/shared
 - Type-safe API client
 - Comprehensive form validation
 - Dark/light theme support
@@ -80,7 +80,7 @@ src/
 
 ## API Integration
 
-Connects to FlavorBot Backend via proxy configuration:
+Connects to MealPlanner Backend via proxy configuration:
 - Development: `http://localhost:5001`
 - Production: Configure via `VITE_API_URL`
 

@@ -11,7 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
-import { useRecipes } from '@flavorbot/shared';
+import { useRecipes } from '@mealplanner/shared';
 
 const { width } = Dimensions.get('window');
 
@@ -68,7 +68,7 @@ export default function HomeScreen({ navigation }: any) {
             >
               <Ionicons name="chatbubble" size={24} color={colors.brandForeground} />
               <Text style={[styles.actionText, { color: colors.brandForeground }]}>
-                Ask FlavorBot
+                Ask MealPlanner
               </Text>
             </TouchableOpacity>
             
@@ -121,7 +121,7 @@ export default function HomeScreen({ navigation }: any) {
             <View style={styles.emptyState}>
               <Ionicons name="restaurant-outline" size={48} color={colors.muted} />
               <Text style={styles.emptyText}>No recipes yet</Text>
-              <Text style={styles.emptySubtext}>Start by asking FlavorBot for recommendations</Text>
+              <Text style={styles.emptySubtext}>Start by asking MealPlanner for recommendations</Text>
             </View>
           )}
         </View>

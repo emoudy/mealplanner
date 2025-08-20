@@ -112,7 +112,7 @@ export default function AuthPage() {
         queryClient.setQueryData(["/api/user"], result);
         queryClient.invalidateQueries({ queryKey: ["/api/user"] });
         toast({
-          title: "Welcome to FlavorBot!",
+          title: "Welcome to MealPlanner!",
           description: "Your account has been created successfully.",
         });
       }
@@ -156,7 +156,7 @@ export default function AuthPage() {
             <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-yellow-500 rounded-xl flex items-center justify-center">
               <ChefHat className="w-6 h-6 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">FlavorBot</h1>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">MealPlanner</h1>
           </div>
           
           <div className="space-y-4">

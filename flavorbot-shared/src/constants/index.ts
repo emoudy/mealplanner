@@ -4,11 +4,11 @@ export * from "./subscription.js";
 
 // General application constants
 export const APP_CONFIG = {
-  NAME: "FlavorBot",
+  NAME: "MealPlanner",
   DESCRIPTION: "AI-Powered Recipe Management Platform",
   VERSION: "1.0.0",
-  SUPPORT_EMAIL: "support@flavorbot.com",
-  WEBSITE_URL: "https://flavorbot.com",
+  SUPPORT_EMAIL: "pemony.mealplanner@gmail.com",
+  WEBSITE_URL: "https://moudy.com/mealplanner",
 } as const;
 
 // Recipe categories with display names

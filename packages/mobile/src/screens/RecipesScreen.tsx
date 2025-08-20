@@ -11,7 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../contexts/ThemeContext';
-import { useRecipes } from '@flavorbot/shared';
+import { useRecipes } from '@mealplanner/shared';
 
 const categories = [
   { id: 'all', label: 'All', icon: 'grid-outline' },
@@ -155,13 +155,13 @@ export default function RecipesScreen({ navigation }: any) {
           <Text style={styles.emptySubtitle}>
             {searchQuery
               ? 'Try adjusting your search terms'
-              : 'Start by asking FlavorBot for recommendations'}
+              : 'Start by asking MealPlanner for recommendations'}
           </Text>
           <TouchableOpacity
             style={styles.emptyButton}
             onPress={() => navigation.navigate('Chat')}
           >
-            <Text style={styles.emptyButtonText}>Ask FlavorBot</Text>
+            <Text style={styles.emptyButtonText}>Ask MealPlanner</Text>
           </TouchableOpacity>
         </View>
       )}

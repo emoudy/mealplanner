@@ -12,7 +12,7 @@ import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { useAddRecipe } from '@/contexts/AddRecipeContext';
 import { Link } from 'wouter';
-import type { Recipe } from '@flavorbot/shared';
+import type { Recipe } from '@mealplanner/shared';
 
 export default function CalendarPage() {
   const { toast } = useToast();
@@ -320,7 +320,7 @@ export default function CalendarPage() {
                                 className="flex items-center gap-2"
                               >
                                 <MessageCircle className="w-4 h-4" />
-                                Ask FlavorBot
+                                Ask MealPlanner
                               </Button>
                             </Link>
                             <Button 
@@ -503,7 +503,7 @@ export default function CalendarPage() {
                               className="flex items-center gap-2"
                             >
                               <MessageCircle className="w-4 h-4" />
-                              Ask FlavorBot
+                              Ask MealPlanner
                             </Button>
                           </Link>
                           <Button 

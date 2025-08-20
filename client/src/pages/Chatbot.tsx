@@ -36,7 +36,7 @@ const quickSuggestions = [
   "Chicken recipes",
 ];
 
-// Function to extract suggestions from FlavorBot responses
+// Function to extract suggestions from MealPlanner responses
 function extractSuggestions(content: string): string[] {
   const suggestions: string[] = [];
 
@@ -154,7 +154,7 @@ export default function Chatbot() {
         {
           role: "assistant",
           content:
-            "Hi! I'm FlavorBot, your AI recipe assistant. I can help you find recipes based on ingredients, dietary preferences, cooking time, or cuisine type. What would you like to cook today?",
+            "Hi! I'm MealPlanner, your AI recipe assistant. I can help you find recipes based on ingredients, dietary preferences, cooking time, or cuisine type. What would you like to cook today?",
         },
       ]);
       setDynamicSuggestions([]);
@@ -203,7 +203,7 @@ export default function Chatbot() {
       }
       toast({
         title: "Error",
-        description: "Failed to get response from FlavorBot",
+        description: "Failed to get response from MealPlanner",
         variant: "destructive",
       });
     },
@@ -323,11 +323,11 @@ export default function Chatbot() {
     // Clear dynamic suggestions when a suggestion is clicked
     setDynamicSuggestions([]);
     
-    // If this is a dynamic suggestion from FlavorBot, always generate a recipe
+    // If this is a dynamic suggestion from MealPlanner, always generate a recipe
     const isDynamicSuggestion = dynamicSuggestions.includes(suggestion);
     
     if (isDynamicSuggestion) {
-      // All FlavorBot suggestions should generate recipes
+      // All MealPlanner suggestions should generate recipes
       setIsGeneratingRecipe(true);
       setMessages((prev) => [...prev, { role: "user", content: `Give me a recipe for ${suggestion}` }]);
       generateRecipeMutation.mutate(`Give me a recipe for ${suggestion}`);
@@ -346,7 +346,7 @@ export default function Chatbot() {
       {/* Page Header */}
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          Ask FlavorBot
+          Ask MealPlanner
         </h1>
         <p className="text-gray-600 dark:text-gray-300">
           Get personalized recipe recommendations from our AI assistant
@@ -356,7 +356,7 @@ export default function Chatbot() {
       {/* Chat Container */}
       <Card className="overflow-hidden" role="main" aria-labelledby="chat-heading">
         <div className="sr-only">
-          <h2 id="chat-heading">Chat conversation with FlavorBot</h2>
+          <h2 id="chat-heading">Chat conversation with MealPlanner</h2>
         </div>
         {/* Chat Messages */}
         <div 
@@ -373,7 +373,7 @@ export default function Chatbot() {
                 message.role === "user" ? "justify-end" : ""
               }`}
               role={message.role === "assistant" ? "status" : undefined}
-              aria-label={`${message.role === "user" ? "Your message" : "FlavorBot response"}: ${message.content.substring(0, 100)}${message.content.length > 100 ? '...' : ''}`}
+              aria-label={`${message.role === "user" ? "Your message" : "MealPlanner response"}: ${message.content.substring(0, 100)}${message.content.length > 100 ? '...' : ''}`}
             >
               {message.role === "assistant" && (
                 <div className="w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center flex-shrink-0">
@@ -576,7 +576,7 @@ export default function Chatbot() {
                   <span className="text-gray-600 dark:text-gray-300 text-sm">
                     {isGeneratingRecipe
                       ? "Creating your recipe..."
-                      : "FlavorBot is thinking..."}
+                      : "MealPlanner is thinking..."}
                   </span>
                 </div>
               </div>
@@ -595,11 +595,11 @@ export default function Chatbot() {
               placeholder="Ask about ingredients, cuisines, dietary restrictions..."
               className="flex-1"
               disabled={chatMutation.isPending || isGeneratingRecipe}
-              aria-label="Type your message to FlavorBot"
+              aria-label="Type your message to MealPlanner"
               aria-describedby="chat-input-help"
             />
             <div className="sr-only" id="chat-input-help">
-              Press Enter or click Send to send your message to FlavorBot
+              Press Enter or click Send to send your message to MealPlanner
             </div>
             <Button
               type="submit"
@@ -609,7 +609,7 @@ export default function Chatbot() {
                 !inputMessage.trim()
               }
               className="bg-brand-500 hover:bg-brand-600"
-              aria-label="Send message to FlavorBot"
+              aria-label="Send message to MealPlanner"
             >
               <Send className="w-4 h-4" aria-hidden="true" />
             </Button>
@@ -618,7 +618,7 @@ export default function Chatbot() {
           {/* Dynamic or Quick Suggestions */}
           <div className="mt-3 grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-4 gap-2" role="group" aria-label="Suggested topics">
             {(dynamicSuggestions.length > 0 ? dynamicSuggestions : quickSuggestions).map((suggestion) => {
-              // All dynamic suggestions from FlavorBot should generate recipes
+              // All dynamic suggestions from MealPlanner should generate recipes
               const isDynamicSuggestion = dynamicSuggestions.includes(suggestion);
               const willGenerateRecipe = isDynamicSuggestion;
               
@@ -631,7 +631,7 @@ export default function Chatbot() {
                   className={`text-xs text-left justify-start min-h-[2rem] w-full px-2 ${
                     willGenerateRecipe ? 'border-brand-500 text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-950' : ''
                   }`}
-                  title={willGenerateRecipe ? `Generate recipe for: ${suggestion}` : `Ask FlavorBot about: ${suggestion}`}
+                  title={willGenerateRecipe ? `Generate recipe for: ${suggestion}` : `Ask MealPlanner about: ${suggestion}`}
                 >
                   <span className="block w-full sm:whitespace-normal whitespace-nowrap overflow-hidden text-ellipsis">
                     {suggestion}

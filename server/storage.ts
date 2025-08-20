@@ -5,7 +5,7 @@ import {
   type InsertRecipe,
   type UpdateUser,
   type UsageTracking,
-} from "@flavorbot/shared";
+} from "@mealplanner/shared";
 
 // Meal plan types
 export interface MealPlanEntry {

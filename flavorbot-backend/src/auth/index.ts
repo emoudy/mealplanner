@@ -47,7 +47,7 @@ export function setupEmailAuth(app: Express) {
     resave: false,
     saveUninitialized: false,
     // store: sessionStore, // Using default in-memory store for backend repo
-    name: 'flavorbot.sid', // Custom session name
+    name: 'mealplanner.sid', // Custom session name
     cookie: {
       httpOnly: true,
       secure: false, // Disable secure in development

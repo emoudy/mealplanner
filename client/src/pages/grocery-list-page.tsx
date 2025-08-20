@@ -15,7 +15,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
-import type { Recipe } from '@flavorbot/shared';
+import type { Recipe } from '@mealplanner/shared';
 
 interface IngredientItem {
   name: string;

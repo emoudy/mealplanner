@@ -98,7 +98,7 @@ export default function Landing() {
         queryClient.setQueryData(["/api/auth/user"], result.user);
         queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
         toast({
-          title: "Welcome to FlavorBot!",
+          title: "Welcome to MealPlanner!",
           description: "Your account has been created and you're now logged in!",
         });
         

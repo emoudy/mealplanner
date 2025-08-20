@@ -1,7 +1,7 @@
 {
-  "name": "flavorbot-backend",
+  "name": "mealplanner-backend",
   "version": "1.0.0",
-  "description": "FlavorBot Express.js API server",
+  "description": "MealPlanner Express.js API server",
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
@@ -14,7 +14,7 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@flavorbot/shared": "../flavorbot-shared",
+    "@mealplanner/shared": "../mealplanner-shared",
     "@anthropic-ai/sdk": "^0.37.0",
     "@neondatabase/serverless": "^0.10.4",
     "@paralleldrive/cuid2": "^2.2.2",
@@ -61,11 +61,11 @@
     "vitest": "^3.2.4"
   },
   "keywords": [
-    "flavorbot",
+    "mealplanner",
     "api",
     "express",
     "backend"
   ],
-  "author": "FlavorBot Team",
+  "author": "MealPlanner Team",
   "license": "MIT"
 }

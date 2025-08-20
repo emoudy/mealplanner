@@ -1,7 +1,7 @@
 {
-  "name": "@flavorbot/shared",
+  "name": "@mealplanner/shared",
   "version": "1.0.0",
-  "description": "Shared code for FlavorBot web and mobile apps",
+  "description": "Shared code for MealPlanner web and mobile apps",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {

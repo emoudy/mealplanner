@@ -1,4 +1,4 @@
-# FlavorBot - AI-Powered Recipe Management Platform
+# MealPlanner - AI-Powered Recipe Management Platform
 
 ## Overview
 MealPlanner is a comprehensive AI-powered recipe management platform designed to generate, personalize, and assist users in their culinary journey. The platform aims to be cross-platform, offering a unified experience across web, desktop (PWA), and mobile applications. Its core business vision is to provide an intuitive, intelligent, and accessible tool for users to manage their recipes, discover new ones through AI, and receive culinary assistance, thereby streamlining their cooking experience and fostering creativity in the kitchen.
@@ -23,7 +23,7 @@ MealPlanner is structured as a cross-platform application with a high degree of 
 - **Subscription Model:** Features are tiered (Free, Basic, Pro) based on recipe generation limits.
 
 **Technology Stack:**
-- **Shared Core (`@flavorbot/shared`):** TypeScript, TanStack Query (server state), Zod (validation).
+- **Shared Core (`@mealplanner/shared`):** TypeScript, TanStack Query (server state), Zod (validation).
 - **Web Platform:** React.js, Vite, Tailwind CSS, shadcn/ui, Wouter (routing), PWA.
 - **Mobile Platform:** React Native, Expo, Expo Secure Store.
 - **Backend:** Express.js, TypeScript, PostgreSQL, Drizzle ORM, Dual authentication system (email/password + Replit OAuth), Session-based authentication, Passport.js.
@@ -76,10 +76,10 @@ MealPlanner is structured as a cross-platform application with a high degree of 
 - **Authentication UI/UX:** Clean `/auth` page with tabbed login/registration forms, verification feedback, and proper error handling.
 - **Session Management:** PostgreSQL-backed sessions with Passport.js LocalStrategy for secure authentication.
 - **Enhanced Security:** Email verification prevents unauthorized account access and ensures valid user email addresses.
-- **Universal Access:** FlavorBot now serves all users worldwide with secure, verified accounts.
+- **Universal Access:** MealPlanner now serves all users worldwide with secure, verified accounts.
 - **WCAG 2.2 ADA Compliance (August 2025):** Implemented comprehensive accessibility features including proper ARIA labels, semantic HTML, keyboard navigation, screen reader support, skip links, focus management, and complete tab flow accessibility for all interactive elements.
-- **Multi-Repository Architecture Planning (August 2025):** Designed separation strategy for independent backend, frontend (web), and mobile teams with 70-80% code reuse through `@flavorbot/shared` NPM package.
-- **Complete Multi-Repository Architecture (August 2025):** Successfully implemented all 4 phases of repository separation enabling independent team development. Created `@flavorbot/shared` NPM package, `flavorbot-backend` Express API server, `flavorbot-web` React application, and `flavorbot-mobile` React Native app. Achieved 70-80% code reuse through shared package while maintaining team independence.
+- **Multi-Repository Architecture Planning (August 2025):** Designed separation strategy for independent backend, frontend (web), and mobile teams with 70-80% code reuse through `@mealplanner/shared` NPM package.
+- **Complete Multi-Repository Architecture (August 2025):** Successfully implemented all 4 phases of repository separation enabling independent team development. Created `@mealplanner/shared` NPM package, `mealplanner-backend` Express API server, `mealplanner-web` React application, and `mealplanner-mobile` React Native app. Achieved 70-80% code reuse through shared package while maintaining team independence.
 - **Replit OAuth Integration (August 2025):** Added optional Replit OAuth authentication as a separate, easily removable module (`server/replit-auth.ts`) maintaining clean dual authentication system. Users can authenticate via email/password for universal access or Replit OAuth for seamless platform integration. System automatically detects and enables OAuth when REPLIT_DOMAINS and REPL_ID environment variables are present.
 
 ## Security Enhancements (January 2025)

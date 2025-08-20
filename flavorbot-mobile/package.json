@@ -1,5 +1,5 @@
 {
-  "name": "flavorbot-mobile",
+  "name": "mealplanner-mobile",
   "version": "1.0.0",
   "main": "expo-router/entry",
   "type": "module",
@@ -16,7 +16,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@flavorbot/shared": "../flavorbot-shared",
+    "@mealplanner/shared": "../mealplanner-shared",
     "@expo/vector-icons": "^14.0.0",
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/stack": "^6.4.1",
@@ -55,12 +55,12 @@
     "react-refresh": "~0.14.0"
   },
   "keywords": [
-    "flavorbot",
+    "mealplanner",
     "react-native",
     "mobile",
     "expo"
   ],
-  "author": "FlavorBot Team",
+  "author": "MealPlanner Team",
   "license": "MIT",
   "private": true
 }

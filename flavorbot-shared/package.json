@@ -1,7 +1,7 @@
 {
-  "name": "@flavorbot/shared",
+  "name": "@mealplanner/shared",
   "version": "1.0.0",
-  "description": "Shared code between FlavorBot web and mobile applications",
+  "description": "Shared code between MealPlanner web and mobile applications",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
@@ -56,16 +56,16 @@
     "@types/react": "^18.3.0"
   },
   "keywords": [
-    "flavorbot",
+    "mealplanner",
     "recipe",
     "ai",
     "shared",
     "typescript"
   ],
-  "author": "FlavorBot Team",
+  "author": "MealPlanner Team",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/flavorbot/flavorbot-shared.git"
+    "url": "https://github.com/mealplanner/mealplanner-shared.git"
   }
 }

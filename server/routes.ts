@@ -4,7 +4,7 @@ import { createServer, type Server } from "http";
 import { storage as dbStorage } from "./storage";
 import { setupEmailAuth, isAuthenticated } from "./auth";
 import { generateRecipe, getChatResponse } from "./anthropic";
-import { insertRecipeSchema, updateUserSchema } from "@flavorbot/shared/schemas";
+import { insertRecipeSchema, updateUserSchema } from "@mealplanner/shared/schemas";
 import { z } from "zod";
 import nodemailer from "nodemailer";
 import multer from "multer";
@@ -382,7 +382,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!sessionMessages || !Array.isArray(sessionMessages) || sessionMessages.length === 0) {
         const welcomeMessage = [{
           role: 'assistant',
-          content: "Hi! I'm FlavorBot, your AI recipe assistant. I can help you find recipes based on ingredients, dietary preferences, cooking time, or cuisine type. What would you like to cook today?"
+          content: "Hi! I'm MealPlanner, your AI recipe assistant. I can help you find recipes based on ingredients, dietary preferences, cooking time, or cuisine type. What would you like to cook today?"
         }];
         
         // Store welcome message in session
@@ -426,8 +426,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const verificationUrl = `${req.protocol}://${req.hostname}/api/auth/verify-email?token=${token}&userId=${userId}`;
       
       const emailContent = `
-        <h2>Welcome to FlavorBot!</h2>
-        <p>Please verify your email address to start using all FlavorBot features:</p>
+        <h2>Welcome to MealPlanner!</h2>
+        <p>Please verify your email address to start using all MealPlanner features:</p>
         <p><a href="${verificationUrl}" style="background-color: #4F46E5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Verify Email Address</a></p>
         <p>Or copy and paste this link: ${verificationUrl}</p>
         <p>This link will expire in 24 hours.</p>
@@ -436,7 +436,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await emailTransporter.sendMail({
         from: process.env.EMAIL_USER,
         to: email,
-        subject: "Verify your FlavorBot email address",
+        subject: "Verify your MealPlanner email address",
         html: emailContent,
       });
 
@@ -462,8 +462,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           <html>
             <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; text-align: center;">
               <h1 style="color: #10B981;">Email Verified!</h1>
-              <p>Your email has been successfully verified. You can now close this window and enjoy all FlavorBot features!</p>
-              <a href="/" style="background-color: #4F46E5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Return to FlavorBot</a>
+              <p>Your email has been successfully verified. You can now close this window and enjoy all MealPlanner features!</p>
+              <a href="/" style="background-color: #4F46E5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Return to MealPlanner</a>
             </body>
           </html>
         `);
@@ -473,7 +473,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; text-align: center;">
               <h1 style="color: #EF4444;">Verification Failed</h1>
               <p>This verification link is invalid or has expired. Please request a new verification email.</p>
-              <a href="/" style="background-color: #4F46E5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Return to FlavorBot</a>
+              <a href="/" style="background-color: #4F46E5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Return to MealPlanner</a>
             </body>
           </html>
         `);

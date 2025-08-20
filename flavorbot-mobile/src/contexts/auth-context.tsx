@@ -1,8 +1,8 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { useQuery, useMutation, UseMutationResult } from '@tanstack/react-query';
 import * as SecureStore from 'expo-secure-store';
-import { apiClient } from '@flavorbot/shared/api-client';
-import { User, InsertUser } from '@flavorbot/shared/schemas';
+import { apiClient } from '@mealplanner/shared/api-client';
+import { User, InsertUser } from '@mealplanner/shared/schemas';
 
 type LoginData = Pick<InsertUser, 'email' | 'password'>;
 

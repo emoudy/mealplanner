@@ -19,14 +19,14 @@ describe('Navigation Component', () => {
   })
 
   describe('Logo and Branding', () => {
-    it('displays the FlavorBot logo with correct styling', () => {
+    it('displays the MealPlanner logo with correct styling', () => {
       render(<Navigation />)
       
-      const logo = screen.getByLabelText('FlavorBot home')
+      const logo = screen.getByLabelText('MealPlanner home')
       expect(logo).toBeInTheDocument()
       expect(logo).toHaveAttribute('href', '/')
       
-      const logoText = screen.getByText('FlavorBot')
+      const logoText = screen.getByText('MealPlanner')
       expect(logoText).toBeInTheDocument()
       expect(logoText).toHaveClass('text-xl', 'font-bold')
     })
@@ -34,7 +34,7 @@ describe('Navigation Component', () => {
     it('has the ChefHat icon with proper gradient background', () => {
       render(<Navigation />)
       
-      const iconContainer = screen.getByRole('link', { name: 'FlavorBot home' })
+      const iconContainer = screen.getByRole('link', { name: 'MealPlanner home' })
         .querySelector('div')
       expect(iconContainer).toHaveClass(
         'w-8', 'h-8', 'bg-gradient-to-br', 'from-red-500', 'to-yellow-500', 'rounded-lg'
@@ -47,7 +47,7 @@ describe('Navigation Component', () => {
       render(<Navigation />)
       
       // Check for chatbot button
-      const chatbotButton = screen.getByLabelText('Ask FlavorBot for recipe recommendations')
+      const chatbotButton = screen.getByLabelText('Ask MealPlanner for recipe recommendations')
       expect(chatbotButton).toBeInTheDocument()
       expect(chatbotButton.closest('a')).toHaveAttribute('href', '/chatbot')
       
@@ -74,7 +74,7 @@ describe('Navigation Component', () => {
 
       render(<Navigation />)
       
-      const chatbotButton = screen.getByLabelText('Ask FlavorBot for recipe recommendations')
+      const chatbotButton = screen.getByLabelText('Ask MealPlanner for recipe recommendations')
       expect(chatbotButton).toHaveAttribute('aria-current', 'page')
     })
 
@@ -186,7 +186,7 @@ describe('Navigation Component', () => {
       const user = userEvent.setup()
       render(<Navigation />)
       
-      const chatbotButton = screen.getByLabelText('Ask FlavorBot for recipe recommendations')
+      const chatbotButton = screen.getByLabelText('Ask MealPlanner for recipe recommendations')
       
       // Tab to the button and press Enter
       await user.tab()
@@ -211,14 +211,14 @@ describe('Navigation Component', () => {
     it('has proper color contrast for visibility', () => {
       render(<Navigation />)
       
-      const logoContainer = screen.getByLabelText('FlavorBot home')
+      const logoContainer = screen.getByLabelText('MealPlanner home')
         .querySelector('div')
       
       // Verify the gradient classes are applied
       expect(logoContainer).toHaveClass('from-red-500', 'to-yellow-500')
       
       // Verify text color for contrast
-      const logoText = screen.getByText('FlavorBot')
+      const logoText = screen.getByText('MealPlanner')
       expect(logoText).toHaveClass('text-gray-900', 'dark:text-white')
     })
   })
@@ -234,7 +234,7 @@ describe('Navigation Component', () => {
     it('maintains logo visibility across all screen sizes', () => {
       render(<Navigation />)
       
-      const logo = screen.getByLabelText('FlavorBot home')
+      const logo = screen.getByLabelText('MealPlanner home')
       expect(logo).toBeInTheDocument()
       expect(logo).toHaveClass('flex', 'items-center')
     })

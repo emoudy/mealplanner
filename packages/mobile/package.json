@@ -1,5 +1,5 @@
 {
-  "name": "@flavorbot/mobile",
+  "name": "@mealplanner/mobile",
   "version": "1.0.0",
   "main": "expo/AppEntry.js",
   "scripts": {
@@ -13,7 +13,7 @@
     "submit:ios": "eas submit --platform ios"
   },
   "dependencies": {
-    "@flavorbot/shared": "workspace:*",
+    "@mealplanner/shared": "workspace:*",
     "@expo/vector-icons": "^14.0.0",
     "@react-navigation/bottom-tabs": "^6.5.0",
     "@react-navigation/native": "^6.1.0",

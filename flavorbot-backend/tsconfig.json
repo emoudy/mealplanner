@@ -22,7 +22,7 @@
   },
   "include": [
     "src/**/*",
-    "../flavorbot-shared/src/utils/index.ts"
+    "../mealplanner-shared/src/utils/index.ts"
   ],
   "exclude": [
     "node_modules",

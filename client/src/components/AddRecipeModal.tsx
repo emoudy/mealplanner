@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 // Error handling now inline instead of using authUtils
-import { createRecipeSchema } from '@flavorbot/shared/utils';
+import { createRecipeSchema } from '@mealplanner/shared/utils';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {

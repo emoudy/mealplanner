@@ -59,13 +59,13 @@ export function Navigation() {
           <Link 
             href="/" 
             className="flex items-center space-x-3 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 rounded-lg p-1 -m-1" 
-            aria-label="FlavorBot home - Navigate to main page"
+            aria-label="MealPlanner home - Navigate to main page"
             tabIndex={0}
           >
             <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-yellow-500 rounded-lg flex items-center justify-center" aria-hidden="true">
               <ChefHat className="w-4 h-4 text-white" />
             </div>
-            <span className="text-xl font-bold text-gray-900 dark:text-white">FlavorBot</span>
+            <span className="text-xl font-bold text-gray-900 dark:text-white">MealPlanner</span>
           </Link>
 
           {/* Navigation Links (Authenticated State) */}
@@ -76,10 +76,10 @@ export function Navigation() {
                 size="icon"
                 className="w-10 h-10"
                 onClick={() => navigate('/chatbot')}
-                aria-label="Chat with FlavorBot - Ask for recipe recommendations"
+                aria-label="Chat with MealPlanner - Ask for recipe recommendations"
                 aria-current={location === '/chatbot' ? 'page' : undefined}
                 role="menuitem"
-                title="Chat with FlavorBot"
+                title="Chat with MealPlanner"
               >
                 <MessageCircle className="w-5 h-5" aria-hidden="true" />
               </Button>

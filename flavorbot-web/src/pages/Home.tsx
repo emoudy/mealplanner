@@ -72,14 +72,14 @@ export default function Home() {
                 navigate('/chatbot');
               }
             }}
-            aria-label="Ask FlavorBot - Get AI-powered recipe recommendations"
+            aria-label="Ask MealPlanner - Get AI-powered recipe recommendations"
           >
             <CardContent className="p-6 text-center">
               <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4" aria-hidden="true">
                 <MessageCircle className="w-6 h-6 text-white" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                Ask FlavorBot
+                Ask MealPlanner
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-300">
                 Get AI-powered recipe recommendations
@@ -185,7 +185,7 @@ export default function Home() {
         <CardContent>
           <div className="space-y-4">
             <p className="text-gray-600 dark:text-gray-300">
-              Welcome to FlavorBot! Here's how to get the most out of your recipe assistant:
+              Welcome to MealPlanner! Here's how to get the most out of your recipe assistant:
             </p>
             <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
               <li className="flex items-start space-x-2">

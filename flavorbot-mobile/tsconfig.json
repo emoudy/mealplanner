@@ -5,7 +5,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@flavorbot/shared": ["../flavorbot-shared/src"]
+      "@mealplanner/shared": ["../mealplanner-shared/src"]
     }
   },
   "include": [

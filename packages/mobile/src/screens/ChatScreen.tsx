@@ -13,7 +13,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../contexts/ThemeContext';
-import { useChat } from '@flavorbot/shared';
+import { useChat } from '@mealplanner/shared';
 
 const quickSuggestions = [
   "What can I make with chicken?",
@@ -83,7 +83,7 @@ export default function ChatScreen() {
         {message.isLoading ? (
           <View style={styles.loadingMessage}>
             <ActivityIndicator size="small" color={colors.mutedForeground} />
-            <Text style={styles.loadingText}>FlavorBot is thinking...</Text>
+            <Text style={styles.loadingText}>MealPlanner is thinking...</Text>
           </View>
         ) : (
           <>
@@ -148,7 +148,7 @@ export default function ChatScreen() {
                 <Ionicons name="chatbubble" size={24} color={colors.brandForeground} />
               </View>
               <View>
-                <Text style={styles.botName}>FlavorBot</Text>
+                <Text style={styles.botName}>MealPlanner</Text>
                 <Text style={styles.botStatus}>Your AI Cooking Assistant</Text>
               </View>
             </View>
@@ -168,7 +168,7 @@ export default function ChatScreen() {
               <View style={styles.welcomeContainer}>
                 <View style={styles.welcomeContent}>
                   <Ionicons name="restaurant" size={48} color={colors.brand} />
-                  <Text style={styles.welcomeTitle}>Welcome to FlavorBot!</Text>
+                  <Text style={styles.welcomeTitle}>Welcome to MealPlanner!</Text>
                   <Text style={styles.welcomeSubtitle}>
                     Ask me for recipe recommendations, cooking tips, or ingredient suggestions
                   </Text>
@@ -193,7 +193,7 @@ export default function ChatScreen() {
           <View style={styles.inputBox}>
             <TextInput
               style={styles.textInput}
-              placeholder="Ask FlavorBot anything..."
+              placeholder="Ask MealPlanner anything..."
               placeholderTextColor={colors.mutedForeground}
               value={inputText}
               onChangeText={setInputText}

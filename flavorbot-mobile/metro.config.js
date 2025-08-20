@@ -5,7 +5,7 @@ const config = getDefaultConfig(__dirname);
 // Add support for TypeScript paths
 config.resolver.alias = {
   '@': './src',
-  '@flavorbot/shared': '../flavorbot-shared/src',
+  '@mealplanner/shared': '../mealplanner-shared/src',
 };
 
 module.exports = config;

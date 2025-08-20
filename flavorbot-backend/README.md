@@ -1,6 +1,6 @@
-# FlavorBot Backend
+# MealPlanner Backend
 
-Express.js API server for FlavorBot - AI-powered recipe management platform.
+Express.js API server for MealPlanner - AI-powered recipe management platform.
 
 ## Features
 
@@ -90,4 +90,4 @@ Built with:
 - PostgreSQL
 - Anthropic Claude API
 - Passport.js for authentication
-- @flavorbot/shared for shared utilities
+- @mealplanner/shared for shared utilities

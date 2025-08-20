@@ -1,6 +1,6 @@
-# @flavorbot/shared
+# @mealplanner/shared
 
-Shared code between FlavorBot web and mobile applications, providing consistent business logic, type definitions, API clients, and utilities.
+Shared code between MealPlanner web and mobile applications, providing consistent business logic, type definitions, API clients, and utilities.
 
 ## Features
 
@@ -14,7 +14,7 @@ Shared code between FlavorBot web and mobile applications, providing consistent 
 ## Installation
 
 ```bash
-npm install @flavorbot/shared
+npm install @mealplanner/shared
 ```
 
 ## Peer Dependencies
@@ -28,16 +28,16 @@ npm install react @tanstack/react-query zod
 ### API Client
 
 ```typescript
-import { createApiClient, FlavorBotApi } from "@flavorbot/shared/api-client";
+import { createApiClient, MealPlannerApi } from "@mealplanner/shared/api-client";
 
 const config = {
-  apiUrl: "https://api.flavorbot.com",
+  apiUrl: "https://api.mealplanner.com",
   environment: "production",
   platform: "web"
 };
 
 const client = createApiClient(config);
-const api = new FlavorBotApi(client);
+const api = new MealPlannerApi(client);
 
 // Use the API
 const user = await api.auth.login({ email, password });
@@ -47,7 +47,7 @@ const recipes = await api.recipes.getRecipes();
 ### React Hooks
 
 ```typescript
-import { useAuth, useRecipes } from "@flavorbot/shared/hooks";
+import { useAuth, useRecipes } from "@mealplanner/shared/hooks";
 
 function MyComponent() {
   const { user, login, isLoading } = useAuth();
@@ -60,8 +60,8 @@ function MyComponent() {
 ### Schemas and Validation
 
 ```typescript
-import { loginSchema, createRecipeSchema } from "@flavorbot/shared/schemas";
-import type { User, Recipe } from "@flavorbot/shared/types";
+import { loginSchema, createRecipeSchema } from "@mealplanner/shared/schemas";
+import type { User, Recipe } from "@mealplanner/shared/types";
 
 // Validate data
 const loginData = loginSchema.parse({ email, password });
@@ -73,7 +73,7 @@ const user: User = { id: "123", email: "user@example.com", ... };
 ### Utilities
 
 ```typescript
-import { formatCookTime, validatePasswordStrength } from "@flavorbot/shared/utils";
+import { formatCookTime, validatePasswordStrength } from "@mealplanner/shared/utils";
 
 const cookTime = formatCookTime(90); // "1h 30m"
 const strength = validatePasswordStrength("mypassword123"); // { isValid: false, ... }
@@ -82,7 +82,7 @@ const strength = validatePasswordStrength("mypassword123"); // { isValid: false,
 ### Constants
 
 ```typescript
-import { API_ENDPOINTS, SUBSCRIPTION_LIMITS } from "@flavorbot/shared/constants";
+import { API_ENDPOINTS, SUBSCRIPTION_LIMITS } from "@mealplanner/shared/constants";
 
 const loginUrl = API_ENDPOINTS.AUTH.LOGIN; // "/api/login"
 const freeLimit = SUBSCRIPTION_LIMITS.free.recipeQueries; // 50
@@ -91,7 +91,7 @@ const freeLimit = SUBSCRIPTION_LIMITS.free.recipeQueries; // 50
 ## Module Structure
 
 ```
-@flavorbot/shared/
+@mealplanner/shared/
 ├── schemas/         # Database schemas and validation
 ├── types/           # TypeScript type definitions
 ├── constants/       # Application constants

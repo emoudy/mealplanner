@@ -50,7 +50,7 @@ export async function generateRecipe(
 
     const response = await anthropic.messages.create({
       model: DEFAULT_MODEL_STR,
-      system: `You are FlavorBot, an expert AI chef assistant. Generate detailed recipes based on user requests and conversation context. 
+      system: `You are MealPlanner, an expert AI chef assistant. Generate detailed recipes based on user requests and conversation context. 
       
       IMPORTANT: Pay close attention to the conversation context to understand what type of recipe the user wants (breakfast, lunch, dinner, snack, cuisine type, dietary restrictions, etc.).
       
@@ -115,7 +115,7 @@ export async function getChatResponse(
   try {
     const response = await anthropic.messages.create({
       model: DEFAULT_MODEL_STR,
-      system: `You are FlavorBot, a friendly AI chef assistant. Help users with cooking questions, recipe suggestions, ingredient substitutions, and cooking techniques. Be encouraging and helpful.
+      system: `You are MealPlanner, a friendly AI chef assistant. Help users with cooking questions, recipe suggestions, ingredient substitutions, and cooking techniques. Be encouraging and helpful.
 
 CRITICAL: Always maintain conversation context. If a user asks about breakfast and then says "make a suggestion", suggest a BREAKFAST recipe. If they're discussing quick meals, keep suggestions quick. Pay attention to the full conversation flow.
 

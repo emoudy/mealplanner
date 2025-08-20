@@ -5,7 +5,7 @@ import {
   type InsertRecipe,
   type UpdateUser,
   type UsageTracking,
-} from "@flavorbot/shared/schemas";
+} from "@mealplanner/shared/schemas";
 // Import DynamoDB storage implementation
 import { DynamoDBStorage } from "./dynamodb-storage";
 

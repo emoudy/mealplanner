@@ -1,7 +1,7 @@
 {
-  "name": "flavorbot-web",
+  "name": "mealplanner-web",
   "version": "1.0.0",
-  "description": "FlavorBot React web application",
+  "description": "MealPlanner React web application",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -12,7 +12,7 @@
     "test:ui": "vitest --ui"
   },
   "dependencies": {
-    "@flavorbot/shared": "../flavorbot-shared",
+    "@mealplanner/shared": "../mealplanner-shared",
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-accordion": "^1.2.4",
     "@radix-ui/react-alert-dialog": "^1.1.7",
@@ -86,11 +86,11 @@
     "vitest": "^3.2.4"
   },
   "keywords": [
-    "flavorbot",
+    "mealplanner",
     "react",
     "web",
     "frontend"
   ],
-  "author": "FlavorBot Team",
+  "author": "MealPlanner Team",
   "license": "MIT"
 }

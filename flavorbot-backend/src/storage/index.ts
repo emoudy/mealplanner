@@ -7,7 +7,7 @@ import {
   type UpdateRecipeData,
   type UpdateUserData,
   type UsageStatsData,
-} from "@flavorbot/shared/utils/schemas.js";
+} from "@mealplanner/shared/utils/schemas.js";
 import { MockDynamoDBStorage } from "./dynamodb-adapter.js";
 
 // Interface for storage operations

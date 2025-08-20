@@ -1,4 +1,4 @@
-// Main entry point for @flavorbot/shared package
+// Main entry point for @mealplanner/shared package
 
 // Re-export all modules
 export * from "./types/index.js";

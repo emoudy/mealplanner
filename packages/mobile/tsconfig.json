@@ -7,7 +7,7 @@
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
     "paths": {
-      "@flavorbot/shared": ["../shared/src"]
+      "@mealplanner/shared": ["../shared/src"]
     }
   },
   "include": [

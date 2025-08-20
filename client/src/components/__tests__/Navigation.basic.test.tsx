@@ -13,16 +13,16 @@ vi.mock('wouter', () => ({
 }))
 
 describe('Navigation - Basic Tests', () => {
-  it('renders FlavorBot logo and text', () => {
+  it('renders MealPlanner logo and text', () => {
     render(<Navigation />)
     
     // Check for logo link
-    const logoLink = screen.getByLabelText('FlavorBot home')
+    const logoLink = screen.getByLabelText('MealPlanner home')
     expect(logoLink).toBeInTheDocument()
     expect(logoLink).toHaveAttribute('href', '/')
     
-    // Check for FlavorBot text
-    const logoText = screen.getByText('FlavorBot')
+    // Check for MealPlanner text
+    const logoText = screen.getByText('MealPlanner')
     expect(logoText).toBeInTheDocument()
   })
 
@@ -38,7 +38,7 @@ describe('Navigation - Basic Tests', () => {
   it('has proper color contrast classes for logo', () => {
     render(<Navigation />)
     
-    const logoText = screen.getByText('FlavorBot')
+    const logoText = screen.getByText('MealPlanner')
     expect(logoText).toHaveClass('text-gray-900', 'dark:text-white')
   })
 

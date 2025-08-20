@@ -81,7 +81,7 @@ export default function ProfileScreen() {
             </View>
             <View style={styles.userInfo}>
               <Text style={styles.userName}>{user?.name || 'Chef'}</Text>
-              <Text style={styles.userEmail}>{user?.email || 'chef@flavorbot.com'}</Text>
+              <Text style={styles.userEmail}>{user?.email || 'pemony_mealplanner@gmail.com'}</Text>
             </View>
           </View>
         </View>
@@ -134,7 +134,7 @@ export default function ProfileScreen() {
 
         {/* App Version */}
         <View style={styles.footer}>
-          <Text style={styles.versionText}>FlavorBot v1.0.0</Text>
+          <Text style={styles.versionText}>MealPlanner v1.0.0</Text>
           <Text style={styles.footerText}>Made with ❤️ for food lovers</Text>
         </View>
       </ScrollView>

@@ -60,7 +60,7 @@ export async function setupEmailAuth(app: Express) {
     resave: false,
     saveUninitialized: false,
     store: sessionStore,
-    name: 'flavorbot.sid', // Custom session name
+    name: 'mealplanner.sid', // Custom session name
     cookie: {
       httpOnly: true,
       secure: false, // Disable secure in development

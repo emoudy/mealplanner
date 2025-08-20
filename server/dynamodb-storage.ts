@@ -5,7 +5,7 @@ import {
   type InsertRecipe,
   type UpdateUser,
   type UsageTracking,
-} from "@flavorbot/shared";
+} from "@mealplanner/shared";
 import type { MealPlanEntry, CreateMealPlanEntryData, MealPlanResponse, CustomGroceryItem, CreateCustomGroceryItem, SavedGroceryList, SavedGroceryItem } from "./storage";
 import { IStorage } from "./storage";
 import { mockRecipes } from "../mock-data";

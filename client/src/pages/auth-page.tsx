@@ -105,7 +105,7 @@ export default function AuthPage() {
       
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       toast({
-        title: "Welcome to FlavorBot!",
+        title: "Welcome to MealPlanner!",
         description: "Your account has been created successfully.",
       });
       setLocation("/");

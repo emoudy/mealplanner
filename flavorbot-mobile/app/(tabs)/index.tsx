@@ -10,8 +10,8 @@ import {
 } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
-import { apiClient } from '@flavorbot/shared/api-client';
-import { Recipe } from '@flavorbot/shared/schemas';
+import { apiClient } from '@mealplanner/shared/api-client';
+import { Recipe } from '@mealplanner/shared/schemas';
 import { useAuth } from '@/contexts/auth-context';
 
 export default function RecipesScreen() {
@@ -47,7 +47,7 @@ export default function RecipesScreen() {
       <SafeAreaView style={[styles.container, colorScheme === 'dark' && styles.containerDark]}>
         <View style={styles.centerContent}>
           <Text style={[styles.title, colorScheme === 'dark' && styles.textDark]}>
-            Welcome to FlavorBot
+            Welcome to MealPlanner
           </Text>
           <TouchableOpacity
             style={styles.authButton}

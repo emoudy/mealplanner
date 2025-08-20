@@ -1,7 +1,7 @@
 module.exports = {
   expo: {
-    name: 'FlavorBot',
-    slug: 'flavorbot',
+    name: 'MealPlanner',
+    slug: 'mealplanner',
     version: '1.0.0',
     orientation: 'portrait',
     userInterfaceStyle: 'automatic',
@@ -14,11 +14,11 @@ module.exports = {
     ],
     ios: {
       supportsTablet: true,
-      bundleIdentifier: 'com.flavorbot.app',
+      bundleIdentifier: 'com.mealplanner.app',
       buildNumber: '1'
     },
     android: {
-      package: 'com.flavorbot.app',
+      package: 'com.mealplanner.app',
       versionCode: 1,
       adaptiveIcon: {
         backgroundColor: '#FFFFFF'

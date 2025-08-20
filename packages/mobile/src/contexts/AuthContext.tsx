@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import * as SecureStore from 'expo-secure-store';
-import { useAuthState, useLogin, useLogout } from '@flavorbot/shared';
+import { useAuthState, useLogin, useLogout } from '@mealplanner/shared';
 
 interface AuthContextType {
   isAuthenticated: boolean;

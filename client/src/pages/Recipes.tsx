@@ -253,10 +253,10 @@ export default function Recipes() {
             <Link href="/chatbot">
               <Button 
                 className="bg-brand-500 hover:bg-brand-600"
-                aria-label="Go to FlavorBot AI assistant to get recipe recommendations"
+                aria-label="Go to MealPlanner AI assistant to get recipe recommendations"
               >
                 <Plus className="w-4 h-4 mr-2" aria-hidden="true" />
-                Ask FlavorBot
+                Ask MealPlanner
               </Button>
             </Link>
           </div>

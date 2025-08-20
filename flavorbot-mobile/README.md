@@ -1,6 +1,6 @@
-# FlavorBot Mobile
+# MealPlanner Mobile
 
-React Native mobile application for FlavorBot - AI-powered recipe management platform.
+React Native mobile application for MealPlanner - AI-powered recipe management platform.
 
 ## Features
 
@@ -19,7 +19,7 @@ React Native mobile application for FlavorBot - AI-powered recipe management pla
 - Node.js 18+
 - Expo CLI
 - iOS Simulator (Mac) or Android Studio
-- FlavorBot Backend running
+- MealPlanner Backend running
 
 ### Installation
 
@@ -78,7 +78,7 @@ src/
 ```
 
 ### Shared Code
-- Uses `@flavorbot/shared` for 70-80% code reuse
+- Uses `@mealplanner/shared` for 70-80% code reuse
 - Shared API client, schemas, and business logic
 - Platform-specific UI implementations
 

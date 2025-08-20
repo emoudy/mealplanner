@@ -125,5 +125,5 @@ app.get('/health', (req, res) => {
 // Start server
 const PORT = process.env.PORT || 5001; // Use different port for backend
 server.listen(PORT, "0.0.0.0", () => {
-  console.log(`🚀 FlavorBot Backend serving on port ${PORT}`);
+  console.log(`🚀 MealPlanner Backend serving on port ${PORT}`);
 });

@@ -1,7 +1,7 @@
 export default {
   expo: {
-    name: "FlavorBot",
-    slug: "flavorbot-mobile",
+    name: "MealPlanner",
+    slug: "mealplanner-mobile",
     version: "1.0.0",
     orientation: "portrait",
     icon: "./assets/icon.png",
@@ -16,14 +16,14 @@ export default {
     ],
     ios: {
       supportsTablet: true,
-      bundleIdentifier: "com.flavorbot.mobile"
+      bundleIdentifier: "com.mealplanner.mobile"
     },
     android: {
       adaptiveIcon: {
         foregroundImage: "./assets/adaptive-icon.png",
         backgroundColor: "#ffffff"
       },
-      package: "com.flavorbot.mobile"
+      package: "com.mealplanner.mobile"
     },
     web: {
       favicon: "./assets/favicon.png",
@@ -33,7 +33,7 @@ export default {
       "expo-router",
       "expo-secure-store"
     ],
-    scheme: "flavorbot",
+    scheme: "mealplanner",
     newArchEnabled: true,
     extra: {
       apiUrl: process.env.EXPO_PUBLIC_API_URL || "http://localhost:5001"

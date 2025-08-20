@@ -1,7 +1,7 @@
-# FlavorBot - AI-Powered Recipe Management Platform
+# MealPlanner - AI-Powered Recipe Management Platform
 
 ## Overview
-FlavorBot is a comprehensive AI-powered recipe management platform with secure email authentication and email verification. The platform provides recipe generation, management, and culinary assistance through an intelligent chatbot interface.
+MealPlanner is a comprehensive AI-powered recipe management platform with secure email authentication and email verification. The platform provides recipe generation, management, and culinary assistance through an intelligent chatbot interface.
 
 ## Authentication System (Mock Email Service)
 The app currently uses a mock email service for development. When you register:

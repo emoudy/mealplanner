@@ -4,7 +4,7 @@ const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
-console.log('Setting up local DynamoDB for FlavorBot development...');
+console.log('Setting up local DynamoDB for MealPlanner development...');
 
 // Check if DynamoDB Local is installed
 const dynamodbPath = path.join(__dirname, '..', 'node_modules', 'dynamodb-local');
