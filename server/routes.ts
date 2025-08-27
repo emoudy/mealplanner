@@ -4,7 +4,7 @@ import { createServer, type Server } from "http";
 import { storage as dbStorage } from "./storage";
 import { setupEmailAuth, isAuthenticated } from "./auth";
 import { generateRecipe, getChatResponse } from "./anthropic";
-import { createRecipeSchema, updateUserSchema } from "../mealplanner-shared/src/utils/schemas";
+import { createRecipeSchema, updateUserSchema } from "@mealplanner/shared/utils";
 import nodemailer from "nodemailer";
 import multer from "multer";
 import path from "path";

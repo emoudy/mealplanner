@@ -6,6 +6,23 @@ import slowDown from "express-slow-down";
 import cors from "cors";
 import { securityMonitoring, httpsRedirect } from "./security/index.js";
 
+// Add process event listeners for debugging
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  // Don't exit immediately in development for debugging
+  if (process.env.NODE_ENV !== 'development') {
+    process.exit(1);
+  }
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Don't exit immediately in development for debugging
+  if (process.env.NODE_ENV !== 'development') {
+    process.exit(1);
+  }
+});
+
 const app = express();
 
 // Trust proxy for rate limiting
@@ -97,10 +114,16 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Register API routes and setup the HTTP server
-const server = registerRoutes(app);
+// Health check endpoint
+app.get('/health', (_req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Register routes
+registerRoutes(app);
 
 // Global error handler with security logging
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
   console.error('Global error:', {
     error: err.message,
     stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,
@@ -117,13 +140,24 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   });
 });
 
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
-
 // Start server
 const PORT = process.env.PORT || 5001; // Use different port for backend
-server.listen(PORT, "0.0.0.0", () => {
+const server = app.listen(Number(PORT), "0.0.0.0", () => {
   console.log(`🚀 MealPlanner Backend serving on port ${PORT}`);
+});
+
+// Add error handling for the server
+server.on('error', (error) => {
+  console.error('Server error:', error);
+});
+
+// Handle uncaught exceptions and unhandled promises
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  process.exit(1);
 });

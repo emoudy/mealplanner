@@ -1,4 +1,33 @@
-# MealPlanner - AI-Powered Recipe Management Platform
+# 🍽️ MealPlanner - Distributed Monolith Architecture
+
+A modern meal planning application with AI-powered recipe generation, built using a distributed monolith architecture pattern.
+
+## 🏗️ Project Structure
+
+```
+mealplanner/
+├── mealplanner-frontend/          # Frontend applications
+│   ├── mealplanner-web/          # React web application  
+│   ├── mealplanner-mobile/       # React Native mobile app
+│   └── mealplanner-shared/       # Shared utilities & types
+├── mealplanner-backend/           # Domain-organized backend
+│   └── src/
+│       ├── domains/              # Business domain routes
+│       │   ├── users/           # User auth & profiles
+│       │   ├── recipes/         # Recipe CRUD operations  
+│       │   ├── ai-chat/         # AI recipe generation
+│       │   ├── meal-planning/   # Meal plan management
+│       │   ├── grocery/         # Grocery lists & items
+│       │   └── notifications/   # Email/SMS notifications
+│       ├── shared/              # Cross-cutting concerns
+│       └── routes/              # Main route orchestration
+├── mealplanner-infra/            # Infrastructure & deployment
+│   ├── aws/                     # AWS CDK/CloudFormation
+│   ├── docker/                  # Container configurations
+│   ├── ci-cd/                   # Pipeline definitions
+│   └── monitoring/              # Observability setup
+└── server/                      # Legacy monolithic routes (deprecated)
+```
 
 ## Overview
 MealPlanner is a comprehensive AI-powered recipe management platform with secure email authentication and email verification. The platform provides recipe generation, management, and culinary assistance through an intelligent chatbot interface.
