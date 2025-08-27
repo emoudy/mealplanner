@@ -1,0 +1,26 @@
+{
+  "name": "@mealplanner/frontend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MealPlanner Frontend - Contains web, mobile, and shared packages",
+  "scripts": {
+    "dev:web": "cd mealplanner-web && npm run dev",
+    "build:web": "cd mealplanner-web && npm run build",
+    "dev:mobile": "cd mealplanner-mobile && npm run start",
+    "build:mobile": "cd mealplanner-mobile && npm run build",
+    "dev:shared": "cd mealplanner-shared && npm run dev",
+    "build:shared": "cd mealplanner-shared && npm run build",
+    "install:all": "npm install && cd mealplanner-web && npm install && cd ../mealplanner-mobile && npm install && cd ../mealplanner-shared && npm install",
+    "clean": "rm -rf node_modules && cd mealplanner-web && rm -rf node_modules && cd ../mealplanner-mobile && rm -rf node_modules && cd ../mealplanner-shared && rm -rf node_modules",
+    "lint": "cd mealplanner-web && npm run lint && cd ../mealplanner-mobile && npm run lint && cd ../mealplanner-shared && npm run lint",
+    "test": "cd mealplanner-web && npm run test && cd ../mealplanner-mobile && npm run test && cd ../mealplanner-shared && npm run test"
+  },
+  "workspaces": [
+    "mealplanner-web",
+    "mealplanner-mobile", 
+    "mealplanner-shared"
+  ],
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

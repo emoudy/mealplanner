@@ -4,6 +4,10 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
+    "dev": "npm run dev:backend",
+    "dev:backend": "cd mealplanner-backend && npm run dev",
+    "dev:web": "cd mealplanner-frontend/mealplanner-web && npm run dev",
+    "dev:mobile": "cd mealplanner-frontend/mealplanner-mobile && npm run dev",
     "build:shared": "cd mealplanner-shared && npm run build",
     "build:backend": "cd mealplanner-backend && npm run build",
     "build:web": "cd mealplanner-web && npm run build",

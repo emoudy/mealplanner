@@ -4,8 +4,7 @@ import { createServer, type Server } from "http";
 import { storage as dbStorage } from "./storage";
 import { setupEmailAuth, isAuthenticated } from "./auth";
 import { generateRecipe, getChatResponse } from "./anthropic";
-import { insertRecipeSchema, updateUserSchema } from "@mealplanner/shared/schemas";
-import { z } from "zod";
+import { createRecipeSchema, updateUserSchema } from "../mealplanner-shared/src/utils/schemas";
 import nodemailer from "nodemailer";
 import multer from "multer";
 import path from "path";
@@ -157,7 +156,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/recipes', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.id;
-      const recipeData = insertRecipeSchema.parse(req.body);
+      const recipeData = createRecipeSchema.parse(req.body);
       const recipe = await dbStorage.createRecipe(userId, recipeData);
       res.json(recipe);
     } catch (error) {
@@ -187,7 +186,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.id;
       const recipeId = parseInt(req.params.id);
-      const updates = insertRecipeSchema.partial().parse(req.body);
+      const updates = createRecipeSchema.partial().parse(req.body);
       const recipe = await dbStorage.updateRecipe(recipeId, userId, updates);
       res.json(recipe);
     } catch (error) {

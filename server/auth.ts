@@ -6,9 +6,8 @@ import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { storage } from "./storage";
 import { DynamoDBSessionStore } from "./session-dynamodb";
-import { User as SelectUser } from "@shared/schema";
+import { UserData as SelectUser } from "../mealplanner-shared/src/utils/schemas";
 import { createId } from "@paralleldrive/cuid2";
-// Removed connect-pg-simple import - now using DynamoDB sessions
 
 declare global {
   namespace Express {
