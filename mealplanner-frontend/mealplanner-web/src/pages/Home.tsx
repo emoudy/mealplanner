@@ -12,7 +12,7 @@ import {
   TrendingUp,
   Clock
 } from 'lucide-react';
-import type { Recipe } from '@shared/schema';
+import type { RecipeData } from '@mealplanner/shared';
 import { LoadingAnnouncer } from '@/components/ui/loading-announcer';
 
 export default function Home() {
@@ -21,7 +21,7 @@ export default function Home() {
   const [, navigate] = useLocation();
 
   // Fetch user's recipes to get the total count
-  const { data: recipes = [], isLoading: recipesLoading, error: recipesError } = useQuery<Recipe[]>({
+  const { data: recipes = [], isLoading: recipesLoading, error: recipesError } = useQuery<RecipeData[]>({
     queryKey: ['/api/recipes'],
     enabled: !!user
   });

@@ -1,4 +1,4 @@
-import { Recipe } from '@shared/schema';
+import { RecipeData } from '@mealplanner/shared';
 import { useState, useEffect } from 'react';
 import {
   Dialog,
@@ -16,7 +16,7 @@ import { Mail, MessageSquare, Copy, Check } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface ShareModalProps {
-  recipe: Recipe;
+  recipe: RecipeData;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }

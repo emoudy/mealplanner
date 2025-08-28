@@ -1,4 +1,4 @@
-import { Recipe } from '@shared/schema';
+import { RecipeData } from '@mealplanner/shared';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -17,10 +17,10 @@ import { useState } from 'react';
 import { ShareModal } from './ShareModal';
 
 interface RecipeCardProps {
-  recipe: Recipe;
-  onEdit: (recipe: Recipe) => void;
+  recipe: RecipeData;
+  onEdit: (recipe: RecipeData) => void;
   onDelete: (id: number) => void;
-  onView?: (recipe: Recipe) => void;
+  onView?: (recipe: RecipeData) => void;
 }
 
 const categoryIcons = {

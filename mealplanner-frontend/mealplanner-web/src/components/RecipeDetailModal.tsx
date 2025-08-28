@@ -1,4 +1,4 @@
-import { Recipe } from '@shared/schema';
+import { RecipeData } from '@mealplanner/shared';
 import {
   Dialog,
   DialogContent,
@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 
 interface RecipeDetailModalProps {
-  recipe: Recipe | null;
+  recipe: RecipeData | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }

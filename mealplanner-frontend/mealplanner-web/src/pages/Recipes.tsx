@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 // Error handling now inline instead of using authUtils
-import { Recipe } from '@shared/schema';
+import { RecipeData } from '@mealplanner/shared';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -34,12 +34,12 @@ export default function Recipes() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
-  const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
-  const [viewingRecipe, setViewingRecipe] = useState<Recipe | null>(null);
+  const [editingRecipe, setEditingRecipe] = useState<RecipeData | null>(null);
+  const [viewingRecipe, setViewingRecipe] = useState<RecipeData | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: recipes = [], isLoading, error } = useQuery<Recipe[]>({
+  const { data: recipes = [], isLoading, error } = useQuery<RecipeData[]>({
     queryKey: ['/api/recipes'],
     retry: false,
   });
@@ -89,11 +89,11 @@ export default function Recipes() {
     }
   }, [error, toast]);
 
-  const handleEditRecipe = (recipe: Recipe) => {
+  const handleEditRecipe = (recipe: RecipeData) => {
     setEditingRecipe(recipe);
   };
 
-  const handleViewRecipe = (recipe: Recipe) => {
+  const handleViewRecipe = (recipe: RecipeData) => {
     setViewingRecipe(recipe);
   };
 
@@ -103,7 +103,7 @@ export default function Recipes() {
     }
   };
 
-  const filteredRecipes = recipes.filter((recipe: Recipe) => {
+  const filteredRecipes = recipes.filter((recipe: RecipeData) => {
     // Filter by category
     const matchesCategory = selectedCategory === 'all' || recipe.category === selectedCategory;
     
@@ -225,7 +225,7 @@ export default function Recipes() {
             role="grid"
             aria-label={`Recipe collection showing ${filteredRecipes.length} recipe${filteredRecipes.length === 1 ? '' : 's'}`}
           >
-            {filteredRecipes.map((recipe: Recipe) => (
+            {filteredRecipes.map((recipe: RecipeData) => (
               <RecipeCard
                 key={recipe.id}
                 recipe={recipe}
