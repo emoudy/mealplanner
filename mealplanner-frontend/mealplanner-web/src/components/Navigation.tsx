@@ -50,20 +50,20 @@ export function Navigation() {
   };
 
   return (
-    <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50" role="navigation" aria-label="Main navigation">
+    <nav className="bg-card border-b border-border sticky top-0 z-50" role="navigation" aria-label="Main navigation">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link 
             href="/" 
-            className="flex items-center space-x-3 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 rounded-lg p-1 -m-1" 
+            className="flex items-center space-x-3 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-lg p-1 -m-1" 
             aria-label="MealPlanner home - Navigate to main page"
             tabIndex={0}
           >
             <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-yellow-500 rounded-lg flex items-center justify-center" aria-hidden="true">
               <ChefHat className="w-4 h-4 text-white" />
             </div>
-            <span className="text-xl font-bold text-gray-900 dark:text-white">MealPlanner</span>
+            <span className="text-xl font-bold text-foreground">MealPlanner</span>
           </Link>
 
           {/* Navigation Links (Authenticated State) */}
@@ -116,7 +116,7 @@ export function Navigation() {
               variant="ghost"
               size="icon"
               onClick={toggleTheme}
-              className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+              className="text-muted-foreground hover:text-foreground"
               aria-label={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
               aria-pressed={isDarkMode}
               title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}

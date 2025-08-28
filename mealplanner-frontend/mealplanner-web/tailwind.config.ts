@@ -43,6 +43,10 @@ const config: Config = {
         accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
+          500: "hsl(var(--accent-500))",
+          600: "hsl(var(--accent-600))",
+          700: "hsl(var(--accent-700))",
+          900: "hsl(var(--accent-900))",
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
@@ -51,6 +55,13 @@ const config: Config = {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+        },
+        brand: {
+          50: "hsl(var(--brand-50))",
+          500: "hsl(var(--brand-500))",
+          600: "hsl(var(--brand-600))",
+          700: "hsl(var(--brand-700))",
+          900: "hsl(var(--brand-900))",
         },
       },
       borderRadius: {
