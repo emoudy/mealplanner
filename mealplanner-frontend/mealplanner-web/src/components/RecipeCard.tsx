@@ -13,7 +13,7 @@ import {
   UtensilsCrossed,
   Cookie
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, MouseEvent, KeyboardEvent } from 'react';
 import { ShareModal } from './ShareModal';
 
 interface RecipeCardProps {
@@ -55,7 +55,7 @@ export function RecipeCard({ recipe, onEdit, onDelete, onView }: RecipeCardProps
         tabIndex={0}
         role="button"
         aria-label={`View ${recipe.title} recipe details`}
-        onKeyDown={(e) => {
+        onKeyDown={(e: KeyboardEvent<HTMLDivElement>) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
             handleCardClick();
@@ -79,7 +79,7 @@ export function RecipeCard({ recipe, onEdit, onDelete, onView }: RecipeCardProps
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={(e) => {
+                onClick={(e: MouseEvent<HTMLButtonElement>) => {
                   e.stopPropagation();
                   onEdit(recipe);
                 }}
@@ -92,7 +92,7 @@ export function RecipeCard({ recipe, onEdit, onDelete, onView }: RecipeCardProps
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={(e) => {
+                onClick={(e: MouseEvent<HTMLButtonElement>) => {
                   e.stopPropagation();
                   setShowShareModal(true);
                 }}
@@ -105,7 +105,7 @@ export function RecipeCard({ recipe, onEdit, onDelete, onView }: RecipeCardProps
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={(e) => {
+                onClick={(e: MouseEvent<HTMLButtonElement>) => {
                   e.stopPropagation();
                   onDelete(recipe.id);
                 }}

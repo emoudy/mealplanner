@@ -89,7 +89,7 @@ export function EditRecipeModal({ recipe, open, onOpenChange }: EditRecipeModalP
   }, [recipe, open, form]);
 
   const updateRecipeMutation = useMutation({
-    mutationFn: async (data: z.infer<typeof formSchema>) => {
+    mutationFn: async (data: Omit<z.infer<typeof createRecipeSchema>, 'id'>) => {
       if (!recipe) throw new Error('No recipe to update');
       return await apiRequest('PATCH', `/api/recipes/${recipe.id}`, data);
     },
@@ -178,7 +178,7 @@ export function EditRecipeModal({ recipe, open, onOpenChange }: EditRecipeModalP
               <FormField
                 control={form.control}
                 name="title"
-                render={({ field }) => (
+                render={({ field }: { field: any }) => (
                   <FormItem>
                     <FormLabel>Recipe Title</FormLabel>
                     <FormControl>
@@ -192,7 +192,7 @@ export function EditRecipeModal({ recipe, open, onOpenChange }: EditRecipeModalP
               <FormField
                 control={form.control}
                 name="category"
-                render={({ field }) => (
+                render={({ field }: { field: any }) => (
                   <FormItem>
                     <FormLabel>Category</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
@@ -217,7 +217,7 @@ export function EditRecipeModal({ recipe, open, onOpenChange }: EditRecipeModalP
             <FormField
               control={form.control}
               name="description"
-              render={({ field }) => (
+              render={({ field }: { field: any }) => (
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
@@ -238,7 +238,7 @@ export function EditRecipeModal({ recipe, open, onOpenChange }: EditRecipeModalP
               <FormField
                 control={form.control}
                 name="cookTime"
-                render={({ field }) => (
+                render={({ field }: { field: any }) => (
                   <FormItem>
                     <FormLabel>Cook Time (minutes)</FormLabel>
                     <FormControl>
@@ -258,7 +258,7 @@ export function EditRecipeModal({ recipe, open, onOpenChange }: EditRecipeModalP
               <FormField
                 control={form.control}
                 name="servings"
-                render={({ field }) => (
+                render={({ field }: { field: any }) => (
                   <FormItem>
                     <FormLabel>Servings</FormLabel>
                     <FormControl>
@@ -315,7 +315,7 @@ export function EditRecipeModal({ recipe, open, onOpenChange }: EditRecipeModalP
             <FormField
               control={form.control}
               name="instructionsText"
-              render={({ field }) => (
+              render={({ field }: { field: any }) => (
                 <FormItem>
                   <FormLabel className="text-base font-medium">Instructions</FormLabel>
                   <FormControl>
