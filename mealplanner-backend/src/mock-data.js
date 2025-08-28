@@ -1,7 +1,5 @@
-import type { Recipe } from "./types.js";
-
 // Mock data for development - easily removable when AWS DynamoDB is configured
-export const mockRecipes: Recipe[] = [
+export const mockRecipes = [
   {
     id: 1,
     title: "Classic Spaghetti Carbonara",
@@ -165,9 +163,9 @@ export const mockUsers = [
     firstName: "Demo",
     lastName: "User",
     emailVerified: true,
-    authProvider: "email" as const,
-    subscriptionTier: "pro" as const,
-    subscriptionStatus: "active" as const,
+    authProvider: "email",
+    subscriptionTier: "pro",
+    subscriptionStatus: "active",
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2024-01-01T00:00:00Z")
   },
@@ -177,9 +175,9 @@ export const mockUsers = [
     firstName: "Chef",
     lastName: "Demo",
     emailVerified: true,
-    authProvider: "email" as const,
-    subscriptionTier: "basic" as const,
-    subscriptionStatus: "active" as const,
+    authProvider: "email",
+    subscriptionTier: "basic",
+    subscriptionStatus: "active",
     createdAt: new Date("2024-01-02T00:00:00Z"),
     updatedAt: new Date("2024-01-02T00:00:00Z")
   }
