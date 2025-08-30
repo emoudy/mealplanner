@@ -41,17 +41,11 @@ async function comparePasswords(supplied: string, stored: string) {
 
 // Authentication middleware
 export const isAuthenticated = (req: any, res: any, next: any) => {
-  // In development mode with mock data, bypass authentication for testing
-  if (process.env.NODE_ENV === 'development' && !process.env.AWS_ACCESS_KEY_ID) {
-    // Set a mock user for development testing
-    req.user = { id: 'mock-user-1', email: 'test@example.com' };
+  if (req.isAuthenticated()) {
     return next();
+  } else {
+    return res.status(401).json({ message: "Please log in to access this resource" });
   }
-  
-  if (req.isAuthenticated && req.isAuthenticated()) {
-    return next();
-  }
-  return res.status(401).json({ message: "Unauthorized" });
 };
 
 export async function setupEmailAuth(app: Express) {
@@ -250,6 +244,7 @@ export async function setupEmailAuth(app: Express) {
 
   // Login route
   app.post("/api/login", (req, res, next) => {
+    // Normal authentication flow
     passport.authenticate("local", (err: any, user: any, info: any) => {
       if (err) {
         return res.status(500).json({ message: "Login failed" });

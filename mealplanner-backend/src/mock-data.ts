@@ -162,6 +162,7 @@ export const mockUsers = [
   {
     id: "mock-user-1",
     email: "demo@mealplanner.com",
+    password: "demo123",
     firstName: "Demo",
     lastName: "User",
     emailVerified: true,
@@ -174,6 +175,7 @@ export const mockUsers = [
   {
     id: "mock-user-2", 
     email: "chef@mealplanner.com",
+    password: "chef123",
     firstName: "Chef",
     lastName: "Demo",
     emailVerified: true,
