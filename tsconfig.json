@@ -1,5 +1,11 @@
 {
-  "include": ["client/src/**/*", "shared/**/*", "server/**/*"],
+  "include": [
+    "mealplanner-backend/src/**/*",
+    "mealplanner-frontend/mealplanner-web/src/**/*",
+    "mealplanner-frontend/mealplanner-mobile/src/**/*",
+    "mealplanner-frontend/mealplanner-shared/src/**/*",
+    "mealplanner-mobile/src/**/*"
+  ],
   "exclude": ["node_modules", "build", "dist", "**/*.test.ts"],
   "compilerOptions": {
     "incremental": true,
@@ -16,8 +22,8 @@
     "baseUrl": ".",
     "types": ["node", "vite/client"],
     "paths": {
-      "@/*": ["./client/src/*"],
-      "@shared/*": ["./shared/*"]
+      "@/*": ["./mealplanner-frontend/mealplanner-web/src/*"],
+      "@shared/*": ["./mealplanner-frontend/mealplanner-shared/src/*"]
     }
   }
 }
