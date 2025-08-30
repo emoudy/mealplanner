@@ -1,5 +1,6 @@
 // User domain routes extracted from lines 67-135 of routes.ts
 import { Router } from 'express';
+import { mockUsers } from '@mealplanner/shared';
 
 export function createUserRoutes(dependencies: any) {
   const router = Router();
@@ -20,18 +21,22 @@ export function createUserRoutes(dependencies: any) {
   router.get('/user', (req: any, res) => {
     console.log("User endpoint called");
     
-    // In development mode with mock data, return mock user
+    // In development mode with mock data, return mock user that matches our mock data
     if (process.env.NODE_ENV === 'development' && !process.env.AWS_ACCESS_KEY_ID) {
-      const mockUser = {
-        id: 'mock-user-1',
-        email: 'test@example.com',
-        firstName: 'Test',
-        lastName: 'User',
-        emailVerified: true,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-      return res.json(mockUser);
+      // Get the first mock user (Demo User) as default for development
+      const mockUser = mockUsers[0];
+      return res.json({
+        id: mockUser.id,
+        email: mockUser.email,
+        firstName: mockUser.firstName,
+        lastName: mockUser.lastName,
+        emailVerified: mockUser.emailVerified,
+        subscriptionTier: mockUser.subscriptionTier,
+        emailNotifications: mockUser.emailNotifications,
+        dietaryPreferences: mockUser.dietaryPreferences,
+        createdAt: mockUser.createdAt,
+        updatedAt: mockUser.updatedAt
+      });
     }
     
     // Production authentication check

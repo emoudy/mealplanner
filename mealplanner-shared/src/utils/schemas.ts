@@ -54,7 +54,7 @@ export const createRecipeSchema = z.object({
   category: z.enum(["breakfast", "lunch", "dinner", "snacks", "dessert", "appetizer", "beverage"]),
   cookTime: z.number().min(1).max(480).optional(), // 1 minute to 8 hours
   servings: z.number().min(1).max(50).optional(),
-  imageUrl: z.string().url().nullable().optional(),
+  imageUrl: z.string().url().nullable(), // Either a valid URL or null, never undefined
 });
 
 // a recipe schema

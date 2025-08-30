@@ -8,8 +8,8 @@ export interface User {
   emailVerified?: boolean;
   emailVerificationToken?: string | null;
   authProvider?: string;
-  profileImageUrl?: string;
-  subscriptionTier?: 'free' | 'basic' | 'pro';
+  profileImageUrl: string | null; // Either a valid URL or null, never undefined
+  subscriptionTier?: 'free' | 'premium' | 'pro';
   subscriptionStatus?: string;
   emailNotifications?: boolean;
   dietaryPreferences?: string[];
@@ -28,8 +28,8 @@ export interface UpsertUser {
   emailVerified?: boolean;
   emailVerificationToken?: string | null;
   authProvider?: string;
-  profileImageUrl?: string;
-  subscriptionTier?: 'free' | 'basic' | 'pro';
+  profileImageUrl: string | null; // Either a valid URL or null, never undefined
+  subscriptionTier?: 'free' | 'premium' | 'pro';
   subscriptionStatus?: string;
   emailNotifications?: boolean;
   dietaryPreferences?: string[];
@@ -47,7 +47,7 @@ export interface Recipe {
   cookTime?: number;
   servings?: number;
   category?: string;
-  imageUrl?: string;
+  imageUrl: string | null; // Either a valid URL or null, never undefined
   isFromAI?: boolean;
   userId: string;
   createdAt?: Date;
@@ -62,7 +62,7 @@ export interface InsertRecipe {
   cookTime?: number;
   servings?: number;
   category?: string;
-  imageUrl?: string;
+  imageUrl: string | null; // Either a valid URL or null, never undefined
   isFromAI?: boolean;
 }
 
@@ -72,7 +72,7 @@ export interface UpdateUser {
   emailVerified?: boolean;
   emailVerificationToken?: string | null;
   profileImageUrl?: string;
-  subscriptionTier?: 'free' | 'basic' | 'pro';
+  subscriptionTier?: 'free' | 'premium' | 'pro';
 }
 
 export interface UsageTracking {

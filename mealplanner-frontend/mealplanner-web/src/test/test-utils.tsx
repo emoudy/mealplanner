@@ -8,7 +8,7 @@ import { vi } from 'vitest'
 // Mock the authentication hook
 vi.mock('@/hooks/useAuth', () => ({
   useAuth: () => ({
-    user: { id: '1', name: 'Test User', email: 'test@example.com' },
+    user: { id: '1', name: 'Demo User', email: 'demo@mealplanner.com' },
     isAuthenticated: true,
     login: vi.fn(),
     logout: vi.fn(),

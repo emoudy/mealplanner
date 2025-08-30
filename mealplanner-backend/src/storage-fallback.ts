@@ -8,7 +8,7 @@ import {
 } from "./types.js";
 import type { IStorage, CustomGroceryItem, CreateCustomGroceryItem, MealPlanEntry, MealPlanResponse, SavedGroceryList, SavedGroceryItem } from "./storage";
 import { createId } from "@paralleldrive/cuid2";
-import { mockRecipes, mockUsers } from "./mock-data.js";
+import { mockRecipes, mockUsers } from "@mealplanner/shared";
 
 // In-memory fallback storage for development when DynamoDB is not available
 export class MemoryStorage implements IStorage {
@@ -36,7 +36,8 @@ export class MemoryStorage implements IStorage {
         this.users.set(user.id, {
           ...user,
           password: undefined, // Will be set when user registers/logs in
-          emailVerificationToken: undefined
+          emailVerificationToken: undefined,
+          profileImageUrl: user.profileImageUrl || null // Ensure it's never undefined
         });
       });
     }
@@ -56,7 +57,7 @@ export class MemoryStorage implements IStorage {
       authProvider: userData.authProvider || "email",
       firstName: userData.firstName ?? undefined,
       lastName: userData.lastName ?? undefined,
-      profileImageUrl: userData.profileImageUrl || undefined,
+      profileImageUrl: userData.profileImageUrl || null,
       subscriptionTier: userData.subscriptionTier || "free",
       subscriptionStatus: userData.subscriptionStatus || "active",
       emailNotifications: userData.emailNotifications !== false,

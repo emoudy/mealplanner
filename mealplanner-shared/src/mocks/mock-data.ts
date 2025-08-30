@@ -1,10 +1,10 @@
 // Mock data for testing - Remove when DynamoDB is fully integrated in AWS
-import { RecipeListData } from "../utils/schemas.js";
+import { RecipeListData, UserData } from "../utils/schemas.js";
 
 export const mockRecipes: RecipeListData = [
   {
     id: 1,
-    userId: "mock-user",
+    userId: "1",
     title: "Classic Pancakes",
     description: "Fluffy, golden pancakes perfect for weekend breakfast",
     ingredients: ["2 cups all-purpose flour", "2 tbsp sugar", "2 tsp baking powder", "1 tsp salt", "2 large eggs", "1¾ cups milk", "¼ cup melted butter"],
@@ -12,14 +12,14 @@ export const mockRecipes: RecipeListData = [
     category: "breakfast",
     cookTime: 15,
     servings: 4,
-    imageUrl: null,
+    imageUrl: "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b",
     createdAt: new Date(),
     updatedAt: new Date(),
     isFromAI: false
   },
   {
     id: 2,
-    userId: "mock-user",
+    userId: "1",
     title: "Mediterranean Quinoa Bowl",
     description: "Healthy quinoa bowl with fresh vegetables and tahini dressing",
     ingredients: ["1 cup quinoa", "2 cups vegetable broth", "1 cucumber, diced", "2 tomatoes, chopped", "½ red onion, sliced", "½ cup kalamata olives", "¼ cup tahini", "2 tbsp lemon juice", "2 tbsp olive oil"],
@@ -34,7 +34,7 @@ export const mockRecipes: RecipeListData = [
   },
   {
     id: 3,
-    userId: "mock-user",
+    userId: "1",
     title: "Garlic Butter Salmon",
     description: "Pan-seared salmon with aromatic garlic butter sauce",
     ingredients: ["4 salmon fillets", "4 cloves garlic, minced", "4 tbsp butter", "2 tbsp olive oil", "1 lemon, juiced", "2 tbsp fresh parsley", "Salt and pepper"],
@@ -44,12 +44,12 @@ export const mockRecipes: RecipeListData = [
     category: "dinner",
     createdAt: new Date(),
     updatedAt: new Date(),
-    imageUrl: null,
+    imageUrl: "https://images.unsplash.com/photo-1467003909585-2f8a72700288",
     isFromAI: false
   },
   {
     id: 4,
-    userId: "mock-user",
+    userId: "1",
     title: "Energy Balls",
     description: "No-bake energy balls with dates, nuts, and chocolate chips",
     ingredients: ["1 cup pitted dates", "½ cup almonds", "½ cup rolled oats", "2 tbsp chia seeds", "2 tbsp dark chocolate chips", "1 tsp vanilla extract"],
@@ -64,7 +64,7 @@ export const mockRecipes: RecipeListData = [
   },
   {
     id: 5,
-    userId: "mock-user",
+    userId: "1",
     title: "Avocado Toast Supreme",
     description: "Elevated avocado toast with everything bagel seasoning",
     ingredients: ["2 slices sourdough bread", "1 ripe avocado", "2 eggs", "2 tbsp everything bagel seasoning", "1 tbsp olive oil", "½ lime, juiced", "Red pepper flakes"],
@@ -79,7 +79,7 @@ export const mockRecipes: RecipeListData = [
   },
   {
     id: 6,
-    userId: "mock-user",
+    userId: "1",
     title: "Thai Green Curry",
     description: "Authentic Thai green curry with vegetables and jasmine rice",
     ingredients: ["2 tbsp green curry paste", "1 can coconut milk", "1 lb chicken breast, sliced", "1 eggplant, cubed", "1 bell pepper", "Thai basil leaves", "2 tbsp fish sauce", "1 tbsp brown sugar", "Jasmine rice"],
@@ -94,7 +94,7 @@ export const mockRecipes: RecipeListData = [
   },
   {
     id: 7,
-    userId: "mock-user",
+    userId: "1",
     title: "Caesar Salad",
     description: "Classic Caesar salad with homemade croutons and dressing",
     ingredients: ["1 head romaine lettuce", "½ cup parmesan cheese", "2 slices bread for croutons", "3 cloves garlic", "2 anchovy fillets", "1 egg yolk", "2 tbsp lemon juice", "⅓ cup olive oil"],
@@ -109,7 +109,7 @@ export const mockRecipes: RecipeListData = [
   },
   {
     id: 8,
-    userId: "mock-user",
+    userId: "1",
     title: "Chocolate Chip Cookies",
     description: "Chewy chocolate chip cookies with crispy edges",
     ingredients: ["2¼ cups all-purpose flour", "1 tsp baking soda", "1 tsp salt", "1 cup butter, softened", "¾ cup granulated sugar", "¾ cup brown sugar", "2 large eggs", "2 tsp vanilla", "2 cups chocolate chips"],
@@ -124,7 +124,7 @@ export const mockRecipes: RecipeListData = [
   },
   {
     id: 9,
-    userId: "mock-user",
+    userId: "1",
     title: "Greek Yogurt Parfait",
     description: "Layered parfait with yogurt, berries, and granola",
     ingredients: ["2 cups Greek yogurt", "1 cup mixed berries", "½ cup granola", "2 tbsp honey", "1 tsp vanilla extract", "Mint leaves for garnish"],
@@ -139,7 +139,7 @@ export const mockRecipes: RecipeListData = [
   },
   {
     id: 10,
-    userId: "mock-user",
+    userId: "1",
     title: "Beef Stir Fry",
     description: "Quick and flavorful beef stir fry with mixed vegetables",
     ingredients: ["1 lb beef sirloin, sliced thin", "2 cups mixed vegetables", "3 cloves garlic, minced", "1 tbsp fresh ginger", "3 tbsp soy sauce", "2 tbsp oyster sauce", "1 tbsp cornstarch", "2 tbsp vegetable oil"],
@@ -154,7 +154,7 @@ export const mockRecipes: RecipeListData = [
   },
   {
     id: 11,
-    userId: "mock-user",
+    userId: "1",
     title: "Caprese Sandwich",
     description: "Fresh mozzarella, tomato, and basil sandwich on ciabatta",
     ingredients: ["1 ciabatta roll", "4 oz fresh mozzarella", "1 large tomato", "Fresh basil leaves", "2 tbsp balsamic glaze", "1 tbsp olive oil", "Salt and pepper"],
@@ -169,7 +169,7 @@ export const mockRecipes: RecipeListData = [
   },
   {
     id: 12,
-    userId: "mock-user",
+    userId: "1",
     title: "Hummus and Veggies",
     description: "Creamy homemade hummus with fresh vegetable sticks",
     ingredients: ["1 can chickpeas, drained", "2 tbsp tahini", "1 lemon, juiced", "2 cloves garlic", "2 tbsp olive oil", "Carrots, celery, bell peppers for dipping"],
@@ -184,7 +184,7 @@ export const mockRecipes: RecipeListData = [
   },
   {
     id: 13,
-    userId: "mock-user",
+    userId: "1",
     title: "French Toast",
     description: "Classic French toast with cinnamon and vanilla",
     ingredients: ["8 slices thick bread", "4 large eggs", "1 cup milk", "2 tbsp sugar", "1 tsp vanilla", "1 tsp cinnamon", "Butter for cooking", "Maple syrup"],
@@ -199,7 +199,7 @@ export const mockRecipes: RecipeListData = [
   },
   {
     id: 14,
-    userId: "mock-user",
+    userId: "1",
     title: "Chicken Caesar Wrap",
     description: "Grilled chicken Caesar salad wrapped in a tortilla",
     ingredients: ["2 large tortillas", "2 chicken breasts", "1 head romaine lettuce", "¼ cup Caesar dressing", "¼ cup parmesan cheese", "2 tbsp olive oil"],
@@ -214,7 +214,7 @@ export const mockRecipes: RecipeListData = [
   },
   {
     id: 15,
-    userId: "mock-user",
+    userId: "1",
     title: "Honey Garlic Chicken",
     description: "Sweet and savory glazed chicken thighs",
     ingredients: ["6 chicken thighs", "⅓ cup honey", "4 cloves garlic, minced", "¼ cup soy sauce", "2 tbsp rice vinegar", "1 tbsp olive oil", "Green onions for garnish"],
@@ -229,7 +229,7 @@ export const mockRecipes: RecipeListData = [
   },
   {
     id: 16,
-    userId: "mock-user",
+    userId: "1",
     title: "Trail Mix",
     description: "Homemade trail mix with nuts, seeds, and dried fruit",
     ingredients: ["1 cup mixed nuts", "½ cup pumpkin seeds", "½ cup dried cranberries", "½ cup dark chocolate chips", "¼ cup coconut flakes"],
@@ -244,7 +244,7 @@ export const mockRecipes: RecipeListData = [
   },
   {
     id: 17,
-    userId: "mock-user",
+    userId: "1",
     title: "Smoothie Bowl",
     description: "Thick smoothie bowl topped with fresh fruits and granola",
     ingredients: ["1 frozen banana", "½ cup frozen berries", "½ cup yogurt", "2 tbsp almond butter", "Fresh berries for topping", "Granola", "Coconut flakes", "Chia seeds"],
@@ -259,7 +259,7 @@ export const mockRecipes: RecipeListData = [
   },
   {
     id: 18,
-    userId: "mock-user",
+    userId: "1",
     title: "Asian Lettuce Wraps",
     description: "Light and fresh lettuce wraps with seasoned ground turkey",
     ingredients: ["1 lb ground turkey", "1 head butter lettuce", "2 tbsp sesame oil", "3 cloves garlic, minced", "1 tbsp fresh ginger", "3 tbsp soy sauce", "2 tbsp rice vinegar", "1 tsp sriracha", "Green onions"],
@@ -274,7 +274,7 @@ export const mockRecipes: RecipeListData = [
   },
   {
     id: 19,
-    userId: "mock-user",
+    userId: "1",
     title: "Mushroom Risotto",
     description: "Creamy Arborio rice with wild mushrooms and parmesan",
     ingredients: ["1½ cups Arborio rice", "6 cups warm chicken broth", "8 oz mixed mushrooms", "1 onion, diced", "3 cloves garlic", "½ cup white wine", "½ cup parmesan cheese", "3 tbsp butter", "2 tbsp olive oil"],
@@ -289,7 +289,7 @@ export const mockRecipes: RecipeListData = [
   },
   {
     id: 20,
-    userId: "mock-user",
+    userId: "1",
     title: "Apple Slices with Peanut Butter",
     description: "Simple and healthy snack with crisp apples and natural peanut butter",
     ingredients: ["2 large apples", "4 tbsp natural peanut butter", "1 tsp cinnamon", "1 tbsp honey"],
@@ -301,5 +301,43 @@ export const mockRecipes: RecipeListData = [
     updatedAt: new Date(),
     imageUrl: null,
     isFromAI: false
+  }
+];
+
+// Mock users for development
+export const mockUsers: UserData[] = [
+  {
+    id: '1',
+    email: 'demo@mealplanner.com',
+    password: 'demo123456789', // Meets minimum length requirement
+    emailVerified: true,
+    authProvider: 'email',
+    firstName: 'Demo',
+    lastName: 'User',
+    profileImageUrl: null,
+    subscriptionTier: 'free',
+    subscriptionStatus: 'active',
+    emailNotifications: true,
+    dietaryPreferences: ['vegetarian'],
+    darkMode: false,
+    createdAt: new Date('2023-01-01'),
+    updatedAt: new Date('2023-01-01')
+  },
+  {
+    id: '2',
+    email: 'chef@mealplanner.com',
+    password: 'chef123456789', // Meets minimum length requirement
+    emailVerified: true,
+    authProvider: 'email',
+    firstName: 'Chef',
+    lastName: 'Marie',
+    profileImageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
+    subscriptionTier: 'premium',
+    subscriptionStatus: 'active',
+    emailNotifications: true,
+    dietaryPreferences: ['french', 'italian', 'asian'],
+    darkMode: false,
+    createdAt: new Date('2023-01-02'),
+    updatedAt: new Date('2023-01-02')
   }
 ];

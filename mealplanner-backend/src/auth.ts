@@ -40,7 +40,19 @@ async function comparePasswords(supplied: string, stored: string) {
 }
 
 // Authentication middleware
-export const isAuthenticated = (req: any, res: any, next: any) => {
+export const isAuthenticated = async (req: any, res: any, next: any) => {
+  // Development bypass - allow access without authentication and set up mock user
+  if (process.env.NODE_ENV === 'development') {
+    // Set up a mock user for development
+    if (!req.user) {
+      const mockUser = await storage.getUserByEmail('demo@mealplanner.com');
+      if (mockUser) {
+        req.user = mockUser;
+      }
+    }
+    return next();
+  }
+  
   if (req.isAuthenticated()) {
     return next();
   } else {
@@ -169,6 +181,7 @@ export async function setupEmailAuth(app: Express) {
         firstName,
         lastName,
         emailVerified: false,
+        profileImageUrl: null,
       });
 
       // Generate email verification token
@@ -239,6 +252,43 @@ export async function setupEmailAuth(app: Express) {
     } catch (error) {
       console.error("Email verification error:", error);
       return res.status(500).json({ message: "Email verification failed" });
+    }
+  });
+
+  // Development login endpoint - bypasses password authentication for mock users
+  app.post('/api/login/dev', async (req, res) => {
+    if (process.env.NODE_ENV !== 'development') {
+      return res.status(404).json({ error: 'Not found' });
+    }
+
+    const { email } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+
+    try {
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(401).json({ error: 'User not found' });
+      }
+
+      // Create session for development bypass
+      (req.session as any).userId = user.id;
+      (req.session as any).user = user;
+
+      res.json({
+        message: 'Development login successful',
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName
+        }
+      });
+    } catch (error) {
+      console.error('Development login error:', error);
+      res.status(500).json({ error: 'Internal server error' });
     }
   });
 

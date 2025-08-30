@@ -8,7 +8,7 @@ import {
 } from "./types.js";
 import type { MealPlanEntry, CreateMealPlanEntryData, MealPlanResponse, CustomGroceryItem, CreateCustomGroceryItem, SavedGroceryList, SavedGroceryItem } from "./storage";
 import { IStorage } from "./storage";
-import { mockRecipes } from "./mock-data.js";
+import { mockRecipes } from "@mealplanner/shared";
 import { docClient, tableName, keys, generateId, generateRecipeId } from "./dynamodb";
 import { GetCommand, PutCommand, UpdateCommand, DeleteCommand, QueryCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
 // Remove bcrypt import as it's not needed for DynamoDB storage
