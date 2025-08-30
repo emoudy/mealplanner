@@ -21,3 +21,6 @@ amplifyconfiguration*
 
 # agent files
 .agent_state*
+
+#co-pilot
+.copilot-instructions.md
