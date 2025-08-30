@@ -1,10 +1,19 @@
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Load environment variables first
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+
 import express, { type Request, Response, NextFunction } from "express";
-import { registerRoutes } from "./routes/index.js";
+import { registerRoutes } from "./routes/index";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import slowDown from "express-slow-down";
 import cors from "cors";
-import { securityMonitoring, httpsRedirect } from "./security/index.js";
+import { securityMonitoring, httpsRedirect } from "./security/index";
 
 // Add process event listeners for debugging
 process.on('uncaughtException', (error) => {

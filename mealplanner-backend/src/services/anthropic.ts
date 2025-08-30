@@ -32,7 +32,7 @@ export async function generateRecipe(
 ): Promise<RecipeResponse> {
   try {
     // Validate prompt for security
-    const { validatePrompt } = await import('../security.js');
+    const { validatePrompt } = await import('../security');
     const validation = validatePrompt(prompt);
     if (!validation.isValid) {
       throw new Error(`Invalid prompt: ${validation.reason}`);

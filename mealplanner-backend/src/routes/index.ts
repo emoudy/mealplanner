@@ -6,17 +6,17 @@ import * as fs from "fs";
 import * as nodemailer from "nodemailer";
 
 // Import domains
-import { createUserRoutes } from '../domains/users/routes.js';
-import { createRecipeRoutes } from '../domains/recipes/routes.js';
-import { createAiChatRoutes } from '../domains/ai-chat/routes.js';
-import { createMealPlanningRoutes } from '../domains/meal-planning/routes.js';
-import { createGroceryRoutes } from '../domains/grocery/routes.js';
-import { createNotificationRoutes } from '../domains/notifications/routes.js';
+import { createUserRoutes } from '../domains/users/routes';
+import { createRecipeRoutes } from '../domains/recipes/routes';
+import { createAiChatRoutes } from '../domains/ai-chat/routes';
+import { createMealPlanningRoutes } from '../domains/meal-planning/routes';
+import { createGroceryRoutes } from '../domains/grocery/routes';
+import { createNotificationRoutes } from '../domains/notifications/routes';
 
 // Import existing infrastructure
-import { storage as dbStorage } from "../storage.js";
-import { setupEmailAuth, isAuthenticated } from "../auth.js";
-import { generateRecipe, getChatResponse } from "../anthropic.js";
+import { storage as dbStorage } from "../storage";
+import { setupEmailAuth, isAuthenticated } from "../auth";
+import { generateRecipe, getChatResponse } from "../anthropic";
 
 // For now, create temporary schemas - will be replaced with proper shared utils
 const createRecipeSchema = { parse: (data: any) => data };

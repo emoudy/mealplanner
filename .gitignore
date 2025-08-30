@@ -2,6 +2,13 @@ node_modules
 dist
 *.log
 
+# Environment variables (contains sensitive API keys)
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
 .DS_Store
 server/public
 vite.config.ts.*
